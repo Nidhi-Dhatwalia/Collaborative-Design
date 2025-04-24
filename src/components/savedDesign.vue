@@ -30,7 +30,13 @@
       </v-col>
     </v-row>
 
-    <v-row justify="center">
+    <v-row justify="center"> 
+      <v-col cols="auto" v-if="isModified">
+        <v-btn color="secondary" @click="saveCurrentDesign">
+          Save Current Design
+        </v-btn>
+      </v-col>
+
       <v-btn color="success" @click="$router.push('/canvas')">
         Back to Canvas
       </v-btn>
@@ -40,33 +46,68 @@
 
 <script setup>
 import { ref, onMounted } from 'vue'
-import { useRouter } from 'vue-router' 
+import { useRouter } from 'vue-router'
 
 let canvasInstance = null
 const savedDesigns = ref([])
+const isModified = ref(false) // Track if the design is modified
 
-onMounted(() => { 
+onMounted(() => {
   const canvasElement = document.getElementById('preview-canvas')
   if (canvasElement) {
     canvasInstance = new fabric.Canvas(canvasElement)
+ 
+    canvasInstance.on('object:modified', () => {
+      isModified.value = true 
+    })
+    canvasInstance.on('object:added', () => {
+      isModified.value = true  
+    })
+    canvasInstance.on('object:removed', () => {
+      isModified.value = true  
+    })
   }
-   const storedDesigns = JSON.parse(localStorage.getItem('savedDesigns')) || []
+
+  const storedDesigns = JSON.parse(localStorage.getItem('savedDesigns')) || []
   savedDesigns.value = storedDesigns
 })
 
 const loadDesign = (design) => {
-  if (canvasInstance) { 
-    canvasInstance.clear() 
+  if (canvasInstance) {
+    canvasInstance.clear()
     canvasInstance.loadFromJSON(design, () => {
       canvasInstance.renderAll()
+      fitCanvasToViewport()
     })
   }
 }
 
 const deleteDesign = (index) => {
   savedDesigns.value.splice(index, 1)
-   
   localStorage.setItem('savedDesigns', JSON.stringify(savedDesigns.value))
+}
+
+const fitCanvasToViewport = () => {
+  const canvasElement = document.getElementById('preview-canvas')
+  canvasElement.scrollIntoView({
+    behavior: 'smooth',
+    block: 'center'
+  })
+
+  if (canvasInstance) {
+    const scale = 1
+    canvasInstance.setZoom(scale)
+  }
+}
+
+ 
+const saveCurrentDesign = () => {
+  if (canvasInstance) {
+    const currentDesign = JSON.stringify(canvasInstance.toJSON())
+    savedDesigns.value.push(currentDesign)
+    localStorage.setItem('savedDesigns', JSON.stringify(savedDesigns.value))
+    isModified.value = false  
+  }
 }
 </script>
 

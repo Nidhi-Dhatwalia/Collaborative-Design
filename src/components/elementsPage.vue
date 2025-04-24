@@ -116,11 +116,11 @@ const createShape = (type) => {
  
   // Create shape based on selected type
   if (type === "rectangle") {
-    shape = new fabric.Rect({ width: 100, height: 100, fill: selectedColor.value, left: 50, top: 50 });
+    shape = new fabric.Rect({ width: 100, height: 100, fill: selectedColor.value, left: 50, top: 50 , hasControls: true,});
   } else if (type === "circle") {
-    shape = new fabric.Circle({ radius: 50, fill: selectedColor.value, left: 100, top: 50 });
+    shape = new fabric.Circle({ radius: 50, fill: selectedColor.value, left: 100, top: 50 , hasControls: true,});
   } else if (type === "triangle") {
-    shape = new fabric.Triangle({ width: 100, height: 100, fill: selectedColor.value, left: 150, top: 50 });
+    shape = new fabric.Triangle({ width: 100, height: 100, fill: selectedColor.value, left: 150, top: 50 , hasControls: true,});
   } else if (type === "text") {
     const textarea = document.createElement("textarea");
     textarea.placeholder = "Type your text...";
@@ -156,6 +156,7 @@ const createShape = (type) => {
   // If shape was created, add it to the canvas
   if (shape) {
     shape.set({ selectable: true });   
+    shape.setCoords(); 
     canvas.value.add(shape); 
     canvas.value.renderAll();   
     saveCanvasState();  
