@@ -50,7 +50,7 @@ import { useRouter } from 'vue-router'
 
 let canvasInstance = null
 const savedDesigns = ref([])
-const isModified = ref(false) // Track if the design is modified
+const isModified = ref(false)  
 
 onMounted(() => {
   const canvasElement = document.getElementById('preview-canvas')

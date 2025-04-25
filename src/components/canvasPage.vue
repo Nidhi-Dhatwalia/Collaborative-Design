@@ -3,12 +3,12 @@
     <v-app-bar color="black lighten-4">
       <v-toolbar-title class="text-h4" style="color: white">Collabie</v-toolbar-title>
 
-      <!-- Undo Button -->
+ 
       <v-btn @click="undoAction" icon>
         <v-icon>mdi-undo</v-icon>
       </v-btn>
 
-      <!-- Redo Button -->
+ 
       <v-btn @click="redoAction" icon>
         <v-icon>mdi-redo</v-icon>
       </v-btn>
@@ -197,7 +197,6 @@ const saveCanvasState = () => {
     redoStack.value = []; 
   }
 
-
   localStorage.setItem("savedDesign", JSON.stringify(currentState));
 };
 
@@ -330,6 +329,8 @@ const uploadCanvas = () => {
     alert("No objects on the canvas to upload!");
     return;
   }
+
+  
   saveCanvasState();  // Save state before uploading
   const storedDesigns = JSON.parse(localStorage.getItem("savedDesigns")) || [];
   storedDesigns.push(json);  // Store the current design

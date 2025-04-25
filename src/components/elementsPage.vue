@@ -47,12 +47,12 @@
     </v-btn>
   </div>
 
-  <!-- Text Settings Dialog -->
-  <v-dialog v-model="showTextDialog" max-width="500px">
+ 
+  <v-dialog v-model="showTextDialog" max-width="500px"> 
     <textSettings
       @apply="handleTextApply"
       @close="showTextDialog = false"
-    />
+    /> 
   </v-dialog>
 </template>
 
