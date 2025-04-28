@@ -4,24 +4,27 @@
       <v-app-bar flat color="white" class="app-bar">
         <v-toolbar-title class="title">Collabie</v-toolbar-title>
         <v-spacer></v-spacer>
-
+        
+        <v-btn class="custom-btn">Pricing</v-btn>
         <v-btn class="custom-btn">Features</v-btn>
         <v-btn class="custom-btn">Our partners</v-btn>
-        <v-btn class="custom-btn">Pricing</v-btn>
         <v-btn class="custom-btn">About us</v-btn>
-
+        
         <v-btn class="custom-btn" color="black">Log in</v-btn>
-        <v-btn class="get-started-btn">Get started</v-btn>
+        <router-link to="/canvas">
+          <v-btn class="get-started-btn">Get started</v-btn>
+        </router-link>
       </v-app-bar>
 
-      <v-container class="inner-container">
-        <v-sheet height="100vh" color="white" class="custom-sheet">
+       <v-container fluid class="inner-container">
+        <v-sheet height="70vh" color="white" class="custom-sheet">
           <v-img
             src="src/assets/remote-collaboration.jpg"
             alt="Image description"
             max-height="300"
             width="100%"
             contain
+            class="image-with-margin"
           ></v-img>
 
           <h1 class="custom-heading">
@@ -30,6 +33,7 @@
           <p class="custom-subtitle">
             Collabie makes it easy to create and share professional designs.
           </p>
+            <br>
           <router-link to="/canvas">
             <v-btn class="btn-large" color="deep-purple-accent-2" rounded>
               Start designing
@@ -37,61 +41,72 @@
           </router-link>
         </v-sheet>
       </v-container>
+
+      
+        <plans /> 
+        
+        <features />
+     
+     <featureReadyToPrint />
+     <getStarted />
+     <footerPage />
     </v-container>
   </v-app>
 </template>
 
+<script setup>
+import plans from '../components/dashboard/plans.vue';
+import features from '../components/dashboard/features.vue';
+import featureReadyToPrint from '../components/dashboard/featureReadyToPrint.vue';
+import getStarted from '../components/dashboard/getStarted.vue';
+import footerPage from './dashboard/footerPage.vue';
+
+</script>
+
 <style scoped>
 .container {
-  padding: 0 !important;
+  width: 100vw;
+  padding: 15px ;
 }
 
-.app-bar {
-  padding: 8px 24px;
+.inner-container{
+  padding: 20px;
+  margin: 20px; 
 }
-
-.title {
-  font-size: 1.5rem;
-  font-weight: bold;
-}
-
-.custom-btn {
-  padding: 8px 16px;
-  font-size: 1rem;
-}
-
-.get-started-btn {
-  margin-left: 16px;
-  padding: 8px 16px;
-}
-
-.inner-container {
-  padding-top: 10px;
-}
-
-.custom-sheet {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  text-align: center;
-  padding: 0 20px;
+.image-with-margin {
+  margin-top: 30px;
 }
 
 .custom-heading {
-  font-size: 2.5rem;
-  line-height: 1.4;
+  font-size: 3rem;
   font-weight: bold;
-  margin-bottom: 1rem;
+  text-align: center;
+  margin-top: 20px;
 }
 
 .custom-subtitle {
   font-size: 1.25rem;
-  margin-bottom: 2rem;
+  text-align: center;
+  margin-top: 10px;
+  color: #555;
 }
 
-.custom-btn-large {
-  padding: 8px 30px;
-  font-size: 20px;
+.plans-container,
+.features-container {
+  margin-top: 20px;
+}
+
+.btn-large {
+  font-size: 1.25rem; 
+}
+
+.get-started-btn {
+  background-color: #6200ea;
+  color: white;
+}
+
+.v-container {
+  padding-left: 0;
+  padding-right: 0;
 }
 </style>

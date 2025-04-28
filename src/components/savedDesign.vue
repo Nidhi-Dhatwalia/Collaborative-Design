@@ -46,37 +46,42 @@
 
 <script setup>
 import { ref, onMounted } from 'vue'
-import { useRouter } from 'vue-router'
 
 let canvasInstance = null
-const savedDesigns = ref([])
+const savedDesigns = ref([])  
 const isModified = ref(false)  
 
 onMounted(() => {
+  // Load saved designs from localStorage
+  const storedDesigns = JSON.parse(localStorage.getItem('savedDesigns')) || []
+  savedDesigns.value = storedDesigns
+
   const canvasElement = document.getElementById('preview-canvas')
   if (canvasElement) {
     canvasInstance = new fabric.Canvas(canvasElement)
- 
+
     canvasInstance.on('object:modified', () => {
-      isModified.value = true 
+      isModified.value = true
     })
     canvasInstance.on('object:added', () => {
-      isModified.value = true  
+      isModified.value = true
     })
     canvasInstance.on('object:removed', () => {
-      isModified.value = true  
+      isModified.value = true
     })
   }
 
-  const storedDesigns = JSON.parse(localStorage.getItem('savedDesigns')) || []
-  savedDesigns.value = storedDesigns
+  // If saved designs exist, load the first one
+  if (savedDesigns.value.length > 0) {
+    loadDesign(savedDesigns.value[0])
+  }
 })
 
 const loadDesign = (design) => {
   if (canvasInstance) {
     canvasInstance.clear()
     canvasInstance.loadFromJSON(design, () => {
-      canvasInstance.renderAll()
+      canvasInstance.renderAll()  
       fitCanvasToViewport()
     })
   }
@@ -100,13 +105,12 @@ const fitCanvasToViewport = () => {
   }
 }
 
- 
 const saveCurrentDesign = () => {
   if (canvasInstance) {
-    const currentDesign = JSON.stringify(canvasInstance.toJSON())
-    savedDesigns.value.push(currentDesign)
-    localStorage.setItem('savedDesigns', JSON.stringify(savedDesigns.value))
-    isModified.value = false  
+    const currentDesign = canvasInstance.toJSON()  // Get the canvas state as JSON
+    savedDesigns.value.push(currentDesign)  // Push it into the savedDesigns array
+    localStorage.setItem('savedDesigns', JSON.stringify(savedDesigns.value))  // Save it to localStorage
+    isModified.value = false  // Reset modified flag
   }
 }
 </script>

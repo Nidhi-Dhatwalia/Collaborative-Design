@@ -113,15 +113,61 @@ watch(selectedColor, (newColor) => {
   }
 });
 
+// Function to find an empty position on the canvas
+const findEmptyPosition = (width, height) => {
+  const margin = 20; // Margin between shapes
+  const canvasWidth = canvas.value.getWidth();
+  const canvasHeight = canvas.value.getHeight();
+  let xPos = margin;
+  let yPos = margin;
+
+  // Iterate over all existing objects to find an empty space
+  canvas.value.getObjects().forEach((obj) => {
+    if (obj.left + obj.width + margin < canvasWidth) {
+      xPos = obj.left + obj.width + margin;  // Move right if there's space
+    } else if (obj.top + obj.height + margin < canvasHeight) {
+      yPos = obj.top + obj.height + margin;  // Move down if there's space
+    } else {
+      xPos = margin; // Reset to start position
+      yPos += height + margin; // Move to the next line
+    }
+  });
+
+  return { x: xPos, y: yPos };
+};
+
 const createShape = (type) => {
   let shape = null;
+  let position = { x: 50, y: 50 };  // Default position if no empty space is found
+
+  // Find an empty position on the canvas
+  if (type !== "text") {
+    position = findEmptyPosition(100, 100);  // Default size for non-text shapes
+  }
 
   if (type === "rectangle") {
-    shape = new fabric.Rect({ width: 100, height: 100, fill: selectedColor.value, left: 50, top: 50 });
+    shape = new fabric.Rect({
+      width: 100,
+      height: 100,
+      fill: selectedColor.value,
+      left: position.x,
+      top: position.y,
+    });
   } else if (type === "circle") {
-    shape = new fabric.Circle({ radius: 50, fill: selectedColor.value, left: 100, top: 50 });
+    shape = new fabric.Circle({
+      radius: 50,
+      fill: selectedColor.value,
+      left: position.x,
+      top: position.y,
+    });
   } else if (type === "triangle") {
-    shape = new fabric.Triangle({ width: 100, height: 100, fill: selectedColor.value, left: 150, top: 50 });
+    shape = new fabric.Triangle({
+      width: 100,
+      height: 100,
+      fill: selectedColor.value,
+      left: position.x,
+      top: position.y,
+    });
   } else if (type === "text") {
     showTextDialog.value = true;
   }
@@ -188,6 +234,7 @@ const deleteSelected = () => {
   }
 };
 </script>
+
 
 <style scoped>
 .v-btn {
