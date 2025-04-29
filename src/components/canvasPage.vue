@@ -62,14 +62,15 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue';
-import { useGlobalCanvas } from '../composables/globalCanvas';
-import { useCanvasUtils } from '../utils/canvasUtils.js';
-import { useDesignUtils } from '../utils/designUtils.js';
-import { useDrawingUtils } from '../utils/drawingUtils.js';
-import { useImageUtils } from '../utils/imageUtils.js';
+import { ref, onMounted } from 'vue'; 
+ import { useGlobalCanvas } from  '../composables/globalCanvas';
+
+import { useCanvasUtils } from  '../utils/canvasUtils'
+import { useDesignUtils } from  '../utils/designUtils'
+import { useDrawingUtils } from '../utils/drawingUtils'
+import { useImageUtils } from '../utils/imageUtils'
 import elementsPage from '../components/elementsPage.vue';
-import drawingComponent from '../components/drawingComponent.vue';
+import drawingComponent from  '../components/drawingComponent.vue';
 
 const { canvas, initCanvas } = useGlobalCanvas();
 const { undoAction, redoAction } = useCanvasUtils(canvas);
@@ -205,7 +206,7 @@ const iconsList = ref([
     label: 'Download',
     actionType: 'function',
     action: downloadCanvas,
-  },
+  }, 
 ]);
 
 onMounted(() => {

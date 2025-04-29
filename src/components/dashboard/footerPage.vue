@@ -1,126 +1,110 @@
 <template>
-  <footer class="footer" >
-    <div class="footer-content">
-      <div class="footer-section">
-        <h3>Features</h3>
-        <ul>
-          <li>Curved text generator</li>
-          <li>Photo effects</li>
-          <li>Image enhancer</li>
-          <li>Add frames to photos</li>
-          <li>Add text to photos</li>
-          <li>Online video recorder</li>
-          <li>Video trimmer</li>
-          <li>Convert videos to MP4</li>
-          <li>See more features</li>
-        </ul>
-      </div>
+  <v-footer color="white" class="footer">
+    <v-container>
+      <v-row> 
+        <v-col cols="12" md="3">
+          <v-subheader class="sub-header">Features</v-subheader>
+            <v-divider> </v-divider>
+          <v-list>
+            <v-list-item>Curved text generator</v-list-item>
+            <v-list-item>Photo effects</v-list-item>
+            <v-list-item>Image enhancer</v-list-item>
+            <v-list-item>Add frames to photos</v-list-item>
+            <v-list-item>Add text to photos</v-list-item>
+            <v-list-item>Online video recorder</v-list-item>
+            <v-list-item>Video trimmer</v-list-item>
+            <v-list-item>Convert videos to MP4</v-list-item>
+            <v-list-item>See more features</v-list-item>
+          </v-list>
+        </v-col>
 
-      <div class="footer-section">
-        <h3>Explore</h3>
-        <ul>
-          <li>Design ideas</li>
-          <li>Custom prints</li>
-          <li>Font pairing</li>
-          <li>Colours</li>
-          <li>Colour wheel</li>
-          <li>Colour palette generator</li>
-          <li>Blog</li>
-          <li>Apps</li>
-        </ul>
-      </div>
+        <!-- Explore Section -->
+        <v-col cols="12" md="3">
+          <v-subheader class="sub-header">Explore</v-subheader>
+            <v-divider> </v-divider>
+          <v-list>
+            <v-list-item>Design ideas</v-list-item>
+            <v-list-item>Custom prints</v-list-item>
+            <v-list-item>Font pairing</v-list-item>
+            <v-list-item>Colours</v-list-item>
+            <v-list-item>Colour wheel</v-list-item>
+            <v-list-item>Colour palette generator</v-list-item>
+            <v-list-item>Blog</v-list-item>
+            <v-list-item>Apps</v-list-item>
+          </v-list>
+        </v-col>
 
-      <div class="footer-section">
-        <h3>Community</h3>
-        <ul>
-          <li>Online communities</li>
-          <li>Creators</li>
-          <li>Canva Represents Fund</li>
-          <li>Developers</li>
-          <li>Partnerships</li>
-          <li>Affiliates program</li>
-        </ul>
-      </div>
+        <!-- Community Section -->
+        <v-col cols="12" md="3">
+          <v-subheader class="sub-header">Community</v-subheader>
+            <v-divider> </v-divider>
+          <v-list>
+            <v-list-item>Online communities</v-list-item>
+            <v-list-item>Creators</v-list-item>
+            <v-list-item>Canva Represents Fund</v-list-item>
+            <v-list-item>Developers</v-list-item>
+            <v-list-item>Partnerships</v-list-item>
+            <v-list-item>Affiliates program</v-list-item>
+          </v-list>
+        </v-col>
 
-      <div class="footer-section">
-        <h3>Download</h3>
-        <ul>
-          <li>iOS</li>
-          <li>Android</li>
-          <li>Windows</li>
-          <li>Mac</li>
-        </ul>
-      </div>
+        <!-- Download Section -->
+        <v-col cols="12" md="3">
+          <v-subheader class="sub-header">Download</v-subheader>
+          <v-divider> </v-divider>
+          <v-list>
+            <v-list-item>iOS</v-list-item>
+            <v-list-item>Android</v-list-item>
+            <v-list-item>Windows</v-list-item>
+            <v-list-item>Mac</v-list-item>
+          </v-list>
+        </v-col>
+      </v-row>
+
  
-    </div>
-
-    <div class="footer-bottom">
-      <p>English (India) | © 2025 All Rights Reserved, Canva®</p>
-      <p>
-        <a href="#">Privacy policy</a> | 
-        <a href="#">Terms</a> |
-        <a href="#">Facebook</a> |
-        <a href="#">Twitter</a> |
-        <a href="#">Pinterest</a> |
-        <a href="#">Instagram</a>
-      </p>
-      <p style="font-size: 12px;">
-        Salesforce.com, inc. is a trademark, and is used here with permission. Quotes are taken from a recent case study.
-      </p>
-    </div>
-  </footer>
+      <v-divider></v-divider>
+      <v-row class="footer-bottom">
+        <v-col class="text-center" cols="12">
+          <p>English (India) | © 2025 All Rights Reserved, Canva®</p>
+          <v-row justify="center">
+            <v-btn text href="#">Privacy policy</v-btn>
+            <v-btn text href="#">Terms</v-btn>
+            <v-btn text href="#"><v-icon>mdi-facebook </v-icon></v-btn>
+            <v-btn text href="#"><v-icon>mdi-twitter </v-icon></v-btn>
+            <v-btn text href="#"><v-icon>mdi-pinterest </v-icon></v-btn>
+            <v-btn text href="#"><v-icon>mdi-instagram </v-icon></v-btn>
+          </v-row> 
+        </v-col>
+      </v-row>
+    </v-container>
+  </v-footer>
 </template>
+
+<script>
+export default {
+  name: 'FooterComponent',
+}
+</script>
 
 <style scoped>
 .footer {
-  background-color: #ffffff;
-  color: #000000;
-  padding: 3rem 2rem;
-  font-family: Arial, sans-serif; 
+  padding: 3rem 0;
 }
-
-.footer-content {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: space-between;
-  margin-bottom: 2rem;
-}
-
-.footer-section {
-  flex: 1 1 200px;
-  margin: 1rem;
-}
-
-.footer-section h3 {
-  margin-bottom: 1rem;
-  font-size: 1.2rem;
-  border-bottom: 1px solid #555;
-  padding-bottom: 5px;
-}
-
-.footer-section ul {
-  list-style: none;
-  padding: 0;
-}
-
-.footer-section ul li {
-  margin-bottom: 0.5rem;
-  font-size: 0.95rem;
+.sub-header{
+  font-weight: bold;
+  font-size: 1.5rem;
 }
 
 .footer-bottom {
-  text-align: center;
   font-size: 0.9rem;
-  line-height: 1.5;
+  line-height: 4.5;
 }
 
-.footer-bottom a {
-  color: #ccc;
-  margin: 0 5px;
-  text-decoration: none;
+.footer-bottom .v-btn {
+  color: #000000;
 }
 
-.footer-bottom a:hover {
+.footer-bottom .v-btn:hover {
   text-decoration: underline;
 }
 </style>

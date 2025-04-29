@@ -1,34 +1,43 @@
 <template>
-  <div class="container"> 
-    <h1>Start Designing with Canvas</h1>
-    <div claas="button"> 
-    <router-link to="/canvas">
-    <v-btn > Get started for Free </v-btn>
-    </router-link>
+  <v-container class="custom-container" fluid>
+    <div class="content-wrapper">
+      <h1 class="title">Start Designing with Canvas</h1>
+
+      <router-link to="/canvas">
+        <v-btn class="start-btn">Get started for Free</v-btn>
+      </router-link>
     </div>
-  </div>
+  </v-container>
 </template>
 
 <style scoped>
-.container {
+.custom-container {
   background: linear-gradient(to right, #07b9d0, #543cf7, #7a2bea);
   color: white;
   height: 70vh;
   width: 100%;
   display: flex;
-  flex-direction: column;
-  gap: 20px;
   align-items: center;
   justify-content: center;
+}
+
+.content-wrapper {
   text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.5rem;  
 }
 
-.container h1 {
-  font-family: 'Cursive' ;
+.title {
+  font-family: 'Cursive', sans-serif;
   font-size: 3rem;
+  margin: 0;  
 }
 
-.button{
-    border-radius: 5px; 
+.start-btn {
+  border-radius: 30px; 
+  font-size: 1.2rem; 
+  text-transform: none;  
 }
 </style>

@@ -1,87 +1,130 @@
 <template>
-    <h2> A perfect fit for everyone </h2>
-  <div class="container">
-    <div class="main-container"> 
-      <p class="header">For One Person</p>
-      <h4 class="title">Canva Free</h4>
-      <p class="description">For designing or working on anything.</p> <br>
-      <v-btn class="cta-button">Get Canva Free</v-btn>
-    </div>
-    <div class="main-container"> 
-      <p class="header">For One Person</p>
-      <h4 class="title">Canva Pro</h4>
-      <p class="description">For growing your brand or passion project with premium features.</p>
-      <v-btn class="cta-button">Start Free Pro trial</v-btn>
-    </div>
-    <div class="main-container"> 
-      <p class="header">For your team</p>
-      <h4 class="title">Canva Teams</h4>
-      <p class="description">For teams to create together with premium workplace tools and workflows.</p>
-      <v-btn class="cta-button">Start Free Teams trial</v-btn>
-    </div>
-    <div class="main-container"> 
-      <p class="header">For your organisation</p>
-      <h4 class="title">Canva Enterprise</h4>
-      <p class="description">For organisations to unite and manage their teams, brands, and designs</p>
-      <v-btn class="cta-button">Contact Sales</v-btn>
-    </div>
-  </div>
+  <v-container class="container" fluid>
+    <h2 class="text-h4 font-weight-bold text-center mb-10 ">
+      A perfect fit for everyone
+    </h2>
+
+    <v-row justify="center">
+      <v-col
+        cols="12"
+        sm="6"
+        md="3"
+        v-for="(plan, index) in plans"
+        :key="index"
+      >
+        <v-card
+          class="pa-6 d-flex flex-column justify-space-between"
+          :style="{ backgroundColor: '#e4d3ed' }"
+          elevation="6"
+        >
+          <div>
+            <p class="text-subtitle-1 font-weight-medium text-grey-darken-2 mb-2">
+              {{ plan.header }}
+            </p>
+            <h4 class="text-h6 font-weight-bold mb-3" style="color: #7b44a8">
+              {{ plan.title }}
+            </h4>
+            <p class="text-body-2 text-grey-darken-1 mb-4">
+              {{ plan.description }}
+            </p>
+          </div>
+          <v-btn
+            class="cta-button white--text text-none"
+            rounded
+            large
+          >
+            {{ plan.cta }}
+          </v-btn>
+        </v-card>
+      </v-col>
+    </v-row>
+  </v-container>
 </template>
+
+<script>
+export default {
+  data() {
+    return {
+      plans: [
+        {
+          header: "For One Person",
+          title: "Canva Free",
+          description: "For designing or working on anything.",
+          cta: "Get Canva Free",
+        },
+        {
+          header: "For One Person",
+          title: "Canva Pro",
+          description:
+            "For growing your brand or passion project with premium features.",
+          cta: "Start Free Pro trial",
+        },
+        {
+          header: "For your team",
+          title: "Canva Teams",
+          description:
+            "For teams to create together with premium workplace tools and workflows.",
+          cta: "Start Free Teams trial",
+        },
+        {
+          header: "For your organisation",
+          title: "Canva Enterprise",
+          description:
+            "For organisations to unite and manage their teams, brands, and designs",
+          cta: "Contact Sales",
+        },
+      ],
+    };
+  },
+};
+</script>
 
 <style scoped>
 .container {
-  display: flex; 
+  margin-top: 50px;
+  width: 90%; /* Ensure full width */
+  padding: 0; /* Remove unnecessary padding */
+}
+
+.text-none {
+  text-transform: none;
+}
+
+.v-card {
+  height: 100%;
+  width: 100%; /* Ensure the card takes full width */
+}
+
+.v-col {
+  display: flex;
   justify-content: space-between;
-  gap: 20px;
-  padding: 30px;
-  margin: 20px auto;
 }
 
-.main-container {
-  width: 100vw;
-  max-width: 280px;
-  padding: 25px;
-  background-color: rgb(221, 203, 231);
-  border-radius: 12px;
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); 
+.v-card .v-btn {
+  margin-top: auto;
 }
 
- 
-
-.header {
-  font-size: 18px;
-  font-weight: 600;
-  color: #4a4a4a;
-  margin-bottom: 10px;
+.v-col {
+  display: flex;
+  justify-content: space-between;
+  align-items: stretch;
 }
 
-.title {
-  font-size: 22px;
-  font-weight: 700;
-  color: rgb(123, 68, 168);
-  margin-bottom: 15px;
+.v-card {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  height: 100%;
 }
 
-.description {
-  font-size: 16px;
-  color: #666;
-  margin-bottom: 25px;
-}
-
-.cta-button { 
-  background-color: rgb(123, 68, 168);
+.v-btn {
+  transition: background-color 0.3s ease;
+  width: auto;
+  background-color: rgb(187, 74, 202);
   color: white;
-  border-radius: 8px; 
-  width: 100%;
-  font-size: 16px;
-  text-align: center; 
-  text-transform: none;   
 }
 
-.cta-button:hover {
-  background-color: #a484af;
- 
+.v-btn:hover {
+  background-color: #9c4d91 !important;
 }
-
- 
 </style>

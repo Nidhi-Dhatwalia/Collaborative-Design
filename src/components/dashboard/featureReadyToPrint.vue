@@ -3,8 +3,6 @@
    
     <div class="content-wrapper">
  
-
-  
       <div class="text-section">
         <h2 class="title">Ready-to-print designs</h2>
         <p class="description">
@@ -33,16 +31,15 @@
 </template>
 
 <style scoped>
-.features-container {
-  max-width: 1200px; 
-  padding: 80px 0px ;
+.features-container { 
+  padding: 80px ;
 }
 
 .content-wrapper {
   display: flex; 
   align-items: center;  
-  justify-content: space-between;
-  gap: 40px;  
+  justify-content:space-between;
+  gap: 90px;  
 }
 
 .feature-image {

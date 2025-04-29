@@ -31,8 +31,7 @@
 </template>
 
 <style scoped>
-.features-container {
-  max-width: 1200px; 
+.features-container { 
   padding: 80px;
 }
 
