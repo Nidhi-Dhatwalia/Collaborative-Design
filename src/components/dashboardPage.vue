@@ -10,8 +10,9 @@
         <v-btn class="custom-btn">Features</v-btn>
         <v-btn class="custom-btn">Our partners</v-btn>
         <v-btn class="custom-btn">About us</v-btn>
-
+        <router-link to="/login" >
         <v-btn class="custom-btn" color="black">Log in</v-btn>
+        </router-link>
         <router-link to="/canvas">
           <v-btn class="get-started-btn">Get started</v-btn>
         </router-link>

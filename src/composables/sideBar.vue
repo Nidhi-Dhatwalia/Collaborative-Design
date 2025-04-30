@@ -20,7 +20,7 @@ export default {
   data() {
     return {
       sidebarItems: [
-        { icon: 'mdi-home', label: 'Home', to: '/' },
+        { icon: 'mdi-home', label: 'Home', to: '/dashboard' },
         { icon: 'mdi-file-document', label: 'Resume', to: '/resume' },
         { icon: 'mdi-table', label: 'Sheet', to: '/sheet' },
         { icon: 'mdi-clipboard-outline', label: 'Whiteboard', to: '/canvas' },

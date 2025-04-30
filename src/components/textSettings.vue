@@ -4,8 +4,7 @@
       Text Settings
     </v-card-title>
 
-    <v-card-text>
-      <!-- Text Input -->
+    <v-card-text> 
       <v-text-field v-model="text" label="Enter Text" />
 
       <!-- Font Size -->

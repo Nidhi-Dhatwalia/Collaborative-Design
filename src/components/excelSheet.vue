@@ -7,21 +7,47 @@
         <v-btn color="primary" @click="saveToLocalStorage">Save</v-btn>
       </div>
 
+      <div
+        v-if="selectedCell.row !== null && selectedCell.col !== null"
+        class="format-toolbar"
+      >
+        <v-btn @click="toggleBold" color="secondary">Bold</v-btn>
+        <v-select
+          v-model="fontSize"
+          :items="fontSizes"
+          label="Font Size"
+          dense
+        />
+      </div>
+
       <div class="excel-wrapper">
-        <!-- Column Headers -->
         <div class="row header-row">
           <div class="cell row-header"></div>
-          <div class="cell col-header" v-for="col in colLabels" :key="col">{{ col }}</div>
+          <div class="cell col-header" v-for="col in colLabels" :key="col">
+            {{ col }}
+          </div>
         </div>
 
-        <!-- Main Grid -->
         <div class="row" v-for="(row, rowIndex) in rows" :key="rowIndex">
           <div class="cell row-header">{{ rowIndex + 1 }}</div>
-          <div class="cell" v-for="(col, colIndex) in cols" :key="colIndex">
+          <div
+            class="cell"
+            v-for="(col, colIndex) in cols"
+            :key="colIndex"
+            :class="{
+              selected:
+                selectedCell.row === rowIndex && selectedCell.col === colIndex,
+            }"
+          >
             <input
               type="text"
               v-model="sheetData[rowIndex][colIndex]"
               class="cell-input"
+              :style="{
+                fontWeight: selectedCell.row === rowIndex && selectedCell.col === colIndex && isBold ? 'bold' : 'normal',
+                fontSize: selectedCell.row === rowIndex && selectedCell.col === colIndex ? fontSize + 'px' : '16px',
+              }"
+              @click="selectCell(rowIndex, colIndex)"
             />
           </div>
         </div>
@@ -31,35 +57,60 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue'
-import sideBar from '../composables/sideBar.vue';
+import { ref, onMounted } from "vue";
+import sideBar from "../composables/sideBar.vue";
 
-const colLabels = Array.from({ length: 26 }, (_, i) =>
-  String.fromCharCode(65 + i)
-)
+const colLabels = [];
+for (let i = 0; i < 26; i++) {
+  colLabels.push(String.fromCharCode(65 + i));
+}
 
-const rows = Array.from({ length: 50 })
-const cols = Array.from({ length: 26 })
+const rows = 50;
+const cols = 26;
 
-const defaultData = () =>
-  Array.from({ length: 50 }, () => Array.from({ length: 26 }, () => ''))
+const sheetData = ref([]);
+for (let i = 0; i < rows; i++) {
+  const row = [];
+  for (let j = 0; j < cols; j++) {
+    row.push('');
+  }
+  sheetData.value.push(row);
+}
 
-const sheetData = ref(defaultData())
-
-const STORAGE_KEY = 'excel-sheet-data'
+const STORAGE_KEY = "excel-sheet-data";
 
 onMounted(() => {
-  const saved = localStorage.getItem(STORAGE_KEY)
+  const saved = localStorage.getItem(STORAGE_KEY);
   if (saved) {
-    sheetData.value = JSON.parse(saved)
+    sheetData.value = JSON.parse(saved);
   }
-})
+});
 
 const saveToLocalStorage = () => {
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(sheetData.value))
-  alert('Sheet saved!')
-}
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(sheetData.value));
+  alert("Sheet saved!");
+};
+
+const selectedCell = ref({ row: null, col: null });
+
+const fontSizes = [12, 14, 16, 18, 20, 24];
+
+const fontSize = ref(16);
+
+const isBold = ref(false);
+
+const selectCell = (row, col) => {
+  selectedCell.value = { row, col };
+};
+
+const toggleBold = () => {
+  const { row, col } = selectedCell.value;
+  if (row !== null && col !== null) {
+    isBold.value = !isBold.value;
+  }
+};
 </script>
+
 
 <style scoped>
 html, body, .v-container {
@@ -73,13 +124,22 @@ html, body, .v-container {
   justify-content: space-between;
   align-items: center;
   padding: 16px;
+  margin-left: 120px;
   background-color: #f5f5f5;
 }
 
+.format-toolbar {
+  display: flex;
+  gap: 10px;
+  margin: 12px 0 12px 120px;
+  align-items: center;
+}
+
 .excel-wrapper {
-  height: calc(100vh - 80px);
+  height: calc(100vh - 140px);
   overflow: auto;
   border: 1px solid #ccc;
+  margin-left: 120px;
 }
 
 .row {
@@ -121,5 +181,9 @@ html, body, .v-container {
   position: sticky;
   top: 0;
   z-index: 2;
+}
+
+.selected {
+  outline: 2px solid #1976d2;
 }
 </style>

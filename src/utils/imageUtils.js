@@ -1,5 +1,6 @@
-import { ref } from 'vue';
+ import { ref } from 'vue';
 
+ 
 export function useImageUtils(canvas) {
   const handleImageUpload = (event) => {
     const file = event.target.files[0];

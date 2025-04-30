@@ -11,7 +11,6 @@
     </v-app-bar>
 
     <v-main>
- 
       <input
         type="file"
         ref="imageInput"
@@ -62,16 +61,18 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue'; 
- import { useGlobalCanvas } from  '../composables/globalCanvas';
-
-import { useCanvasUtils } from  '../utils/canvasUtils'
-import { useDesignUtils } from  '../utils/designUtils'
-import { useDrawingUtils } from '../utils/drawingUtils'
-import { useImageUtils } from '../utils/imageUtils'
+import { ref, onMounted } from 'vue';
+import { db } from '../firebase';  // Ensure this is correctly imported
+import { useGlobalCanvas } from '../composables/globalCanvas';
+import { useCanvasUtils } from '../utils/canvasUtils';
+import { useDesignUtils } from '../utils/designUtils';
+import { useDrawingUtils } from '../utils/drawingUtils';
+import { useImageUtils } from '../utils/imageUtils';
 import elementsPage from '../components/elementsPage.vue';
-import drawingComponent from  '../components/drawingComponent.vue';
+import drawingComponent from '../components/drawingComponent.vue';
+import { ref as firebaseRef, set, onValue } from 'firebase/database'; 
 
+// States
 const { canvas, initCanvas } = useGlobalCanvas();
 const { undoAction, redoAction } = useCanvasUtils(canvas);
 const { uploadCanvas, createNew } = useDesignUtils();
@@ -84,20 +85,73 @@ const showShapesMenu = ref(false);
 const isDrawingMode = ref(false);
 const imageInput = ref(null);
 
+// Flag to track if data is being loaded from Firebase
+let isDataLoadingFromFirebase = false; 
+
+// Sync the canvas state with Firebase Realtime Database
+const syncCanvasWithFirebase = (canvasState) => {
+  if (isDataLoadingFromFirebase) return; // Prevent saving if data is being loaded from Firebase
+
+  const canvasRef = firebaseRef(db, 'canvasDesigns');
+  set(canvasRef, canvasState)
+    .then(() => {
+      console.log('Canvas data saved successfully to Firebase!');
+    })
+    .catch((error) => {
+      console.error('Error saving canvas data to Firebase:', error);
+    });
+};
+
+// Load canvas state from Firebase Realtime Database (Real-Time Sync)
+const loadCanvasFromFirebase = () => {
+  const canvasRef = firebaseRef(db, 'canvasDesigns');
+  onValue(canvasRef, (snapshot) => {
+    if (snapshot.exists()) {
+      const canvasData = snapshot.val();
+      console.log("Canvas data loaded from Firebase:", canvasData);
+
+      // Flag data loading to prevent save in the event handler
+      isDataLoadingFromFirebase = true;
+
+      if (canvasData) {
+        canvas.value.loadFromJSON(canvasData, () => {
+          canvas.value.renderAll();
+        });
+      }
+
+      // Reset flag after loading data
+      isDataLoadingFromFirebase = false;
+    } else {
+      console.log("No data available in Firebase");
+    }
+  });
+};
+
+// Save canvas state to Firebase
 const saveCanvasState = () => {
   if (canvas.value) {
     const canvasState = canvas.value.toJSON();
+    syncCanvasWithFirebase(canvasState);
+  }
+};
+
+// Save canvas state to LocalStorage
+const saveCanvasStateToLocalStorage = () => {
+  if (canvas.value) {
+    const canvasState = canvas.value.toJSON();
     localStorage.setItem('savedDesign', JSON.stringify(canvasState));
-    console.log('Canvas state saved.');
+    console.log('Canvas state saved to localStorage.');
   } else {
     console.error('Canvas is not initialized yet!');
   }
 };
 
+// Toggle the shape menu visibility
 const toggleShapesMenu = () => {
   showShapesMenu.value = !showShapesMenu.value;
 };
 
+// Download canvas as PNG
 const downloadCanvas = () => {
   if (canvas.value) {
     const dataUrl = canvas.value.toDataURL({
@@ -114,6 +168,7 @@ const downloadCanvas = () => {
   }
 };
 
+// Create new design (clear canvas)
 const createNewDesign = () => {
   if (canvas.value && canvas.value.isInitialized) {
     canvas.value.clear();
@@ -123,6 +178,7 @@ const createNewDesign = () => {
   }
 };
 
+// Toggle drawing mode
 const toggleDrawingModeHandler = () => {
   if (canvas.value) {
     toggleMode(canvas.value, setCanvasCursor);
@@ -130,17 +186,19 @@ const toggleDrawingModeHandler = () => {
   }
 };
 
+// Handle drawing settings (e.g., pen size, color)
 const handleDrawingSettings = (settings) => {
   if (canvas.value) {
     applySettings(canvas.value, settings);
   }
 };
 
+// Upload the current design to localStorage
 const upload = () => {
   if (canvas.value) {
     const designData = canvas.value.toJSON();
     const savedDesigns = JSON.parse(localStorage.getItem('savedDesigns')) || [];
-    savedDesigns.push(designData);   
+    savedDesigns.push(designData);
     localStorage.setItem('savedDesigns', JSON.stringify(savedDesigns));
     canvas.value.clear();
   } else {
@@ -148,7 +206,7 @@ const upload = () => {
   }
 };
 
-
+// Actions for sidebar buttons
 const actions = {
   createNewDesign,
   toggleShapesMenu,
@@ -158,117 +216,57 @@ const actions = {
   upload,
 };
 
+// Sidebar icons list with corresponding actions
 const iconsList = ref([
-  {
-    icon: 'mdi-home',
-    label: 'Home',
-    actionType: 'route',
-    action: '/',
-  },
-  {
-    icon: 'mdi-plus',
-    label: 'New Design',
-    actionType: 'function',
-    action: createNewDesign,
-  },
-  {
-    icon: 'mdi-shape-outline',
-    label: 'Elements',
-    actionType: 'function',
-    action: toggleShapesMenu,
-  },
-  {
-    icon: 'mdi-pencil',
-    label: 'Draw',
-    actionType: 'function',
-    action: toggleDrawingModeHandler,
-  },
-  {
-    icon: 'mdi-cloud-upload',
-    label: 'Upload',
-    actionType: 'function',
-    action: upload,
-  },
-  {
-    icon: 'mdi-image',
-    label: 'Media',
-    actionType: 'function',
-    action: triggerImageUpload,
-  },
-  {
-    icon: 'mdi-content-save',
-    label: 'Saved Designs',
-    actionType: 'route',
-    action: '/save',
-  },
-  {
-    icon: 'mdi-download',
-    label: 'Download',
-    actionType: 'function',
-    action: downloadCanvas,
-  }, 
+  { icon: 'mdi-home', label: 'Home', actionType: 'route', action: '/' },
+  { icon: 'mdi-plus', label: 'New Design', actionType: 'function', action: createNewDesign },
+  { icon: 'mdi-shape-outline', label: 'Elements', actionType: 'function', action: toggleShapesMenu },
+  { icon: 'mdi-pencil', label: 'Draw', actionType: 'function', action: toggleDrawingModeHandler },
+  { icon: 'mdi-cloud-upload', label: 'Upload', actionType: 'function', action: upload },
+  { icon: 'mdi-image', label: 'Media', actionType: 'function', action: triggerImageUpload },
+  { icon: 'mdi-content-save', label: 'Saved Designs', actionType: 'route', action: '/save' },
+  { icon: 'mdi-download', label: 'Download', actionType: 'function', action: downloadCanvas },
 ]);
 
 onMounted(() => {
-  const initializedCanvas = initCanvas();  
+  const initializedCanvas = initCanvas();
   canvas.value = initializedCanvas;
- 
-  initializedCanvas.on('after:render', () => { 
-    canvas.value.isInitialized = true;   
+
+  // Load the canvas from Firebase when the component is mounted
+  loadCanvasFromFirebase();
+
+  initializedCanvas.on('after:render', () => {
+    canvas.value.isInitialized = true;
   });
 
-  const savedDesign = localStorage.getItem('savedDesign');
-  if (savedDesign) {
-    canvas.value.loadFromJSON(JSON.parse(savedDesign), () => {
-      canvas.value.renderAll();
-      console.log('Canvas loaded from saved design.');
-    });
-  } else {
-    console.log('No saved design found.');
-  }
-
-  initializedCanvas.on('object:added', () => {
-    if (canvas.value.isDrawingMode) {
-      switchToSelectionMode();
-    }
-  });
-
-  initializedCanvas.on('selection:created', () => {
-    if (!canvas.value.isDrawingMode) {
-      console.log('Object selected');
-    }
-  });
-
-  initializedCanvas.on('selection:cleared', () => {
-    console.log('Selection cleared');
-  });
-
-  canvas.value.isDrawingMode = false;
-  setCanvasCursor();
-
+  // Save canvas state to Firebase whenever objects are modified
   initializedCanvas.on('object:added', saveCanvasState);
   initializedCanvas.on('object:modified', saveCanvasState);
   initializedCanvas.on('object:removed', saveCanvasState);
 });
 
+// Switch to selection mode
 const switchToSelectionMode = () => {
   canvas.value.isDrawingMode = false;
   setCanvasCursor();
   setCanvasSelectionState();
 };
 
+// Set canvas cursor based on mode
 const setCanvasCursor = () => {
   if (canvas.value) {
     canvas.value.defaultCursor = canvas.value.isDrawingMode ? 'crosshair' : 'default';
   }
 };
 
+// Set canvas selection state (selection mode or drawing mode)
 const setCanvasSelectionState = () => {
   if (canvas.value) {
     canvas.value.selection = !canvas.value.isDrawingMode;
   }
 };
 
+// Handle action from sidebar (e.g., toggling drawing mode)
 const handleAction = (actionName) => {
   if (typeof actionName === 'function') {
     actionName();
@@ -277,7 +275,6 @@ const handleAction = (actionName) => {
   }
 };
 </script>
-
 
 <style scoped>
 .v-list-item {

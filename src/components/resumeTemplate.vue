@@ -4,7 +4,7 @@
     <div class="sidebar">
       <div class="nav-links">
          
-        <router-link to="/" class="nav-link">
+        <router-link to="/dashboard" class="nav-link">
           <v-btn class="template-btn" elevation="2" rounded size="large">
             <v-icon left>mdi-home</v-icon>  
           </v-btn>
@@ -13,7 +13,7 @@
       <div class="logo">
         <h2>Select a Template</h2>
       </div>
-        <!-- Template Links -->
+       
         <router-link to="/modernResume" class="nav-link">
           <v-btn class="template-btn" elevation="2" rounded size="large"> Modern
           </v-btn>
@@ -88,7 +88,7 @@
   font-size: 18px;
   margin: 0;
   transition: background-color 0.3s ease;
-  border-radius: 25px; /* Rounded buttons */
+  border-radius: 25px; 
   width: 100%;
 }
 
@@ -100,13 +100,13 @@
   font-size: 18px;
 }
 
-/* Main content area */
+ 
 .main-content {
-  margin-left: 250px; /* Ensure content starts after sidebar */
+  margin-left: 250px; 
   width: 100%;
   padding: 50px;
   background-color: #f4f7fc;
-  overflow: auto; /* Allow scrolling in case content is large */
+  overflow: auto;  
   height: 100vh;
 }
 

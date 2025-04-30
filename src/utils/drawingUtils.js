@@ -10,9 +10,9 @@ const handleDrawingSettings = (canvas, settings) => {
 
 // Function to toggle drawing mode
 const toggleDrawingMode = (canvas, setCanvasCursor) => {
-  canvas.isDrawingMode = !canvas.isDrawingMode; // Toggle the drawing mode on the canvas
-  setCanvasCursor(canvas); // Update cursor style based on drawing mode
-  setCanvasSelectionState(canvas, canvas.isDrawingMode); // Update selection state
+  canvas.isDrawingMode = !canvas.isDrawingMode; 
+  setCanvasCursor(canvas); 
+  setCanvasSelectionState(canvas, canvas.isDrawingMode); 
 };
 
 const setCanvasCursor = (canvas) => {
@@ -23,9 +23,9 @@ const setCanvasSelectionState = (canvas, isDrawingMode) => {
   canvas.selection = !isDrawingMode;
 };
 
-// useDrawingUtils hook
+ 
 export const useDrawingUtils = () => {
-  const drawingMode = ref(false); // Reactive state for drawing mode
+  const drawingMode = ref(false);  
 
   const applySettings = (canvas, settings) => {
     handleDrawingSettings(canvas, settings);

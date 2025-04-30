@@ -8,11 +8,11 @@ import ModernResume from './components/resumeTemplate/ModernResume.vue';
 import ProfessionalResume from './components/resumeTemplate/ProfessionalResume.vue';
 import MinimalistResume from  './components/resumeTemplate/MinimalistResume.vue';
 import excelSheet from './components/excelSheet.vue';
-
+import loginPage from './components/login/loginPage.vue';
 
 const routes = [
   {
-    path: '/',
+    path: '/dashboard',
     name: 'Dashboard',
     component: dashboardPage,
   },
@@ -50,6 +50,11 @@ const routes = [
     path: '/minimalist',
     name: 'minimalist',
     component: MinimalistResume,
+  },
+  {
+    path: '/',
+    name: 'loginPage',
+    component: loginPage,
   },
   
 ]
