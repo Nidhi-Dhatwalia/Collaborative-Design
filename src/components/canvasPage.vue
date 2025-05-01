@@ -1,15 +1,32 @@
 <template>
   <v-app>
     <v-app-bar color="black lighten-4">
-      <v-toolbar-title class="text-h4" style="color: white">Excel Sheet</v-toolbar-title>
+      <v-toolbar-title class="text-h4" style="color: white">Collabie</v-toolbar-title>
+      
     </v-app-bar>
-
     <v-main>
+      <input
+        type="file"
+        ref="imageInput"
+        @change="handleImageUpload"
+        style="display: none"
+        accept="image/*"
+      />
       <v-container fluid class="d-flex pa-0">
         <v-navigation-drawer width="150" color="white">
           <v-list dense nav>
             <template v-for="(item, index) in iconsList" :key="index">
-              <v-list-item @click="() => handleAction(item)">
+              <router-link v-if="item.actionType === 'route'" :to="item.action">
+                <v-list-item>
+                  <v-btn outlined icon>
+                    <v-icon>{{ item.icon }}</v-icon>
+                  </v-btn>
+                  <v-list-item-content>
+                    <v-list-item-title>{{ item.label }}</v-list-item-title>
+                  </v-list-item-content>
+                </v-list-item>
+              </router-link>
+              <v-list-item v-else @click="() => handleAction(item)">
                 <v-btn outlined icon>
                   <v-icon>{{ item.icon }}</v-icon>
                 </v-btn>
@@ -21,23 +38,17 @@
           </v-list>
         </v-navigation-drawer>
 
-        <!-- Excel Sheet Data Table -->
-        <v-container>
-          <v-row>
-            <v-col v-for="(row, rowIndex) in sheetData" :key="rowIndex" cols="12">
-              <v-row>
-                <v-col v-for="(cell, colIndex) in row" :key="colIndex" cols="12">
-                  <v-text-field
-                    v-model="sheetData[rowIndex][colIndex]"
-                    outlined
-                    label="Cell"
-                    @input="saveExcelSheetState"
-                  ></v-text-field>
-                </v-col>
-              </v-row>
-            </v-col>
-          </v-row>
-        </v-container>
+        <v-navigation-drawer width="100">
+          <elementsPage v-if="showShapesMenu" />
+        </v-navigation-drawer>
+
+        <drawingComponent v-if="isDrawingMode" @applyDrawingSettings="handleDrawingSettings" />
+
+        <div class="dashboard-container">
+          <div class="canvas-wrapper">
+            <canvas id="my-canvas" width="600" height="500"></canvas>
+          </div>
+        </div>
       </v-container>
     </v-main>
   </v-app>
@@ -46,62 +57,165 @@
 <script setup>
 import { ref, onMounted } from 'vue';
 import { db } from '../firebase';
+import { useGlobalCanvas } from '@/composables/globalCanvas';
+import { useCanvasUtils } from '@/utils/canvasUtils';
+import { useDesignUtils } from '@/utils/designUtils';
+import { useDrawingUtils } from '@/utils/drawingUtils';
+import { useImageUtils } from '../utils/imageUtils';
+import elementsPage from '../components/elementsPage.vue';
+import drawingComponent from '../components/drawingComponent.vue';
 import { ref as firebaseRef, set, onValue } from 'firebase/database';
 
-// Sheet data and styles
-const sheetData = ref([]);
-const cellStyles = ref([]);
+
+ 
+const { canvas, initCanvas } = useGlobalCanvas(); 
+const { uploadCanvas, createNew } = useDesignUtils();
+const { toggleMode, drawingMode, applySettings } = useDrawingUtils();
+const { handleImageUpload, triggerImageUpload } = useImageUtils(canvas);
+
+const savedDesigns = ref([]);
+const showShapesMenu = ref(false);
+const isDrawingMode = ref(false);
+const imageInput = ref(null);
+
 let isDataLoadingFromFirebase = false;
 
-// Save Excel Data to Firebase
-const syncExcelDataWithFirebase = (excelData) => {
+const syncCanvasWithFirebase = (canvasState) => {
   if (isDataLoadingFromFirebase) return;
-
-  const excelRef = firebaseRef(db, 'excelSheets');
-  set(excelRef, excelData)
-    .then(() => console.log('Excel data saved to Firebase.'))
+  const canvasRef = firebaseRef(db, 'canvasDesigns');
+  console.log("canvasRef",canvasRef)
+  set(canvasRef, canvasState)
+    .then(() => console.log('Canvas data saved to Firebase.'))
     .catch((error) => console.error('Firebase save error:', error));
 };
 
-// Load Excel Data from Firebase
-const loadExcelSheetFromFirebase = () => {
-  const excelRef = firebaseRef(db, 'excelSheets');
-  onValue(excelRef, (snapshot) => {
+const loadCanvasFromFirebase = () => {
+  const canvasRef = firebaseRef(db, 'canvasDesigns');
+  onValue(canvasRef, (snapshot) => {
     if (snapshot.exists()) {
-      const excelData = snapshot.val();
+      const canvasData = snapshot.val();
       isDataLoadingFromFirebase = true;
+      
+      
+      // console.log("canvasData", canvasData);
 
-      sheetData.value = excelData.sheetData || [];
-      cellStyles.value = excelData.cellStyles || [];
+ 
+      canvas.value.off('object:added');
+      canvas.value.off('object:modified');
+      canvas.value.off('object:removed');
+ 
+      const onAfterRender = () => {
+        canvas.value.on('object:added', saveCanvasState);
+        canvas.value.on('object:modified', saveCanvasState);
+        canvas.value.on('object:removed', saveCanvasState);
+        isDataLoadingFromFirebase = false;
+ 
+        canvas.value.off('after:render', onAfterRender);
+      };
 
-      isDataLoadingFromFirebase = false;
+      canvas.value.on('after:render', onAfterRender);
+      
+//  console.log("Firebase data:", snapshot.val());
+
+      canvas.value.loadFromJSON(canvasData, () => {
+        canvas.value.renderAll();
+      });
     }
   });
 };
 
-// Save Excel Sheet State
-const saveExcelSheetState = () => {
-  if (!isDataLoadingFromFirebase) {
-    const excelState = {
-      sheetData: sheetData.value,
-      cellStyles: cellStyles.value,
-    };
-    syncExcelDataWithFirebase(excelState);
+
+const saveCanvasState = () => {
+  if (canvas.value && !isDataLoadingFromFirebase) {
+    const canvasState = canvas.value.toJSON();
+    syncCanvasWithFirebase(canvasState);
   }
 };
 
-// Action Handlers
+const toggleShapesMenu = () => showShapesMenu.value = !showShapesMenu.value;
+
+const downloadCanvas = () => {
+  const dataUrl = canvas.value.toDataURL({ format: 'png', quality: 1 });
+  const link = document.createElement('a');
+  link.href = dataUrl;
+  link.download = 'canvas-design.png';
+  link.click();
+};
+
+const createNewDesign = () => {
+  canvas.value.off('object:added');
+  canvas.value.off('object:modified');
+  canvas.value.off('object:removed');
+  canvas.value.clear();
+  syncCanvasWithFirebase(canvas.value.toJSON());
+  localStorage.removeItem("savedDesign");
+  canvas.value.on('object:added', saveCanvasState);
+  canvas.value.on('object:modified', saveCanvasState);
+  canvas.value.on('object:removed', saveCanvasState);
+};
+
+const toggleDrawingModeHandler = () => {
+  toggleMode(canvas.value, setCanvasCursor);
+  isDrawingMode.value = true;
+  canvas.value.freeDrawingBrush.color = '#ff0000';
+  canvas.value.freeDrawingBrush.width = 5;
+};
+
+const handleDrawingSettings = (settings) => applySettings(canvas.value, settings);
+
+const upload = () => {
+  canvas.value.off('object:added');
+  canvas.value.off('object:modified');
+  canvas.value.off('object:removed');
+  const designData = canvas.value.toJSON();
+  const localDesigns = JSON.parse(localStorage.getItem('savedDesigns')) || [];
+  localDesigns.push(designData);
+  localStorage.setItem('savedDesigns', JSON.stringify(localDesigns));
+  canvas.value.clear();
+  canvas.value.on('object:added', saveCanvasState);
+  canvas.value.on('object:modified', saveCanvasState);
+  canvas.value.on('object:removed', saveCanvasState);
+};
+
+const actions = {
+  createNewDesign,
+  toggleShapesMenu,
+  toggleDrawingModeHandler,
+  downloadCanvas,
+  triggerImageUpload,
+  upload,
+};
+
+onMounted(() => {
+  const initializedCanvas = initCanvas();
+  canvas.value = initializedCanvas;
+  
+  loadCanvasFromFirebase();
+  
+  initializedCanvas.on('after:render', () => canvas.value.isInitialized = true);
+  initializedCanvas.on('object:added', saveCanvasState);
+  initializedCanvas.on('object:modified', saveCanvasState);
+  initializedCanvas.on('object:removed', saveCanvasState);
+  console.log(canvas.value,"canvas.value")
+});
+
+const setCanvasCursor = () => canvas.value.defaultCursor = canvas.value.isDrawingMode ? 'crosshair' : 'default';
+const setCanvasSelectionState = () => canvas.value.selection = !canvas.value.isDrawingMode;
+
 const handleAction = (item) => {
   if (item.actionType === 'function' && typeof item.action === 'function') item.action();
 };
 
 const iconsList = ref([
-  { icon: 'mdi-content-save', label: 'Save', actionType: 'function', action: saveExcelSheetState },
+  { icon: 'mdi-home', label: 'Home', actionType: 'route', action: '/dashboard' },
+  { icon: 'mdi-plus', label: 'New Design', actionType: 'function', action: createNewDesign },
+  { icon: 'mdi-shape-outline', label: 'Elements', actionType: 'function', action: toggleShapesMenu },
+  { icon: 'mdi-pencil', label: 'Draw', actionType: 'function', action: toggleDrawingModeHandler },
+  { icon: 'mdi-cloud-upload', label: 'Upload', actionType: 'function', action: upload },
+  { icon: 'mdi-image', label: 'Media', actionType: 'function', action: triggerImageUpload },
+  { icon: 'mdi-content-save', label: 'Saved Designs', actionType: 'route', action: '/save' },
+  { icon: 'mdi-download', label: 'Download', actionType: 'function', action: downloadCanvas },
 ]);
-
-onMounted(() => {
-  loadExcelSheetFromFirebase();
-});
 </script>
 
 <style scoped>
@@ -111,5 +225,13 @@ onMounted(() => {
 }
 .v-list-item:hover {
   background-color: #f0f0ff;
+}
+.canvas-wrapper {
+  border: 1px solid black;
+  margin-top: 40px;
+}
+.v-navigation-drawer {
+  position: relative;
+  margin: 20px 0px;
 }
 </style>
