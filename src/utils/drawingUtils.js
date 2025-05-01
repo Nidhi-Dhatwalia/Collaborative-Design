@@ -2,9 +2,18 @@ import { ref } from 'vue';
 
 // Function to handle drawing mode settings
 const handleDrawingSettings = (canvas, settings) => {
+  if (!settings) {
+    console.warn("No drawing settings provided.");
+    return;
+  }
+
+  if (!canvas.freeDrawingBrush) {
+    canvas.freeDrawingBrush = new fabric.PencilBrush(canvas);
+  }
+
   canvas.isDrawingMode = true;
-  canvas.freeDrawingBrush.color = settings.color;
-  canvas.freeDrawingBrush.width = settings.weight;
+  canvas.freeDrawingBrush.color = settings.color || '#000000';
+  canvas.freeDrawingBrush.width = settings.weight || 2;
   setCanvasCursor(canvas);
 };
 

@@ -28,18 +28,7 @@ const downloadCanvas = (canvas) => {
   link.click();
 };
 
-const createNewDesign = (canvas) => {
-  if (canvas && canvas.clear) {
-    if (canvas.isRendering) {
-      canvas.clear();
-      localStorage.removeItem("savedDesign");
-    } else {
-      console.error('Canvas is still not initialized properly.');
-    }
-  } else {
-    console.error('Canvas is not initialized yet.');
-  }
-};
+ 
 
 export const useDesignUtils = () => {
   const savedDesigns = ref([]);

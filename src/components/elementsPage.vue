@@ -115,34 +115,37 @@ watch(selectedColor, (newColor) => {
 
 // Function to find an empty position on the canvas
 const findEmptyPosition = (width, height) => {
-  const margin = 20; // Margin between shapes
+  const margin = 20;
   const canvasWidth = canvas.value.getWidth();
   const canvasHeight = canvas.value.getHeight();
-  let xPos = margin;
-  let yPos = margin;
 
-  // Iterate over all existing objects to find an empty space
-  canvas.value.getObjects().forEach((obj) => {
-    if (obj.left + obj.width + margin < canvasWidth) {
-      xPos = obj.left + obj.width + margin;  // Move right if there's space
-    } else if (obj.top + obj.height + margin < canvasHeight) {
-      yPos = obj.top + obj.height + margin;  // Move down if there's space
-    } else {
-      xPos = margin; // Reset to start position
-      yPos += height + margin; // Move to the next line
-    }
-  });
+  let x, y;
+  let overlap = true;
 
-  return { x: xPos, y: yPos };
+  while (overlap) { 
+    x = Math.random() * (canvasWidth - width - margin);
+    y = Math.random() * (canvasHeight - height - margin);
+
+    
+    overlap = canvas.value.getObjects().some(obj => {
+      return (
+        x < obj.left + obj.width + margin &&
+        x + width + margin > obj.left &&
+        y < obj.top + obj.height + margin &&
+        y + height + margin > obj.top
+      );
+    });
+  }
+
+  return { x, y };
 };
 
 const createShape = (type) => {
   let shape = null;
-  let position = { x: 50, y: 50 };  // Default position if no empty space is found
-
-  // Find an empty position on the canvas
+  let position = { x: 50, y: 50 };   
+ 
   if (type !== "text") {
-    position = findEmptyPosition(100, 100);  // Default size for non-text shapes
+    position = findEmptyPosition(100, 100);   
   }
 
   if (type === "rectangle") {
@@ -152,6 +155,7 @@ const createShape = (type) => {
       fill: selectedColor.value,
       left: position.x,
       top: position.y,
+        selectable: true,  
     });
   } else if (type === "circle") {
     shape = new fabric.Circle({
@@ -159,6 +163,7 @@ const createShape = (type) => {
       fill: selectedColor.value,
       left: position.x,
       top: position.y,
+        selectable: true,  
     });
   } else if (type === "triangle") {
     shape = new fabric.Triangle({
@@ -167,6 +172,7 @@ const createShape = (type) => {
       fill: selectedColor.value,
       left: position.x,
       top: position.y,
+      
     });
   } else if (type === "text") {
     showTextDialog.value = true;

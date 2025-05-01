@@ -4,20 +4,12 @@
     <v-container fluid class="pa-0">
       <div class="toolbar">
         <h2 class="text-h5 font-weight-bold">Excel Style Sheet</h2>
-        <v-btn color="primary" @click="saveToLocalStorage">Save</v-btn>
+        <v-btn color="primary" @click="saveToFirebase">Save</v-btn>
       </div>
 
-      <div
-        v-if="selectedCell.row !== null && selectedCell.col !== null"
-        class="format-toolbar"
-      >
+      <div v-if="selectedCell.row !== null && selectedCell.col !== null" class="format-toolbar">
         <v-btn @click="toggleBold" color="secondary">Bold</v-btn>
-        <v-select
-          v-model="fontSize"
-          :items="fontSizes"
-          label="Font Size"
-          dense
-        />
+        <v-select v-model="fontSize" :items="fontSizes" label="Font Size" dense />
       </div>
 
       <div class="excel-wrapper">
@@ -34,18 +26,15 @@
             class="cell"
             v-for="(col, colIndex) in cols"
             :key="colIndex"
-            :class="{
-              selected:
-                selectedCell.row === rowIndex && selectedCell.col === colIndex,
-            }"
+            :class="{ selected: selectedCell.row === rowIndex && selectedCell.col === colIndex }"
           >
             <input
               type="text"
               v-model="sheetData[rowIndex][colIndex]"
               class="cell-input"
               :style="{
-                fontWeight: selectedCell.row === rowIndex && selectedCell.col === colIndex && isBold ? 'bold' : 'normal',
-                fontSize: selectedCell.row === rowIndex && selectedCell.col === colIndex ? fontSize + 'px' : '16px',
+                fontWeight: cellStyles[rowIndex][colIndex].isBold ? 'bold' : 'normal',
+                fontSize: cellStyles[rowIndex][colIndex].fontSize + 'px',
               }"
               @click="selectCell(rowIndex, colIndex)"
             />
@@ -57,60 +46,84 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from "vue";
+import { ref, onMounted, watch } from "vue";
+import { db } from "../firebase"; 
+import { ref as dbRef, set, onValue } from "firebase/database";
 import sideBar from "../composables/sideBar.vue";
 
-const colLabels = [];
-for (let i = 0; i < 26; i++) {
-  colLabels.push(String.fromCharCode(65 + i));
-}
-
+// Spreadsheet config
 const rows = 50;
 const cols = 26;
+const colLabels = Array.from({ length: cols }, (_, i) => String.fromCharCode(65 + i));
 
+// Data and styles
 const sheetData = ref([]);
+const cellStyles = ref([]);
 for (let i = 0; i < rows; i++) {
-  const row = [];
-  for (let j = 0; j < cols; j++) {
-    row.push('');
-  }
-  sheetData.value.push(row);
+  sheetData.value.push(Array.from({ length: cols }, () => ''));
+  cellStyles.value.push(Array.from({ length: cols }, () => ({ isBold: false, fontSize: 16 })));
 }
-
-const STORAGE_KEY = "excel-sheet-data";
-
 onMounted(() => {
-  const saved = localStorage.getItem(STORAGE_KEY);
-  if (saved) {
-    sheetData.value = JSON.parse(saved);
-  }
+  const dataRef = dbRef(db, "sheetData");
+  const styleRef = dbRef(db, "cellStyles");
+
+  console.log("Fetching data from Firebase...");
+
+  onValue(dataRef, (snapshot) => {
+    if (snapshot.exists()) {
+      console.log("Sheet Data:", snapshot.val()); // Check if data is available
+      sheetData.value = snapshot.val();
+    } else {
+      console.warn("No sheetData found in Firebase.");
+    }
+  });
+
+  onValue(styleRef, (snapshot) => {
+    if (snapshot.exists()) {
+      console.log("Cell Styles:", snapshot.val()); // Check if styles are available
+      cellStyles.value = snapshot.val();
+    } else {
+      console.warn("No cellStyles found in Firebase.");
+    }
+  });
 });
 
-const saveToLocalStorage = () => {
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(sheetData.value));
-  alert("Sheet saved!");
+// Firebase save
+const saveToFirebase = () => {
+  console.log("Saving data to Firebase...");
+  set(dbRef(db, "sheetData"), sheetData.value);
+  set(dbRef(db, "cellStyles"), cellStyles.value);
+  alert("Sheet synced with Firebase!");
+  console.log("SheetData and cellStyles saved to Firebase.");
 };
 
+// Cell selection & formatting
 const selectedCell = ref({ row: null, col: null });
-
-const fontSizes = [12, 14, 16, 18, 20, 24];
-
-const fontSize = ref(16);
-
-const isBold = ref(false);
-
 const selectCell = (row, col) => {
   selectedCell.value = { row, col };
+  fontSize.value = cellStyles.value[row][col].fontSize;
 };
+
+const fontSizes = [12, 14, 16, 18, 20, 24];
+const fontSize = ref(16);
+
+watch(fontSize, (newSize) => {
+  const { row, col } = selectedCell.value;
+  if (row !== null && col !== null) {
+    cellStyles.value[row][col].fontSize = newSize;
+    console.log(`Font size updated for cell (${row}, ${col}): ${newSize}px`);
+  }
+});
 
 const toggleBold = () => {
   const { row, col } = selectedCell.value;
   if (row !== null && col !== null) {
-    isBold.value = !isBold.value;
+    const currentBoldState = cellStyles.value[row][col].isBold;
+    cellStyles.value[row][col].isBold = !currentBoldState;
+    console.log(`Bold state toggled for cell (${row}, ${col}): ${!currentBoldState}`);
   }
 };
 </script>
-
 
 <style scoped>
 html, body, .v-container {
@@ -118,7 +131,6 @@ html, body, .v-container {
   margin: 0;
   padding: 0;
 }
-
 .toolbar {
   display: flex;
   justify-content: space-between;
@@ -127,26 +139,22 @@ html, body, .v-container {
   margin-left: 120px;
   background-color: #f5f5f5;
 }
-
 .format-toolbar {
   display: flex;
   gap: 10px;
   margin: 12px 0 12px 120px;
   align-items: center;
 }
-
 .excel-wrapper {
   height: calc(100vh - 140px);
   overflow: auto;
   border: 1px solid #ccc;
   margin-left: 120px;
 }
-
 .row {
   display: flex;
   min-width: max-content;
 }
-
 .cell {
   border: 1px solid #ccc;
   box-sizing: border-box;
@@ -157,7 +165,6 @@ html, body, .v-container {
   justify-content: center;
   padding: 4px;
 }
-
 .cell-input {
   width: 100%;
   height: 100%;
@@ -166,7 +173,6 @@ html, body, .v-container {
   font-size: 16px;
   text-align: center;
 }
-
 .row-header {
   background-color: #f0f0f0;
   font-weight: bold;
@@ -174,7 +180,6 @@ html, body, .v-container {
   left: 0;
   z-index: 1;
 }
-
 .col-header {
   background-color: #e0e0e0;
   font-weight: bold;
@@ -182,7 +187,6 @@ html, body, .v-container {
   top: 0;
   z-index: 2;
 }
-
 .selected {
   outline: 2px solid #1976d2;
 }

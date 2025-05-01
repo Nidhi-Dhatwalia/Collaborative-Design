@@ -10,6 +10,14 @@ import MinimalistResume from  './components/resumeTemplate/MinimalistResume.vue'
 import excelSheet from './components/excelSheet.vue';
 import loginPage from './components/login/loginPage.vue';
 
+
+//Dashboard Router-Links 
+import plans from './components/dashboard/plans.vue';
+import features from './components/dashboard/features.vue';
+import featureReadyToPrint from './components/dashboard/featureReadyToPrint.vue';
+import getStarted from './components/dashboard/getStarted.vue';
+
+
 const routes = [
   {
     path: '/dashboard',
@@ -56,7 +64,28 @@ const routes = [
     name: 'loginPage',
     component: loginPage,
   },
+  //dashboard Paths 
   
+  {
+    path: '/plans',
+    name: 'plans',
+    component: plans,
+  },
+  {
+    path: '/features',
+    name: 'features',
+    component: features,
+  },
+  {
+    path: '/feature',
+    name: 'featureReadyToPrint',
+    component: featureReadyToPrint,
+  },
+  {
+    path: '/getStarted',
+    name: 'getStarted',
+    component: getStarted,
+  },
 ]
 
 const router = createRouter({

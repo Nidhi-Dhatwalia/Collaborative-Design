@@ -44,7 +44,7 @@ const emit = defineEmits();
 
  
 const lineColor = ref("#000000");
-const lineWeight = ref(5);
+const lineWeight = ref(2);
 const dialog = ref(true);
 
  
@@ -53,11 +53,12 @@ const applySettings = () => {
     color: lineColor.value,
     weight: lineWeight.value,
   };
-  
-  emit("applyDrawingSettings", settings);   
-  dialog.value = false; 
+
+  emit("applyDrawingSettings", settings); 
+  dialog.value = false;
 };
 
+   
  
 const closeDialog = () => {
   dialog.value = false;
