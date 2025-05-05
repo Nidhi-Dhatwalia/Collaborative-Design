@@ -34,19 +34,20 @@
     </v-row>
   </v-container>
 
-  <!-- Color Picker for Object -->
   <div v-show="isObjectSelected" class="color-picker-container">
     <input type="color" v-model="selectedColor" @input="updateColor" />
   </div>
 
-  <!-- Custom Context Menu -->
-  <div v-if="showContextMenu" :style="{ top: contextMenuPosition.y + 'px', left: contextMenuPosition.x + 'px' }" class="context-menu">
-    <v-btn @click="deleteSelected">Delete</v-btn>
-    <v-btn @click="editSelected">Edit</v-btn>
-    <v-btn @click="resizeSelected">Resize</v-btn>
+  <div class="button-container">
+    <v-btn v-show="isObjectSelected" @click="deleteSelected">
+      <v-icon size="x-large">mdi-delete</v-icon>
+    </v-btn>
+    <v-btn v-show="isObjectSelected" @click="editSelected">
+      <v-icon size="x-large">mdi-pencil</v-icon>
+    </v-btn>
   </div>
 
-  <!-- Text Dialog for Text Object -->
+ 
   <v-dialog v-model="showTextDialog" max-width="500px"> 
     <textSettings
       @apply="handleTextApply"
@@ -56,7 +57,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from "vue";
+import { ref, onMounted, watch } from "vue";
 import { useGlobalCanvas } from "../composables/globalCanvas";
 import textSettings from '../components/textSettings.vue';
 
@@ -67,14 +68,15 @@ const isObjectSelected = ref(false);
 const zoomLevel = ref(1);
 const showTextDialog = ref(false);
 
-const showContextMenu = ref(false);
-const contextMenuPosition = ref({ x: 0, y: 0 });
+const saveCanvasState = () => {
+  const currentState = canvas.value.toJSON();
+  localStorage.setItem("savedDesign", JSON.stringify(currentState));
+};
 
 onMounted(() => {
   const initializedCanvas = initCanvas();
 
   if (initializedCanvas) {
-    // Handle object selection events
     initializedCanvas.on("selection:created", () => {
       isObjectSelected.value = true;
     });
@@ -87,34 +89,63 @@ onMounted(() => {
       isObjectSelected.value = false;
     });
 
-    // Handle right-click event
-    initializedCanvas.on("mouse:down", (opt) => {
-      if (opt.button === 3) {  // Right-click
-        const pointer = canvas.value.getPointer(opt.e);
-        const activeObject = canvas.value.getActiveObject();
-
-        if (activeObject) {
-          // Show context menu if an object is selected
-          showContextMenu.value = true;
-          contextMenuPosition.value = { x: pointer.x, y: pointer.y };
-        } else {
-          // Hide context menu if no object is selected
-          showContextMenu.value = false;
-        }
+    initializedCanvas.on("mouse:wheel", (opt) => {
+      const delta = opt.e.deltaY;
+      if (delta > 0) {
+        zoomOut();
+      } else {
+        zoomIn();
       }
+      opt.e.preventDefault();
+      opt.e.stopPropagation();
     });
   } else {
     console.error("Canvas not initialized properly");
   }
 });
 
-// Function to create a shape
+watch(selectedColor, (newColor) => {
+  const activeObject = canvas.value.getActiveObject();
+  if (activeObject) {
+    activeObject.set({ fill: newColor });
+    canvas.value.renderAll();
+    saveCanvasState();
+  }
+});
+
+// Function to find an empty position on the canvas
+const findEmptyPosition = (width, height) => {
+  const margin = 20;
+  const canvasWidth = canvas.value.getWidth();
+  const canvasHeight = canvas.value.getHeight();
+
+  let x, y;
+  let overlap = true;
+
+  while (overlap) { 
+    x = Math.random() * (canvasWidth - width - margin);
+    y = Math.random() * (canvasHeight - height - margin);
+
+    
+    overlap = canvas.value.getObjects().some(obj => {
+      return (
+        x < obj.left + obj.width + margin &&
+        x + width + margin > obj.left &&
+        y < obj.top + obj.height + margin &&
+        y + height + margin > obj.top
+      );
+    });
+  }
+
+  return { x, y };
+};
+
 const createShape = (type) => {
   let shape = null;
-  let position = { x: 50, y: 50 };
-
+  let position = { x: 50, y: 50 };   
+ 
   if (type !== "text") {
-    position = findEmptyPosition(100, 100);
+    position = findEmptyPosition(100, 100);   
   }
 
   if (type === "rectangle") {
@@ -124,7 +155,7 @@ const createShape = (type) => {
       fill: selectedColor.value,
       left: position.x,
       top: position.y,
-      selectable: true,
+        selectable: true,  
     });
   } else if (type === "circle") {
     shape = new fabric.Circle({
@@ -132,7 +163,7 @@ const createShape = (type) => {
       fill: selectedColor.value,
       left: position.x,
       top: position.y,
-      selectable: true,
+        selectable: true,  
     });
   } else if (type === "triangle") {
     shape = new fabric.Triangle({
@@ -141,7 +172,7 @@ const createShape = (type) => {
       fill: selectedColor.value,
       left: position.x,
       top: position.y,
-      selectable: true,
+      
     });
   } else if (type === "text") {
     showTextDialog.value = true;
@@ -151,41 +182,18 @@ const createShape = (type) => {
     shape.set({ selectable: true });
     canvas.value.add(shape);
     canvas.value.renderAll();
+    saveCanvasState();
   }
 };
 
-// Function to delete the selected object
-const deleteSelected = () => {
-  const activeObject = canvas.value.getActiveObject();
-  if (activeObject) {
-    canvas.value.remove(activeObject);
-    canvas.value.discardActiveObject();
-    canvas.value.requestRenderAll();
-    showContextMenu.value = false;
-  }
-};
-
-// Function to edit the selected object
-const editSelected = () => {
-  const activeObject = canvas.value.getActiveObject();
-  if (activeObject) {
-    activeObject.set({ stroke: "yellow", strokeWidth: 5 });
-    canvas.value.renderAll();
-  }
-};
-
-// Function to resize the selected object
-const resizeSelected = () => {
-  const activeObject = canvas.value.getActiveObject();
-  if (activeObject) {
-    activeObject.set({ scaleX: 1.2, scaleY: 1.2 });
-    canvas.value.renderAll();
-  }
-};
-
-// Handle text application in the dialog
 const handleTextApply = ({ text, color, fontSize, fontFamily, fontWeight, fontStyle, textBaseline }) => {
-  const textbox = new fabric.Textbox(text, {
+ 
+  console.log("Text Baseline:", textBaseline);
+  if (textBaseline !== 'alphabetic') {
+    console.error('Invalid textBaseline value:', textBaseline);
+  }
+ 
+ const textbox = new fabric.Textbox(text, {
     left: 250,
     top: 150,
     width: 300,
@@ -194,7 +202,7 @@ const handleTextApply = ({ text, color, fontSize, fontFamily, fontWeight, fontSt
     fill: color,
     fontWeight: fontWeight,
     fontStyle: fontStyle,
-    textBaseline: textBaseline || 'alphabetic',
+    textBaseline: textBaseline || 'alphabetic',   
     hasBorders: true,
     hasControls: true,
   });
@@ -202,9 +210,57 @@ const handleTextApply = ({ text, color, fontSize, fontFamily, fontWeight, fontSt
   textbox.set({ selectable: true });
   canvas.value.add(textbox);
   canvas.value.renderAll();
+  saveCanvasState();
   showTextDialog.value = false;
 };
+
+
+ 
+
+
+const zoomIn = () => {
+  const activeObject = canvas.value.getActiveObject();
+  if (activeObject) {
+    activeObject.scaleX *= 1.1;
+    activeObject.scaleY *= 1.1;
+    activeObject.setCoords();
+    canvas.value.renderAll();
+    saveCanvasState();
+  }
+};
+
+const zoomOut = () => {
+  const activeObject = canvas.value.getActiveObject();
+  if (activeObject) {
+    activeObject.scaleX *= 0.9;
+    activeObject.scaleY *= 0.9;
+    activeObject.setCoords();
+    canvas.value.renderAll();
+    saveCanvasState();
+  }
+};
+
+const editSelected = () => {
+  const activeObject = canvas.value.getActiveObject();
+  if (activeObject) {
+    activeObject.set({ stroke: "yellow", strokeWidth: 5 });
+    canvas.value.renderAll();
+    saveCanvasState();
+  }
+};
+
+const deleteSelected = () => {
+  const activeObject = canvas.value.getActiveObject();
+  if (activeObject) {
+    canvas.value.remove(activeObject);
+    canvas.value.discardActiveObject();
+    canvas.value.requestRenderAll();
+    isObjectSelected.value = false;
+    saveCanvasState();
+  }
+};
 </script>
+
 
 <style scoped>
 .v-btn {
@@ -232,18 +288,10 @@ const handleTextApply = ({ text, color, fontSize, fontFamily, fontWeight, fontSt
   text-align: center;
 }
 
-.context-menu {
-  position: absolute;
-  background: white;
-  border: 1px solid #ccc;
-  box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.1);
-  z-index: 10;
-  padding: 10px;
-}
-
-.context-menu v-btn {
-  display: block;
-  margin: 5px 0;
+.button-container {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
 }
 
 input[type="color"] {
