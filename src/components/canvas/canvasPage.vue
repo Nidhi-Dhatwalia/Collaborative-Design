@@ -56,10 +56,9 @@
 
 <script setup>
 import { ref, onMounted } from 'vue';
-import { db } from '../firebase';
+import { db } from '@/firebase';
 
-
-import { useGlobalCanvas } from  '@/composables/globalCanvas.js'
+import { useGlobalCanvas } from  '@/composables/globalCanvas.js';
 
 
 

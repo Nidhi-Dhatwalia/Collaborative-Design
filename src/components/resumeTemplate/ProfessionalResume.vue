@@ -84,67 +84,71 @@
 </template>
 
 <script setup>
-import { ref } from 'vue';
-import { jsPDF } from 'jspdf';
+import { ref } from 'vue'
+import jsPDF from 'jspdf'  
 
 const header = ref({
   name: 'Jane Smith',
   title: 'Senior Software Engineer'
-});
+})
 
 const experience = ref({
   position: 'Lead Developer at XYZ Ltd. (2020 - Present)',
   details: 'Leading a team of developers to create web applications using Vue.js and Node.js.'
-});
+})
 
-const education = ref("Bachelor's in Computer Science from ABC University");
-
-const skills = ref("JavaScript, Vue.js, Node.js, MongoDB, Agile methodologies");
+const education = ref("Bachelor's in Computer Science from ABC University")
+const skills = ref("JavaScript, Vue.js, Node.js, MongoDB, Agile methodologies")
 
 function downloadResume() {
-  const doc = new jsPDF();
-  doc.setFont('helvetica', 'italic');
-  doc.setFontSize(20);
-  doc.text(header.value.name, 20, 20);
-  doc.setFontSize(18);
-  doc.text(header.value.title, 20, 30);
+  const doc = new jsPDF()
+  doc.setFont('helvetica', 'italic')
+  doc.setFontSize(20)
+  doc.text(header.value.name, 20, 20)
+  doc.setFontSize(18)
+  doc.text(header.value.title, 20, 30)
 
-  doc.setDrawColor(0, 0, 0);
-  doc.setLineWidth(0.5);
-  doc.line(20, 35, 190, 35);
+  doc.setDrawColor(0, 0, 0)
+  doc.setLineWidth(0.5)
+  doc.line(20, 35, 190, 35)
 
-  doc.setFont('times', 'italic');
-  doc.setFontSize(22);
-  doc.text('Professional Experience', 20, 50);
-  doc.setFontSize(16);
-  const experienceDetails = experience.value.details.split('\n');
-  let yPosition = 60;
+  doc.setFont('times', 'italic')
+  doc.setFontSize(22)
+  doc.text('Professional Experience', 20, 50)
+  doc.setFontSize(16)
+  doc.text(experience.value.position, 20, 60)
+
+  const experienceDetails = experience.value.details.split('\n')
+  let yPosition = 70
   experienceDetails.forEach((line) => {
-    doc.text(line, 20, yPosition);
-    yPosition += 10;
-  });
+    doc.text(line, 20, yPosition)
+    yPosition += 10
+  })
 
-  doc.line(20, yPosition + 5, 190, yPosition + 5);
+  doc.line(20, yPosition + 5, 190, yPosition + 5)
+  yPosition += 15
 
-  doc.setFont('times', 'italic');
-  doc.setFontSize(22);
-  doc.text('Education', 20, yPosition + 15);
-  doc.setFontSize(16);
-  doc.text(education.value, 20, yPosition + 25);
+  doc.setFontSize(22)
+  doc.text('Education', 20, yPosition)
+  yPosition += 10
+  doc.setFontSize(16)
+  doc.text(education.value, 20, yPosition)
 
-  doc.line(20, yPosition + 30, 190, yPosition + 30);
+  yPosition += 15
+  doc.line(20, yPosition, 190, yPosition)
+  yPosition += 10
 
-  doc.setFont('times', 'italic');
-  doc.setFontSize(22);
-  doc.text('Skills', 20, yPosition + 40);
-  doc.setFontSize(16);
-  doc.text(skills.value, 20, yPosition + 50);
+  doc.setFontSize(22)
+  doc.text('Skills', 20, yPosition)
+  yPosition += 10
+  doc.setFontSize(16)
+  doc.text(skills.value, 20, yPosition)
 
-  doc.save('resume.pdf');
+  doc.save('resume.pdf')
 }
 
 function goBack() {
-  window.history.back();
+  window.history.back()
 }
 </script>
 

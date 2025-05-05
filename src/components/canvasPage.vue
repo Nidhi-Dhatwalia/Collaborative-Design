@@ -1,7 +1,7 @@
-<template>
+ <template>
   <v-app>
     <v-app-bar color="black lighten-4">
-      <v-toolbar-title class="text-h4" style="color: white">Collabie</v-toolbar-title>
+      <v-toolbar-title class="text-h4" style="color: white">Collabie </v-toolbar-title>
       
     </v-app-bar>
     <v-main>
@@ -16,25 +16,21 @@
         <v-navigation-drawer width="150" color="white">
           <v-list dense nav>
             <template v-for="(item, index) in iconsList" :key="index">
-              <router-link v-if="item.actionType === 'route'" :to="item.action">
-                <v-list-item>
-                  <v-btn outlined icon>
-                    <v-icon>{{ item.icon }}</v-icon>
-                  </v-btn>
-                  <v-list-item-content>
-                    <v-list-item-title>{{ item.label }}</v-list-item-title>
-                  </v-list-item-content>
-                </v-list-item>
-              </router-link>
-              <v-list-item v-else @click="() => handleAction(item)">
+            <router-link v-if="item.actionType === 'route'" :to="item.action">
+              <v-list-item>
                 <v-btn outlined icon>
                   <v-icon>{{ item.icon }}</v-icon>
                 </v-btn>
-                <v-list-item-content>
-                  <v-list-item-title>{{ item.label }}</v-list-item-title>
-                </v-list-item-content>
+                <v-list-item-title>{{ item.label }}</v-list-item-title>
               </v-list-item>
-            </template>
+            </router-link>
+            <v-list-item v-else @click="() => handleAction(item)">
+              <v-btn outlined icon>
+                <v-icon>{{ item.icon }}</v-icon>
+              </v-btn>
+              <v-list-item-title>{{ item.label }}</v-list-item-title>
+            </v-list-item>
+          </template>
           </v-list>
         </v-navigation-drawer>
 
@@ -48,6 +44,7 @@
           <div class="canvas-wrapper">
             <canvas id="my-canvas" width="600" height="500"></canvas>
           </div>
+          
         </div>
       </v-container>
     </v-main>
@@ -67,11 +64,74 @@ import drawingComponent from '../components/drawingComponent.vue';
 import { ref as firebaseRef, set, onValue } from 'firebase/database';
 
 
+
+const syncCanvasWithFirebase = (canvasState) => {
+  if (isDataLoadingFromFirebase) return;
+  const canvasRef = firebaseRef(db, 'canvasDesigns');
+
+  // console.log("canvasRef",canvasRef)
+  
+  set(canvasRef, canvasState)
+    .then(() => console.log('Canvas data saved to Firebase.'))
+    .catch((error) => console.error('Firebase save error:', error));
+};
+
+
+
+const loadCanvasFromFirebase = () => {
+  const canvasRef = firebaseRef(db, 'canvasDesigns');
+  onValue(canvasRef, (snapshot) => {
+    if (snapshot.exists()) {
+      isDataLoadingFromFirebase = true;   
+
+      const canvasData = snapshot.val();
+
+
+       console.log("canvasData",canvasData);
+
+
+       
+
+      // Remove listeners
+      canvas.value.off('object:added');
+      canvas.value.off('object:modified');
+      canvas.value.off('object:removed');
+
+      // Load JSON
+      canvas.value.loadFromJSON(canvasData, () => {
+        canvas.value.renderAll();
+
+       
+        setTimeout(() => {
+    canvas.value.on('object:added', saveCanvasState);
+    canvas.value.on('object:modified', saveCanvasState);
+    canvas.value.on('object:removed', saveCanvasState);
+    isDataLoadingFromFirebase = false;
+  }, 100);  
+        
+      });
+    }
+  });
+};
+
+
+
+const saveCanvasState = () => {
+  if (!canvas.value || isDataLoadingFromFirebase) return;
+
+  const canvasState = canvas.value.toJSON();
+  syncCanvasWithFirebase(canvasState);
+};
+
  
 const { canvas, initCanvas } = useGlobalCanvas(); 
 const { uploadCanvas, createNew } = useDesignUtils();
 const { toggleMode, drawingMode, applySettings } = useDrawingUtils();
-const { handleImageUpload, triggerImageUpload } = useImageUtils(canvas);
+const {
+  triggerImageUpload,
+  saveCanvasToLocalStorage,
+  saveCanvasAsImage
+} = useImageUtils(canvas, saveCanvasState);
 
 const savedDesigns = ref([]);
 const showShapesMenu = ref(false);
@@ -80,57 +140,6 @@ const imageInput = ref(null);
 
 let isDataLoadingFromFirebase = false;
 
-const syncCanvasWithFirebase = (canvasState) => {
-  if (isDataLoadingFromFirebase) return;
-  const canvasRef = firebaseRef(db, 'canvasDesigns');
-  console.log("canvasRef",canvasRef)
-  set(canvasRef, canvasState)
-    .then(() => console.log('Canvas data saved to Firebase.'))
-    .catch((error) => console.error('Firebase save error:', error));
-};
-
-const loadCanvasFromFirebase = () => {
-  const canvasRef = firebaseRef(db, 'canvasDesigns');
-  onValue(canvasRef, (snapshot) => {
-    if (snapshot.exists()) {
-      const canvasData = snapshot.val();
-      isDataLoadingFromFirebase = true;
-      
-      
-      // console.log("canvasData", canvasData);
-
- 
-      canvas.value.off('object:added');
-      canvas.value.off('object:modified');
-      canvas.value.off('object:removed');
- 
-      const onAfterRender = () => {
-        canvas.value.on('object:added', saveCanvasState);
-        canvas.value.on('object:modified', saveCanvasState);
-        canvas.value.on('object:removed', saveCanvasState);
-        isDataLoadingFromFirebase = false;
- 
-        canvas.value.off('after:render', onAfterRender);
-      };
-
-      canvas.value.on('after:render', onAfterRender);
-      
-//  console.log("Firebase data:", snapshot.val());
-
-      canvas.value.loadFromJSON(canvasData, () => {
-        canvas.value.renderAll();
-      });
-    }
-  });
-};
-
-
-const saveCanvasState = () => {
-  if (canvas.value && !isDataLoadingFromFirebase) {
-    const canvasState = canvas.value.toJSON();
-    syncCanvasWithFirebase(canvasState);
-  }
-};
 
 const toggleShapesMenu = () => showShapesMenu.value = !showShapesMenu.value;
 
@@ -156,10 +165,9 @@ const createNewDesign = () => {
 
 const toggleDrawingModeHandler = () => {
   toggleMode(canvas.value, setCanvasCursor);
-  isDrawingMode.value = true;
-  canvas.value.freeDrawingBrush.color = '#ff0000';
-  canvas.value.freeDrawingBrush.width = 5;
+  isDrawingMode.value = !isDrawingMode.value;
 };
+
 
 const handleDrawingSettings = (settings) => applySettings(canvas.value, settings);
 
@@ -189,6 +197,14 @@ const actions = {
 onMounted(() => {
   const initializedCanvas = initCanvas();
   canvas.value = initializedCanvas;
+
+  initializedCanvas.on('mouse:up', () => {
+  if (initializedCanvas.isDrawingMode) {
+    initializedCanvas.isDrawingMode = false;
+    setCanvasCursor();
+    setCanvasSelectionState();
+  }
+});
   
   loadCanvasFromFirebase();
   
@@ -196,7 +212,7 @@ onMounted(() => {
   initializedCanvas.on('object:added', saveCanvasState);
   initializedCanvas.on('object:modified', saveCanvasState);
   initializedCanvas.on('object:removed', saveCanvasState);
-  console.log(canvas.value,"canvas.value")
+  
 });
 
 const setCanvasCursor = () => canvas.value.defaultCursor = canvas.value.isDrawingMode ? 'crosshair' : 'default';

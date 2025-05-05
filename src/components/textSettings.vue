@@ -86,8 +86,10 @@ const fontOptions = [
   'Roboto',
   'Tahoma',
 ];
-
 const applySettings = () => {
+
+    console.log('applySettings triggered'); 
+    
   let finalText = isUpperCase.value ? text.value.toUpperCase() : text.value;
 
   const styles = {
@@ -103,6 +105,8 @@ const applySettings = () => {
     styles.fontStyle = 'italic';
   }
 
+  const textBaseline = 'alphabetic';  
+
   emit('apply', {
     text: finalText,
     color: color.value,
@@ -110,6 +114,8 @@ const applySettings = () => {
     fontFamily: fontFamily.value,
     fontWeight: styles.fontWeight || 'normal',
     fontStyle: styles.fontStyle || 'normal',
+    textBaseline: textBaseline,  
   });
 };
+
 </script>

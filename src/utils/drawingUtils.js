@@ -1,6 +1,6 @@
 import { ref } from 'vue';
 
-// Function to handle drawing mode settings
+ 
 const handleDrawingSettings = (canvas, settings) => {
   if (!settings) {
     console.warn("No drawing settings provided.");
@@ -12,9 +12,16 @@ const handleDrawingSettings = (canvas, settings) => {
   }
 
   canvas.isDrawingMode = true;
-  canvas.freeDrawingBrush.color = settings.color || '#000000';
+  canvas.freeDrawingBrush.color = settings.color || 'black';
   canvas.freeDrawingBrush.width = settings.weight || 2;
+
+
+  canvas.freeDrawingBrush.fill = 'transparent'; // No fill color
+  console.log("Brush fill color is set to:", canvas.freeDrawingBrush.fill);
+
+
   setCanvasCursor(canvas);
+ 
 };
 
 // Function to toggle drawing mode

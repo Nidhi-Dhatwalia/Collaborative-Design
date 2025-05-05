@@ -1,5 +1,6 @@
 <template>
-  <v-app>
+  <v-app>  
+    
   <v-container class="home-container" fluid> 
       <v-app-bar flat color="white" class="app-bar">
         
@@ -91,7 +92,7 @@
       </v-container>
 
     
-      <plans />
+      <plans  style="margin-top: 250px;" />
       <features />
       <featureReadyToPrint />
       <getStarted />
@@ -99,6 +100,9 @@
     </v-container>
   </v-app>
 </template>
+
+
+
 <script setup>
 import plans from '../components/dashboard/plans.vue';
 import features from '../components/dashboard/features.vue';
@@ -106,6 +110,10 @@ import featureReadyToPrint from '../components/dashboard/featureReadyToPrint.vue
 import getStarted from '../components/dashboard/getStarted.vue';
 import footerPage from './dashboard/footerPage.vue';
 </script>
+
+
+
+
 <style scoped>
  
 .home-container {
@@ -151,7 +159,7 @@ import footerPage from './dashboard/footerPage.vue';
   gap: 20px;
   justify-content: center;
   align-items: center;
-  flex-wrap: wrap;
+  flex-wrap: nowrap;
 }
 
 .button-link {

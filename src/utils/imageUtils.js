@@ -1,4 +1,4 @@
- import { ref } from 'vue';
+import { ref } from 'vue';
 
  
 export function useImageUtils(canvas) {
@@ -47,9 +47,9 @@ export function useImageUtils(canvas) {
         quality: 1,
       });
 
-      const link = document.createElement('a');
+      const link = document.createElement('a'); 
       link.href = dataUrl;
-      link.download = 'canvas-design.png'; // Name the file
+      link.download = 'canvas-design.png';  
       link.click();
     } else {
       console.error('Canvas is not initialized yet!');

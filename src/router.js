@@ -9,7 +9,7 @@ import ProfessionalResume from './components/resumeTemplate/ProfessionalResume.v
 import MinimalistResume from  './components/resumeTemplate/MinimalistResume.vue';
 import excelSheet from './components/excelSheet.vue';
 import loginPage from './components/login/loginPage.vue';
-
+ 
 
 //Dashboard Router-Links 
 import plans from './components/dashboard/plans.vue';
@@ -63,7 +63,10 @@ const routes = [
     path: '/',
     name: 'loginPage',
     component: loginPage,
-  },
+  }, 
+
+
+  
   //dashboard Paths 
   
   {

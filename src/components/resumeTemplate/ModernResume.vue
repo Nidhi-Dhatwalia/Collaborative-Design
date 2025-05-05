@@ -22,8 +22,8 @@
     </v-row>
 
     <v-row>
-      <v-col cols="12">
-        <v-subheader class="editable-section-title">Experience</v-subheader>
+      <v-col cols="12"> 
+        <v-text class="editable-section-title">Experience</v-text>
         <v-card class="experience-item">
           <v-text-field
             v-model="experience.position"
@@ -55,6 +55,7 @@
     </v-row>
   </v-container>
 </template>
+
 
 <script setup>
 import { ref } from "vue";

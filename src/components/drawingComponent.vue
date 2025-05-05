@@ -19,7 +19,7 @@
                 min="1"
                 max="10"
                 step="1"
-                ticks
+                :ticks="[]"
                 tick-size="4"
                 thumb-label
               ></v-slider>
@@ -58,8 +58,7 @@ const applySettings = () => {
   dialog.value = false;
 };
 
-   
- 
+
 const closeDialog = () => {
   dialog.value = false;
 };

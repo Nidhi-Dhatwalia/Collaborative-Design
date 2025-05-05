@@ -23,7 +23,9 @@
 
     <v-row>
       <v-col cols="12">
-        <v-subheader class="editable-section-title">Experience</v-subheader>
+        <v-divider></v-divider>
+        <v-text class="editable-section-title">Experience</v-text>
+        <v-divider></v-divider>
         <v-card class="experience-item">
           <v-text-field
             v-model="experience.position"
@@ -45,7 +47,9 @@
 
     <v-row>
       <v-col cols="12">
-        <v-subheader class="editable-section-title">Skills</v-subheader>
+        <v-divider></v-divider>
+        <v-text class="editable-section-title">Skills</v-text>
+        <v-divider></v-divider>
         <v-textarea
           v-model="skills"
           label="Skills"
@@ -69,6 +73,7 @@
     </v-row>
   </v-container>
 </template>
+
 
 <script setup>
 import { ref } from 'vue';
