@@ -1,7 +1,7 @@
 import { ref } from 'vue';
 
- 
 export function useImageUtils(canvas) {
+  // Function to handle image upload
   const handleImageUpload = (event) => {
     const file = event.target.files[0];
     if (file && canvas.value) {
@@ -9,17 +9,27 @@ export function useImageUtils(canvas) {
       reader.onload = function(e) {
         const img = new Image();
         img.onload = function() {
-          const fabricImage = new fabric.Image(img);
+          // Ensure fabric.Image is created correctly in Fabric.js 6.x
+          const fabricImage = new fabric.Image(img, {
+            left: 50,  // Set default position, modify as per need
+            top: 50,
+            selectable: true
+          });
+
+          // Add the image to canvas and re-render
           canvas.value.add(fabricImage);
           canvas.value.renderAll();
+
+          // Save the canvas state to localStorage
+          saveCanvasToLocalStorage();
         };
-        saveCanvasToLocalStorage();
         img.src = e.target.result;
       };
       reader.readAsDataURL(file);
     }
   };
 
+  // Trigger image upload via an input element
   const triggerImageUpload = () => {
     const inputElement = document.createElement('input');
     inputElement.type = 'file';
@@ -28,9 +38,8 @@ export function useImageUtils(canvas) {
   
     inputElement.addEventListener('change', handleImageUpload);
   };
-  
 
-
+  // Save the canvas state to localStorage
   const saveCanvasToLocalStorage = () => {
     if (canvas.value) {
       const canvasState = JSON.stringify(canvas.value.toJSON());
@@ -42,14 +51,16 @@ export function useImageUtils(canvas) {
   // New function to save the canvas as an image
   const saveCanvasAsImage = () => {
     if (canvas.value) {
+      // toDataURL is still valid in Fabric 6.x
       const dataUrl = canvas.value.toDataURL({
-        format: 'png',
-        quality: 1,
+        format: 'png', // Ensure format is supported
+        quality: 1, // You can adjust the quality if needed
       });
 
-      const link = document.createElement('a'); 
+      // Create a link and trigger the download
+      const link = document.createElement('a');
       link.href = dataUrl;
-      link.download = 'canvas-design.png';  
+      link.download = 'canvas-design.png';  // File name
       link.click();
     } else {
       console.error('Canvas is not initialized yet!');

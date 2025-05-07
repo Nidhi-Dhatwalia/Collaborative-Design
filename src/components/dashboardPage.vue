@@ -1,28 +1,16 @@
 <template>
   <v-app>  
-    
-  <v-container class="home-container" fluid> 
+    <v-container class="home-container" fluid> 
       <v-app-bar flat color="white" class="app-bar">
-        
         <v-toolbar-title class="title">Collabie</v-toolbar-title>
         <v-spacer></v-spacer>
-<router-link to="/plans">
-        <v-btn class="custom-btn">Pricing</v-btn>
-         </router-link>
-        <router-link to="/features">
-        <v-btn class="custom-btn">Features</v-btn>
-         </router-link>
-        <router-link to="/feature">
-        <v-btn class="custom-btn">Our partners</v-btn>
-         </router-link>
-        <router-link to="/getStarted" > 
-        <v-btn class="custom-btn">About us</v-btn>  
-         </router-link>
-        <router-link to="/canvas">
-          <v-btn class="get-started-btn">Get started</v-btn>
-        </router-link>
+        
+        <template v-for="(button, index) in buttons" :key="index">
+          <router-link :to="button.route">
+            <v-btn :class="button.class">{{ button.label }}</v-btn>
+          </router-link>
+        </template>
       </v-app-bar>
-
     
       <v-container fluid class="inner-container">
         <v-sheet height="100vh" color="white" class="custom-sheet">
@@ -43,56 +31,28 @@
           </p>
 
           <br />
-            <router-link to="/canvas" >
+          <router-link to="/canvas">
             <v-btn class="btn-large" color="deep-purple-accent-2" rounded>
               Start designing
             </v-btn>
-            </router-link>
-           
+          </router-link>
 
-        
           <div class="button-wrapper">
-            <router-link to="/resume" class="button-link">
-              <v-btn class="icon-button" color="deep-purple-accent-4" rounded>
-                <div class="icon-content">
-                  <v-icon class="icon">mdi-file-document</v-icon>
-                  <span class="label-text">Resume</span>
-                </div>
-              </v-btn>
-            </router-link>
-
-            <router-link to="/canvas" class="button-link">
-              <v-btn class="icon-button" color="indigo darken-3" rounded>
-                <div class="icon-content">
-                  <v-icon class="icon">mdi-clipboard-outline</v-icon>
-                  <span class="label-text">Whiteboard</span>
-                </div>
-              </v-btn>
-            </router-link>
-
-              <router-link to="/sheet" class="button-link">
-              <v-btn class="icon-button" color="pink darken-2" rounded>
-                <div class="icon-content">
-                  <v-icon class="icon">mdi-table</v-icon>
-                  <span class="label-text">Sheet</span>
-                </div>
-              </v-btn>
+            <template v-for="(iconButton, index) in iconButtons" :key="index">
+              <router-link :to="iconButton.route" class="button-link">
+                <v-btn :class="iconButton.class" :color="iconButton.color" rounded>
+                  <div class="icon-content">
+                    <v-icon :class="iconButton.icon" class="icon"></v-icon>
+                    <span class="label-text">{{ iconButton.label }}</span>
+                  </div>
+                </v-btn>
               </router-link>
-
-            <router-link to="/" class="button-link">
-              <v-btn class="icon-button" color="pink darken-2" rounded>
-                <div class="icon-content">
-                  <v-icon class="icon">mdi-dots-horizontal</v-icon>
-                  <span class="label-text">More</span>
-                </div>
-              </v-btn>
-            </router-link>
+            </template>
           </div>
         </v-sheet>
       </v-container>
 
-    
-      <plans  style="margin-top: 250px;" />
+      <plans style="margin-top: 250px;" />
       <features />
       <featureReadyToPrint />
       <getStarted />
@@ -101,33 +61,39 @@
   </v-app>
 </template>
 
-
-
 <script setup>
 import plans from '../components/dashboard/plans.vue';
 import features from '../components/dashboard/features.vue';
 import featureReadyToPrint from '../components/dashboard/featureReadyToPrint.vue';
 import getStarted from '../components/dashboard/getStarted.vue';
 import footerPage from './dashboard/footerPage.vue';
+
+const buttons = [
+  { label: "Pricing", route: "/plans", class: "custom-btn" },
+  { label: "Features", route: "/features", class: "custom-btn" },
+  { label: "Our partners", route: "/feature", class: "custom-btn" },
+  { label: "About us", route: "/getStarted", class: "custom-btn" },
+  { label: "Get started", route: "/canvas", class: "get-started-btn" }
+];
+
+const iconButtons = [
+  { label: "Resume", route: "/resume", class: "icon-button", icon: "mdi-file-document", color: "deep-purple-accent-4" },
+  { label: "Whiteboard", route: "/canvas", class: "icon-button", icon: "mdi-clipboard-outline", color: "indigo darken-3" },
+  { label: "Sheet", route: "/sheet", class: "icon-button", icon: "mdi-table", color: "pink darken-2" },
+  { label: "More", route: "/", class: "icon-button", icon: "mdi-dots-horizontal", color: "pink darken-2" }
+];
 </script>
 
-
-
-
 <style scoped>
- 
 .home-container {
   padding: 15px;
   width: 100%;
 }
 
- 
-
 .image-with-margin {
   margin-top: 30px;
 }
 
- 
 .custom-heading {
   font-size: 3rem;
   font-weight: bold;
@@ -142,7 +108,6 @@ import footerPage from './dashboard/footerPage.vue';
   color: #555;
 }
 
- 
 .btn-large {
   font-size: 1.25rem;
 }
@@ -152,7 +117,6 @@ import footerPage from './dashboard/footerPage.vue';
   color: white;
 }
 
- 
 .button-wrapper {
   margin-top: 50px;
   display: flex;
@@ -166,7 +130,6 @@ import footerPage from './dashboard/footerPage.vue';
   text-decoration: none;
 }
 
- 
 .icon-button {
   width: 120px;
   height: 120px;
@@ -187,10 +150,10 @@ import footerPage from './dashboard/footerPage.vue';
   transform: translateY(-5px);
 }
 
-.custom-btn{
+.custom-btn {
   color: black;
 }
- 
+
 .icon-content {
   display: flex;
   flex-direction: column;
@@ -206,4 +169,4 @@ import footerPage from './dashboard/footerPage.vue';
   font-size: 14px;
   font-weight: 500;
 }
-</style>  
+</style>

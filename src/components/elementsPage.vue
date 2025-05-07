@@ -47,12 +47,11 @@
     </v-btn>
   </div>
 
- 
-  <v-dialog v-model="showTextDialog" max-width="500px"> 
+  <v-dialog v-model="showTextDialog" max-width="500px">
     <textSettings
       @apply="handleTextApply"
       @close="showTextDialog = false"
-    /> 
+    />
   </v-dialog>
 </template>
 
@@ -63,20 +62,29 @@ import textSettings from '../components/textSettings.vue';
 
 const { canvas, initCanvas } = useGlobalCanvas();
 
-const selectedColor = ref("#3734eb");
+const selectedColor = ref("#000000");
 const isObjectSelected = ref(false);
 const zoomLevel = ref(1);
 const showTextDialog = ref(false);
 
 const saveCanvasState = () => {
   const currentState = canvas.value.toJSON();
+ console.log(currentState);
+ 
+
   localStorage.setItem("savedDesign", JSON.stringify(currentState));
 };
 
 onMounted(() => {
   const initializedCanvas = initCanvas();
+  console.log(initializedCanvas);  
 
   if (initializedCanvas) {
+    canvas.value = initializedCanvas;
+    canvas.value.setWidth(window.innerWidth);
+    canvas.value.setHeight(window.innerHeight);
+    canvas.value.renderAll();
+
     initializedCanvas.on("selection:created", () => {
       isObjectSelected.value = true;
     });
@@ -113,20 +121,19 @@ watch(selectedColor, (newColor) => {
   }
 });
 
-// Function to find an empty position on the canvas
 const findEmptyPosition = (width, height) => {
   const margin = 20;
-  const canvasWidth = canvas.value.getWidth();
-  const canvasHeight = canvas.value.getHeight();
+  const canvasWidth = canvas.value.width;
+  const canvasHeight = canvas.value.height;
 
   let x, y;
   let overlap = true;
+  let attempts = 0;
 
-  while (overlap) { 
+  while (overlap && attempts < 100) {
     x = Math.random() * (canvasWidth - width - margin);
     y = Math.random() * (canvasHeight - height - margin);
 
-    
     overlap = canvas.value.getObjects().some(obj => {
       return (
         x < obj.left + obj.width + margin &&
@@ -135,6 +142,12 @@ const findEmptyPosition = (width, height) => {
         y + height + margin > obj.top
       );
     });
+
+    attempts++;
+  }
+
+  if (attempts >= 100) {
+    console.warn("Unable to find empty position after 100 attempts.");
   }
 
   return { x, y };
@@ -142,10 +155,10 @@ const findEmptyPosition = (width, height) => {
 
 const createShape = (type) => {
   let shape = null;
-  let position = { x: 50, y: 50 };   
- 
+  let position = { x: 50, y: 50 };
+
   if (type !== "text") {
-    position = findEmptyPosition(100, 100);   
+    position = findEmptyPosition(100, 100);
   }
 
   if (type === "rectangle") {
@@ -155,7 +168,7 @@ const createShape = (type) => {
       fill: selectedColor.value,
       left: position.x,
       top: position.y,
-        selectable: true,  
+      selectable: true,
     });
   } else if (type === "circle") {
     shape = new fabric.Circle({
@@ -163,7 +176,7 @@ const createShape = (type) => {
       fill: selectedColor.value,
       left: position.x,
       top: position.y,
-        selectable: true,  
+      selectable: true,
     });
   } else if (type === "triangle") {
     shape = new fabric.Triangle({
@@ -172,28 +185,31 @@ const createShape = (type) => {
       fill: selectedColor.value,
       left: position.x,
       top: position.y,
-      
     });
   } else if (type === "text") {
     showTextDialog.value = true;
   }
+   
+      console.log("Created shape:", shape);
 
   if (shape) {
     shape.set({ selectable: true });
     canvas.value.add(shape);
     canvas.value.renderAll();
-    saveCanvasState();
+ saveCanvasState();   
   }
 };
 
 const handleTextApply = ({ text, color, fontSize, fontFamily, fontWeight, fontStyle, textBaseline }) => {
- 
-  console.log("Text Baseline:", textBaseline);
-  if (textBaseline !== 'alphabetic') {
-    console.error('Invalid textBaseline value:', textBaseline);
+  const validTextBaseline = ['alphabetic', 'middle', 'ideographic'];
+  const finalTextBaseline = validTextBaseline.includes(textBaseline) ? textBaseline : 'middle';
+
+  if (!text || !color || !fontSize || !fontFamily) {
+    console.error("Invalid text settings");
+    return;
   }
- 
- const textbox = new fabric.Textbox(text, {
+
+  const textbox = new fabric.Textbox(text, {
     left: 250,
     top: 150,
     width: 300,
@@ -202,7 +218,7 @@ const handleTextApply = ({ text, color, fontSize, fontFamily, fontWeight, fontSt
     fill: color,
     fontWeight: fontWeight,
     fontStyle: fontStyle,
-    textBaseline: textBaseline || 'alphabetic',   
+    textBaseline: finalTextBaseline,
     hasBorders: true,
     hasControls: true,
   });
@@ -214,30 +230,18 @@ const handleTextApply = ({ text, color, fontSize, fontFamily, fontWeight, fontSt
   showTextDialog.value = false;
 };
 
-
- 
-
-
 const zoomIn = () => {
-  const activeObject = canvas.value.getActiveObject();
-  if (activeObject) {
-    activeObject.scaleX *= 1.1;
-    activeObject.scaleY *= 1.1;
-    activeObject.setCoords();
-    canvas.value.renderAll();
-    saveCanvasState();
-  }
+  zoomLevel.value *= 1.1;
+  canvas.value.setZoom(zoomLevel.value);
+  canvas.value.renderAll();
+  saveCanvasState();
 };
 
 const zoomOut = () => {
-  const activeObject = canvas.value.getActiveObject();
-  if (activeObject) {
-    activeObject.scaleX *= 0.9;
-    activeObject.scaleY *= 0.9;
-    activeObject.setCoords();
-    canvas.value.renderAll();
-    saveCanvasState();
-  }
+  zoomLevel.value *= 0.9;
+  canvas.value.setZoom(zoomLevel.value);
+  canvas.value.renderAll();
+  saveCanvasState();
 };
 
 const editSelected = () => {
@@ -260,7 +264,6 @@ const deleteSelected = () => {
   }
 };
 </script>
-
 
 <style scoped>
 .v-btn {

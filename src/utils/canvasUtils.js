@@ -1,64 +1,39 @@
-// utils/useCanvasUtils.js
-
 import { ref } from 'vue';
 
-// Canvas state management functions
-const saveCanvasState = (canvas, undoStack, redoStack) => {
+const saveCanvasState = (canvas) => {
+  if (!canvas) return;
+
+  // Get the current state of the canvas
   const currentState = canvas.toJSON();
-  if (
-    undoStack.length === 0 ||
-    JSON.stringify(undoStack[undoStack.length - 1]) !==
-      JSON.stringify(currentState)
-  ) {
-    undoStack.push(currentState);
-    redoStack.length = 0; // Clear redo stack
-  }
+
+  // Save state to localStorage for persistence
   localStorage.setItem("savedDesign", JSON.stringify(currentState));
 };
 
-const undoAction = (canvas, undoStack, redoStack) => {
-  if (undoStack.length > 1) {
-    const lastState = undoStack.pop();
-    redoStack.push(lastState);
-    const prevState = undoStack[undoStack.length - 1];
-    canvas.loadFromJSON(prevState, () => {
-      canvas.renderAll();
+const loadCanvasState = (canvas) => {
+  if (!canvas) return;
+
+  // Retrieve the saved canvas state from localStorage
+  const savedState = localStorage.getItem("savedDesign");
+  if (savedState) {
+    const parsedState = JSON.parse(savedState);
+    canvas.loadFromJSON(parsedState, () => {
+      canvas.renderAll(); // Re-render the canvas after loading the saved state
     });
   }
 };
 
-const redoAction = (canvas, undoStack, redoStack) => {
-  if (redoStack.length > 0) {
-    const state = redoStack.pop();
-    undoStack.push(state);
-    canvas.loadFromJSON(state, () => {
-      canvas.renderAll();
-    });
-  }
-};
-
-// useCanvasUtils hook
 export const useCanvasUtils = () => {
-  const undoStack = ref([]);
-  const redoStack = ref([]);
-  
   const saveState = (canvas) => {
-    saveCanvasState(canvas, undoStack.value, redoStack.value);
+    saveCanvasState(canvas);
   };
 
-  const undo = (canvas) => {
-    undoAction(canvas, undoStack.value, redoStack.value);
-  };
-
-  const redo = (canvas) => {
-    redoAction(canvas, undoStack.value, redoStack.value);
+  const loadState = (canvas) => {
+    loadCanvasState(canvas);
   };
 
   return {
-    undoStack,
-    redoStack,
-    saveState,
-    undo,
-    redo,
+    saveState, // Function to save the canvas state
+    loadState, // Function to load the saved canvas state
   };
 };

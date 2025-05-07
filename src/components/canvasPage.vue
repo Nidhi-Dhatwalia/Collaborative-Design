@@ -1,8 +1,7 @@
- <template>
+<template>
   <v-app>
     <v-app-bar color="black lighten-4">
-      <v-toolbar-title class="text-h4" style="color: white">Collabie </v-toolbar-title>
-      
+      <v-toolbar-title class="text-h4" style="color: white">Collabie</v-toolbar-title>
     </v-app-bar>
     <v-main>
       <input
@@ -16,21 +15,21 @@
         <v-navigation-drawer width="150" color="white">
           <v-list dense nav>
             <template v-for="(item, index) in iconsList" :key="index">
-            <router-link v-if="item.actionType === 'route'" :to="item.action">
-              <v-list-item>
+              <router-link v-if="item.actionType === 'route'" :to="item.action">
+                <v-list-item>
+                  <v-btn outlined icon>
+                    <v-icon>{{ item.icon }}</v-icon>
+                  </v-btn>
+                  <v-list-item-title>{{ item.label }}</v-list-item-title>
+                </v-list-item>
+              </router-link>
+              <v-list-item v-else @click="() => handleAction(item)">
                 <v-btn outlined icon>
                   <v-icon>{{ item.icon }}</v-icon>
                 </v-btn>
                 <v-list-item-title>{{ item.label }}</v-list-item-title>
               </v-list-item>
-            </router-link>
-            <v-list-item v-else @click="() => handleAction(item)">
-              <v-btn outlined icon>
-                <v-icon>{{ item.icon }}</v-icon>
-              </v-btn>
-              <v-list-item-title>{{ item.label }}</v-list-item-title>
-            </v-list-item>
-          </template>
+            </template>
           </v-list>
         </v-navigation-drawer>
 
@@ -44,7 +43,6 @@
           <div class="canvas-wrapper">
             <canvas id="my-canvas" width="600" height="500"></canvas>
           </div>
-          
         </div>
       </v-container>
     </v-main>
@@ -63,86 +61,79 @@ import elementsPage from '../components/elementsPage.vue';
 import drawingComponent from '../components/drawingComponent.vue';
 import { ref as firebaseRef, set, onValue } from 'firebase/database';
 
+let isDataLoadingFromFirebase = false; // global flag
 
-
+// Sync Canvas to Firebase
 const syncCanvasWithFirebase = (canvasState) => {
-  if (isDataLoadingFromFirebase) return;
+  if (isDataLoadingFromFirebase) return; // Prevent syncing while loading
   const canvasRef = firebaseRef(db, 'canvasDesigns');
 
-  // console.log("canvasRef",canvasRef)
-  
   set(canvasRef, canvasState)
     .then(() => console.log('Canvas data saved to Firebase.'))
     .catch((error) => console.error('Firebase save error:', error));
 };
 
+// Save the Canvas state
+const saveCanvasState = () => {
+  if (!canvas.value || isDataLoadingFromFirebase) {
+    console.log("Skipping saveCanvasState due to loading phase");
+    return;
+  }
 
+  console.log("Saving canvas to Firebase...");
+  const canvasState = canvas.value.toJSON();
+  syncCanvasWithFirebase(canvasState);
+};
 
+// Load Canvas from Firebase
 const loadCanvasFromFirebase = () => {
   const canvasRef = firebaseRef(db, 'canvasDesigns');
+
   onValue(canvasRef, (snapshot) => {
-    if (snapshot.exists()) {
-      isDataLoadingFromFirebase = true;   
-
+    if (snapshot.exists() && canvas.value) {
       const canvasData = snapshot.val();
+      console.log("Canvas data exists:", canvasData);
 
+      isDataLoadingFromFirebase = true;
 
-       console.log("canvasData",canvasData);
+      // Temporarily disable event triggers
+      canvas.value.off('object:added', saveCanvasState);
+      canvas.value.off('object:modified', saveCanvasState);
+      canvas.value.off('object:removed', saveCanvasState);
 
-
-       
-
-      // Remove listeners
-      canvas.value.off('object:added');
-      canvas.value.off('object:modified');
-      canvas.value.off('object:removed');
-
-      // Load JSON
       canvas.value.loadFromJSON(canvasData, () => {
         canvas.value.renderAll();
+        console.log("Canvas loaded from Firebase");
 
-       
+        // Re-enable after short delay to avoid unwanted triggering
         setTimeout(() => {
-    canvas.value.on('object:added', saveCanvasState);
-    canvas.value.on('object:modified', saveCanvasState);
-    canvas.value.on('object:removed', saveCanvasState);
-    isDataLoadingFromFirebase = false;
-  }, 100);  
-        
+          canvas.value.on('object:added', saveCanvasState);
+          canvas.value.on('object:modified', saveCanvasState);
+          canvas.value.on('object:removed', saveCanvasState);
+
+          // Reset the loading flag after the canvas is loaded
+          isDataLoadingFromFirebase = false;
+        }, 200);
       });
     }
   });
 };
 
-
-
-const saveCanvasState = () => {
-  if (!canvas.value || isDataLoadingFromFirebase) return;
-
-  const canvasState = canvas.value.toJSON();
-  syncCanvasWithFirebase(canvasState);
-};
-
- 
+// Initialize Canvas using custom hook
 const { canvas, initCanvas } = useGlobalCanvas(); 
 const { uploadCanvas, createNew } = useDesignUtils();
 const { toggleMode, drawingMode, applySettings } = useDrawingUtils();
-const {
-  triggerImageUpload,
-  saveCanvasToLocalStorage,
-  saveCanvasAsImage
-} = useImageUtils(canvas, saveCanvasState);
+const { triggerImageUpload, saveCanvasToLocalStorage, saveCanvasAsImage } = useImageUtils(canvas, saveCanvasState);
 
 const savedDesigns = ref([]);
 const showShapesMenu = ref(false);
 const isDrawingMode = ref(false);
 const imageInput = ref(null);
 
-let isDataLoadingFromFirebase = false;
-
-
+// Toggle shapes menu visibility
 const toggleShapesMenu = () => showShapesMenu.value = !showShapesMenu.value;
 
+// Download canvas as an image
 const downloadCanvas = () => {
   const dataUrl = canvas.value.toDataURL({ format: 'png', quality: 1 });
   const link = document.createElement('a');
@@ -151,6 +142,7 @@ const downloadCanvas = () => {
   link.click();
 };
 
+// Create a new design by clearing the canvas
 const createNewDesign = () => {
   canvas.value.off('object:added');
   canvas.value.off('object:modified');
@@ -163,14 +155,16 @@ const createNewDesign = () => {
   canvas.value.on('object:removed', saveCanvasState);
 };
 
+// Toggle Drawing Mode
 const toggleDrawingModeHandler = () => {
   toggleMode(canvas.value, setCanvasCursor);
   isDrawingMode.value = !isDrawingMode.value;
 };
 
-
+// Handle drawing settings
 const handleDrawingSettings = (settings) => applySettings(canvas.value, settings);
 
+// Upload current canvas design
 const upload = () => {
   canvas.value.off('object:added');
   canvas.value.off('object:modified');
@@ -194,34 +188,39 @@ const actions = {
   upload,
 };
 
+// Mounted lifecycle hook to initialize canvas and load data from Firebase
 onMounted(() => {
   const initializedCanvas = initCanvas();
   canvas.value = initializedCanvas;
 
   initializedCanvas.on('mouse:up', () => {
-  if (initializedCanvas.isDrawingMode) {
-    initializedCanvas.isDrawingMode = false;
-    setCanvasCursor();
-    setCanvasSelectionState();
-  }
-});
-  
+    if (initializedCanvas.isDrawingMode) {
+      initializedCanvas.isDrawingMode = false;
+      setCanvasCursor();
+      setCanvasSelectionState();
+    }
+  });
+
   loadCanvasFromFirebase();
-  
+
   initializedCanvas.on('after:render', () => canvas.value.isInitialized = true);
   initializedCanvas.on('object:added', saveCanvasState);
   initializedCanvas.on('object:modified', saveCanvasState);
   initializedCanvas.on('object:removed', saveCanvasState);
-  
 });
 
+// Set the cursor style based on drawing mode
 const setCanvasCursor = () => canvas.value.defaultCursor = canvas.value.isDrawingMode ? 'crosshair' : 'default';
+
+// Set selection state based on drawing mode
 const setCanvasSelectionState = () => canvas.value.selection = !canvas.value.isDrawingMode;
 
+// Handle actions from the navigation menu
 const handleAction = (item) => {
   if (item.actionType === 'function' && typeof item.action === 'function') item.action();
 };
 
+// Icons and actions for the navigation menu
 const iconsList = ref([
   { icon: 'mdi-home', label: 'Home', actionType: 'route', action: '/dashboard' },
   { icon: 'mdi-plus', label: 'New Design', actionType: 'function', action: createNewDesign },

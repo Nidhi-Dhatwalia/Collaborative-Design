@@ -86,10 +86,25 @@ const fontOptions = [
   'Roboto',
   'Tahoma',
 ];
-const applySettings = () => {
 
-    console.log('applySettings triggered'); 
-    
+const validateCanvasData = (canvasData) => {
+  canvasData.objects.forEach((object, index) => {
+    if (!object.path) {
+      console.error(`Object at index ${index} is missing a path.`);
+      // Optionally, set a default path or handle it in another way
+      object.path = object.path || 'default-path'; // Example default
+    }
+  });
+};
+
+const saveToFirebase = (canvasData) => {
+  const validData = validateFirebaseData(canvasData);
+  firebase.database().ref('canvasDesigns').set(validData); // Save valid data
+};
+
+const applySettings = () => {
+  console.log('applySettings triggered');
+
   let finalText = isUpperCase.value ? text.value.toUpperCase() : text.value;
 
   const styles = {
@@ -105,17 +120,29 @@ const applySettings = () => {
     styles.fontStyle = 'italic';
   }
 
-  const textBaseline = 'alphabetic';  
+  const textBaseline = 'alphabetic';
 
-  emit('apply', {
+  const canvasData = {
     text: finalText,
     color: color.value,
     fontSize: fontSize.value,
     fontFamily: fontFamily.value,
     fontWeight: styles.fontWeight || 'normal',
     fontStyle: styles.fontStyle || 'normal',
-    textBaseline: textBaseline,  
-  });
+    textBaseline: textBaseline,
+    objects: [
+      {
+        path: 'some-path', // Ensure this is valid
+      },
+    ]
+  };
+
+  // Validate canvas data before emitting it
+  validateCanvasData(canvasData);
+
+  emit('apply', canvasData); // Emit the data to the parent component
+  console.log(canvasData);
 };
+
 
 </script>

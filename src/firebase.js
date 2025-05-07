@@ -6,6 +6,7 @@ import { getAuth } from 'firebase/auth';
 const firebaseConfig = {
   apiKey: "AIzaSyCNYBZiLa4pi0s769GmCzjob7DADRxuXHc",
   authDomain: "celestial-tract-452810-g3.firebaseapp.com",
+  databaseURL: "https://celestial-tract-452810-g3-default-rtdb.firebaseio.com",
   projectId: "celestial-tract-452810-g3",
   storageBucket: "celestial-tract-452810-g3.firebasestorage.app",
   messagingSenderId: "818029844896",

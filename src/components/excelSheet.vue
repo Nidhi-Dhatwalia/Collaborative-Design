@@ -4,8 +4,6 @@
     <v-container fluid class="pa-0">
       <div class="toolbar">
         <h2 class="text-h5 font-weight-bold">Excel Style Sheet</h2>
-        <!-- Save button optional hai ab -->
-        <!-- <v-btn color="primary" @click="saveToFirebase">Save</v-btn> -->
       </div>
 
       <div v-if="selectedCell.row !== null && selectedCell.col !== null" class="format-toolbar">
