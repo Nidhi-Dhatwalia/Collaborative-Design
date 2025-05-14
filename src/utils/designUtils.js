@@ -1,4 +1,5 @@
 import { ref } from 'vue';
+import * as fabric from "fabric"; 
 
 const uploadCanvas = (canvas, savedDesigns) => {
   const json = canvas.toJSON();
@@ -10,10 +11,13 @@ const uploadCanvas = (canvas, savedDesigns) => {
   }
 
   const storedDesigns = JSON.parse(localStorage.getItem("savedDesigns")) || [];
+
   storedDesigns.push(json);
+
   localStorage.setItem("savedDesigns", JSON.stringify(storedDesigns));
 
   savedDesigns.value = storedDesigns;
+
   canvas.clear();
 };
 
@@ -22,13 +26,12 @@ const downloadCanvas = (canvas) => {
     format: "png",
     quality: 1,
   });
+
   const link = document.createElement("a");
   link.href = dataURL;
   link.download = "my-canvas.png";
   link.click();
 };
-
- 
 
 export const useDesignUtils = () => {
   const savedDesigns = ref([]);
@@ -44,6 +47,6 @@ export const useDesignUtils = () => {
   return {
     savedDesigns,
     upload,
-    download, 
+    download,
   };
 };

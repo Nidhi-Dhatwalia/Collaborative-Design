@@ -29,11 +29,11 @@
           >
             <input
               type="text"
-              v-model="sheetData[rowIndex][colIndex]"
+               v-model="sheetData[rowIndex][colIndex]"
               class="cell-input"
               :style="{
-                fontWeight: cellStyles[rowIndex][colIndex].isBold ? 'bold' : 'normal',
-                fontSize: cellStyles[rowIndex][colIndex].fontSize + 'px',
+                fontWeight: cellStyles[rowIndex] && cellStyles[rowIndex][colIndex] && cellStyles[rowIndex][colIndex].isBold ? 'bold' : 'normal',
+                fontSize: cellStyles[rowIndex] && cellStyles[rowIndex][colIndex] && cellStyles[rowIndex][colIndex].fontSize + 'px',
               }"
               @click="selectCell(rowIndex, colIndex)"
               @input="autoSaveCell(rowIndex, colIndex)"
@@ -61,7 +61,7 @@ const sheetData = ref([]);
 const cellStyles = ref([]);
 
 for (let i = 0; i < rows; i++) {
-  sheetData.value.push(Array.from({ length: cols }, () => ''));
+  sheetData.value.push(Array.from({ length: cols }, () => ""));
   cellStyles.value.push(Array.from({ length: cols }, () => ({ isBold: false, fontSize: 16 })));
 }
 
@@ -73,7 +73,8 @@ onMounted(() => {
 
   onValue(dataRef, (snapshot) => {
     if (snapshot.exists()) {
-      sheetData.value = snapshot.val();
+      const fetchedData = snapshot.val();
+      sheetData.value = Array.from({ length: rows }, (_, i) => fetchedData[i] || Array(cols).fill(""));
     } else {
       console.warn("No sheetData found in Firebase.");
     }
@@ -81,40 +82,34 @@ onMounted(() => {
 
   onValue(styleRef, (snapshot) => {
     if (snapshot.exists()) {
-      cellStyles.value = snapshot.val();
+      const fetchedStyles = snapshot.val();
+      cellStyles.value = Array.from({ length: rows }, (_, i) =>
+        fetchedStyles[i] || Array.from({ length: cols }, () => ({ isBold: false, fontSize: 16 }))
+      );
     } else {
       console.warn("No cellStyles found in Firebase.");
     }
   });
 });
 
-// 🔄 Realtime Auto-save per Cell Edit
-const autoSaveCell = (row, col) => {
-  const value = sheetData.value[row][col];
-  const style = cellStyles.value[row][col];
-  set(dbRef(db, `sheetData/${row}/${col}`), value);
-  set(dbRef(db, `cellStyles/${row}/${col}`), style);
-  console.log(`Auto-saved cell (${row}, ${col}) to Firebase`);
-};
-
-// 🔁 Optional manual save (not needed now)
-const saveToFirebase = () => {
-  set(dbRef(db, "sheetData"), sheetData.value);
-  set(dbRef(db, "cellStyles"), cellStyles.value);
-  alert("Sheet synced with Firebase!");
-};
-
-// Cell selection & formatting
 const selectedCell = ref({ row: null, col: null });
+
 const selectCell = (row, col) => {
   selectedCell.value = { row, col };
-  fontSize.value = cellStyles.value[row][col].fontSize;
+
+  if (!cellStyles.value[row]) {
+    cellStyles.value[row] = [];
+  }
+  if (!cellStyles.value[row][col]) {
+    cellStyles.value[row][col] = { isBold: false, fontSize: 16 };
+  }
+
+  fontSize.value = cellStyles.value[row][col].fontSize || 16;
 };
 
 const fontSizes = [12, 14, 16, 18, 20, 24];
 const fontSize = ref(16);
 
-// 🔁 Watch font size changes and auto-save
 watch(fontSize, (newSize) => {
   const { row, col } = selectedCell.value;
   if (row !== null && col !== null) {
@@ -124,17 +119,32 @@ watch(fontSize, (newSize) => {
   }
 });
 
-// 🔁 Toggle bold and auto-save
 const toggleBold = () => {
   const { row, col } = selectedCell.value;
   if (row !== null && col !== null) {
     const newBold = !cellStyles.value[row][col].isBold;
     cellStyles.value[row][col].isBold = newBold;
     set(dbRef(db, `cellStyles/${row}/${col}/isBold`), newBold);
-    console.log(`Bold state toggled & saved for cell (${row}, ${col}): ${newBold}`);
+    console.log(`Bold toggled for cell (${row}, ${col}): ${newBold}`);
   }
 };
+
+const autoSaveCell = (row, col) => {
+  const value = sheetData.value[row][col];
+  if (!cellStyles.value[row]) {
+    cellStyles.value[row] = [];
+  }
+  if (!cellStyles.value[row][col]) {
+    cellStyles.value[row][col] = { isBold: false, fontSize: 16 };
+  }
+  const style = cellStyles.value[row][col];
+
+  set(dbRef(db, `sheetData/${row}/${col}`), value);
+  set(dbRef(db, `cellStyles/${row}/${col}`), style);
+  console.log(`Auto-saved cell (${row}, ${col}) to Firebase`);
+};
 </script>
+
 
 <style scoped>
 html, body, .v-container {

@@ -43,22 +43,21 @@
     </v-row>
   </v-container>
 </template>
-
 <script setup>
 import { ref, onMounted } from 'vue'
+import { Canvas } from 'fabric' 
 
 let canvasInstance = null
 const savedDesigns = ref([])  
 const isModified = ref(false)  
 
 onMounted(() => {
-  // Load saved designs from localStorage
   const storedDesigns = JSON.parse(localStorage.getItem('savedDesigns')) || []
   savedDesigns.value = storedDesigns
 
   const canvasElement = document.getElementById('preview-canvas')
   if (canvasElement) {
-    canvasInstance = new fabric.Canvas(canvasElement)
+    canvasInstance = new Canvas(canvasElement)
 
     canvasInstance.on('object:modified', () => {
       isModified.value = true
@@ -71,7 +70,6 @@ onMounted(() => {
     })
   }
 
-  // If saved designs exist, load the first one
   if (savedDesigns.value.length > 0) {
     loadDesign(savedDesigns.value[0])
   }
@@ -80,8 +78,8 @@ onMounted(() => {
 const loadDesign = (design) => {
   if (canvasInstance) {
     canvasInstance.clear()
-    canvasInstance.loadFromJSON(design, () => {
-      canvasInstance.renderAll()  
+    canvasInstance.loadFromJSON(design).then(() => {
+      canvasInstance.renderAll()
       fitCanvasToViewport()
     })
   }
@@ -107,13 +105,14 @@ const fitCanvasToViewport = () => {
 
 const saveCurrentDesign = () => {
   if (canvasInstance) {
-    const currentDesign = canvasInstance.toJSON()  // Get the canvas state as JSON
-    savedDesigns.value.push(currentDesign)  // Push it into the savedDesigns array
-    localStorage.setItem('savedDesigns', JSON.stringify(savedDesigns.value))  // Save it to localStorage
-    isModified.value = false  // Reset modified flag
+    const currentDesign = canvasInstance.toJSON()
+    savedDesigns.value.push(currentDesign)
+    localStorage.setItem('savedDesigns', JSON.stringify(savedDesigns.value))
+    isModified.value = false
   }
 }
 </script>
+
 
 <style scoped>
 .saved-designs {

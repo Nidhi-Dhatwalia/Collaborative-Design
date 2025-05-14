@@ -1,39 +1,36 @@
 import { ref } from 'vue';
-
+import * as fabric from "fabric";
+ 
 const saveCanvasState = (canvas) => {
   if (!canvas) return;
 
-  // Get the current state of the canvas
-  const currentState = canvas.toJSON();
+  // Get the current state of the canvas as a JSON object
+  const currentState = canvas.toJSON(); 
 
-  // Save state to localStorage for persistence
   localStorage.setItem("savedDesign", JSON.stringify(currentState));
 };
 
 const loadCanvasState = (canvas) => {
-  if (!canvas) return;
-
-  // Retrieve the saved canvas state from localStorage
+  if (!canvas) return; 
   const savedState = localStorage.getItem("savedDesign");
   if (savedState) {
-    const parsedState = JSON.parse(savedState);
-    canvas.loadFromJSON(parsedState, () => {
-      canvas.renderAll(); // Re-render the canvas after loading the saved state
+    const parsedState = JSON.parse(savedState); 
+    canvas.loadFromJSON(parsedState, () => { 
+      canvas.renderAll();
     });
   }
 };
 
-export const useCanvasUtils = () => {
+export const useCanvasUtils = () => { 
   const saveState = (canvas) => {
     saveCanvasState(canvas);
-  };
-
+  }; 
   const loadState = (canvas) => {
     loadCanvasState(canvas);
   };
 
   return {
-    saveState, // Function to save the canvas state
-    loadState, // Function to load the saved canvas state
+    saveState,  
+    loadState,  
   };
 };

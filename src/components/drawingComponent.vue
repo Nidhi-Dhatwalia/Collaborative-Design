@@ -42,7 +42,6 @@ import { ref } from "vue";
  
 const emit = defineEmits();
 
- 
 const lineColor = ref("#000000");
 const lineWeight = ref(2);
 const dialog = ref(true);

@@ -1,8 +1,11 @@
 <template>
   <v-app>
     <v-app-bar color="black lighten-4">
-      <v-toolbar-title class="text-h4" style="color: white">Collabie</v-toolbar-title>
+      <v-toolbar-title class="text-h4" style="color: white">
+        Collabie
+      </v-toolbar-title>
     </v-app-bar>
+
     <v-main>
       <input
         type="file"
@@ -49,92 +52,134 @@
   </v-app>
 </template>
 
+
 <script setup>
 import { ref, onMounted } from 'vue';
-import { db } from '../firebase';
-import { useGlobalCanvas } from '@/composables/globalCanvas';
-import { useCanvasUtils } from '@/utils/canvasUtils';
+import * as fabric  from "fabric"; 
+import { db } from '../firebase'; 
+import { useGlobalCanvas } from '@/composables/globalCanvas'; 
 import { useDesignUtils } from '@/utils/designUtils';
 import { useDrawingUtils } from '@/utils/drawingUtils';
-import { useImageUtils } from '../utils/imageUtils';
+import { useImageUtils } from '@/utils/imageUtils';
 import elementsPage from '../components/elementsPage.vue';
 import drawingComponent from '../components/drawingComponent.vue';
 import { ref as firebaseRef, set, onValue } from 'firebase/database';
+ 
 
-let isDataLoadingFromFirebase = false; // global flag
+const { canvas, initCanvas } = useGlobalCanvas(); 
+const { toggleMode, drawingMode, applySettings } = useDrawingUtils();
 
-// Sync Canvas to Firebase
+const showShapesMenu = ref(false);
+const isDrawingMode = ref(false);
+const imageInput = ref(null);
+const isCanvasReady = ref(false);
+
+let isDataLoadingFromFirebase = false;
+
+// Save data to Firebase
 const syncCanvasWithFirebase = (canvasState) => {
-  if (isDataLoadingFromFirebase) return; // Prevent syncing while loading
-  const canvasRef = firebaseRef(db, 'canvasDesigns');
-
-  set(canvasRef, canvasState)
-    .then(() => console.log('Canvas data saved to Firebase.'))
-    .catch((error) => console.error('Firebase save error:', error));
-};
-
-// Save the Canvas state
-const saveCanvasState = () => {
-  if (!canvas.value || isDataLoadingFromFirebase) {
-    console.log("Skipping saveCanvasState due to loading phase");
+  if (isDataLoadingFromFirebase) { 
     return;
   }
 
-  console.log("Saving canvas to Firebase...");
-  const canvasState = canvas.value.toJSON();
-  syncCanvasWithFirebase(canvasState);
+  const canvasRef = firebaseRef(db, 'canvasDesigns');
+  set(canvasRef, canvasState)
+    .then(() => {
+      console.log('Canvas data saved to Firebase.');
+    })
+    .catch((error) => {
+      console.error('Error saving canvas to Firebase:', error);
+    });
 };
 
-// Load Canvas from Firebase
+// Remove undefined values from the canvas state
+const removeUndefined = (obj) => {
+  if (Array.isArray(obj)) {
+    return obj.map(removeUndefined);
+  } else if (typeof obj === 'object' && obj !== null) {
+    const cleaned = {};
+    for (const key in obj) {
+      if (obj[key] !== undefined) {
+        cleaned[key] = removeUndefined(obj[key]);
+      }
+    }
+    return cleaned;
+  }
+  return obj;
+};
+
+// Save Canvas Data  
+const saveCanvasState = () => {
+  if (!canvas.value) {
+    console.warn("Canvas is not initialized. Skipping save.");
+    return;
+  }
+  const rawCanvasState = canvas.value.toJSON();
+  const cleanedState = removeUndefined(rawCanvasState);
+  syncCanvasWithFirebase(cleanedState);
+};
+
+// Load Data from Firebase
 const loadCanvasFromFirebase = () => {
   const canvasRef = firebaseRef(db, 'canvasDesigns');
+  console.log("Loading canvas data from Firebase...");
 
   onValue(canvasRef, (snapshot) => {
-    if (snapshot.exists() && canvas.value) {
+    if (snapshot.exists()) {
       const canvasData = snapshot.val();
-      console.log("Canvas data exists:", canvasData);
+
+      console.log("Firebase data received:", canvasData);
+
+      if (!canvas.value) {
+        console.error("canvas.value is NULL before load");
+        isDataLoadingFromFirebase = false;
+        return;
+      }
 
       isDataLoadingFromFirebase = true;
 
-      // Temporarily disable event triggers
-      canvas.value.off('object:added', saveCanvasState);
-      canvas.value.off('object:modified', saveCanvasState);
-      canvas.value.off('object:removed', saveCanvasState);
+      const timeout = setTimeout(() => {
+        console.warn("loadFromJSON callback NOT triggered in 2s, resetting flag manually");
+        isDataLoadingFromFirebase = false;
+      }, 2000);
 
-      canvas.value.loadFromJSON(canvasData, () => {
-        canvas.value.renderAll();
-        console.log("Canvas loaded from Firebase");
+      // Ensure the data is properly structured
+      if (canvasData && canvasData.objects) {
+        canvas.value.loadFromJSON(canvasData, () => {
+          clearTimeout(timeout);
+          console.log("loadFromJSON callback triggered");
 
-        // Re-enable after short delay to avoid unwanted triggering
-        setTimeout(() => {
-          canvas.value.on('object:added', saveCanvasState);
-          canvas.value.on('object:modified', saveCanvasState);
-          canvas.value.on('object:removed', saveCanvasState);
+          setTimeout(() => {
+            canvas.value.renderAll(); 
 
-          // Reset the loading flag after the canvas is loaded
-          isDataLoadingFromFirebase = false;
-        }, 200);
-      });
+            setTimeout(() => {
+              // Ensure events are set after render
+              canvas.value.on('object:added', saveCanvasState);
+              canvas.value.on('object:modified', saveCanvasState);
+              canvas.value.on('object:removed', saveCanvasState);
+
+              isDataLoadingFromFirebase = false;
+              console.log("Canvas fully loaded. Flag reset:", isDataLoadingFromFirebase);
+            }, 100);
+          }, 200);
+        });
+      }  
+    } else {
+      console.log("Firebase: No canvas data found");
+      isDataLoadingFromFirebase = false;
     }
   });
 };
 
-// Initialize Canvas using custom hook
-const { canvas, initCanvas } = useGlobalCanvas(); 
-const { uploadCanvas, createNew } = useDesignUtils();
-const { toggleMode, drawingMode, applySettings } = useDrawingUtils();
-const { triggerImageUpload, saveCanvasToLocalStorage, saveCanvasAsImage } = useImageUtils(canvas, saveCanvasState);
-
-const savedDesigns = ref([]);
-const showShapesMenu = ref(false);
-const isDrawingMode = ref(false);
-const imageInput = ref(null);
-
 // Toggle shapes menu visibility
-const toggleShapesMenu = () => showShapesMenu.value = !showShapesMenu.value;
+const toggleShapesMenu = () => (showShapesMenu.value = !showShapesMenu.value);
 
 // Download canvas as an image
 const downloadCanvas = () => {
+  if (!canvas.value) {
+    console.warn("Canvas is not initialized. Cannot download.");
+    return;
+  }
   const dataUrl = canvas.value.toDataURL({ format: 'png', quality: 1 });
   const link = document.createElement('a');
   link.href = dataUrl;
@@ -142,7 +187,7 @@ const downloadCanvas = () => {
   link.click();
 };
 
-// Create a new design by clearing the canvas
+// Create a new design  
 const createNewDesign = () => {
   canvas.value.off('object:added');
   canvas.value.off('object:modified');
@@ -155,72 +200,59 @@ const createNewDesign = () => {
   canvas.value.on('object:removed', saveCanvasState);
 };
 
-// Toggle Drawing Mode
+// Toggle drawing mode
 const toggleDrawingModeHandler = () => {
+  if (!canvas.value) {
+    console.warn("Canvas is not initialized. Cannot toggle drawing mode.");
+    return;
+  }
   toggleMode(canvas.value, setCanvasCursor);
   isDrawingMode.value = !isDrawingMode.value;
 };
 
-// Handle drawing settings
-const handleDrawingSettings = (settings) => applySettings(canvas.value, settings);
+// Set cursor for drawing mode
+const setCanvasCursor = () => {
+  if (!canvas.value) {
+    console.warn("Canvas is not initialized. Cannot set cursor.");
+    return;
+  }
+  canvas.value.defaultCursor = canvas.value.isDrawingMode ? 'crosshair' : 'default';
+};
 
-// Upload current canvas design
+// Apply drawing settings to the canvas
+const handleDrawingSettings = (settings) => {
+  if (!canvas.value) {
+    console.warn("Canvas is not initialized. Cannot apply drawing settings.");
+    return;
+  }
+  applySettings(canvas.value, settings);
+};
+
+const {
+  triggerImageUpload, 
+} = useImageUtils(canvas);
+
+// Upload the design to local storage
 const upload = () => {
-  canvas.value.off('object:added');
-  canvas.value.off('object:modified');
-  canvas.value.off('object:removed');
+  if (!canvas.value) {
+    console.warn("Canvas is not initialized. Cannot upload.");
+    return;
+  }
   const designData = canvas.value.toJSON();
   const localDesigns = JSON.parse(localStorage.getItem('savedDesigns')) || [];
   localDesigns.push(designData);
   localStorage.setItem('savedDesigns', JSON.stringify(localDesigns));
   canvas.value.clear();
-  canvas.value.on('object:added', saveCanvasState);
-  canvas.value.on('object:modified', saveCanvasState);
-  canvas.value.on('object:removed', saveCanvasState);
 };
 
-const actions = {
-  createNewDesign,
-  toggleShapesMenu,
-  toggleDrawingModeHandler,
-  downloadCanvas,
-  triggerImageUpload,
-  upload,
-};
-
-// Mounted lifecycle hook to initialize canvas and load data from Firebase
-onMounted(() => {
-  const initializedCanvas = initCanvas();
-  canvas.value = initializedCanvas;
-
-  initializedCanvas.on('mouse:up', () => {
-    if (initializedCanvas.isDrawingMode) {
-      initializedCanvas.isDrawingMode = false;
-      setCanvasCursor();
-      setCanvasSelectionState();
-    }
-  });
-
-  loadCanvasFromFirebase();
-
-  initializedCanvas.on('after:render', () => canvas.value.isInitialized = true);
-  initializedCanvas.on('object:added', saveCanvasState);
-  initializedCanvas.on('object:modified', saveCanvasState);
-  initializedCanvas.on('object:removed', saveCanvasState);
-});
-
-// Set the cursor style based on drawing mode
-const setCanvasCursor = () => canvas.value.defaultCursor = canvas.value.isDrawingMode ? 'crosshair' : 'default';
-
-// Set selection state based on drawing mode
-const setCanvasSelectionState = () => canvas.value.selection = !canvas.value.isDrawingMode;
-
-// Handle actions from the navigation menu
+// Handle action based on menu item
 const handleAction = (item) => {
-  if (item.actionType === 'function' && typeof item.action === 'function') item.action();
+  if (item.actionType === 'function' && typeof item.action === 'function') {
+    item.action();
+  }
 };
 
-// Icons and actions for the navigation menu
+// Icons list for the menu
 const iconsList = ref([
   { icon: 'mdi-home', label: 'Home', actionType: 'route', action: '/dashboard' },
   { icon: 'mdi-plus', label: 'New Design', actionType: 'function', action: createNewDesign },
@@ -231,6 +263,36 @@ const iconsList = ref([
   { icon: 'mdi-content-save', label: 'Saved Designs', actionType: 'route', action: '/save' },
   { icon: 'mdi-download', label: 'Download', actionType: 'function', action: downloadCanvas },
 ]);
+
+onMounted(() => {
+  const initializedCanvas = initCanvas();
+  if (!initializedCanvas) {
+    console.error('Canvas initialization failed.');
+    return;
+  }
+  console.log('Canvas initialized:', initializedCanvas);
+  canvas.value = initializedCanvas;
+  isCanvasReady.value = true;
+
+  canvas.value.setWidth(800);
+  canvas.value.setHeight(600);
+  canvas.value.renderAll();
+
+  loadCanvasFromFirebase();
+
+  // Event listeners for object modifications on the canvas
+  canvas.value.on('object:added', (e) => { 
+    saveCanvasState();
+  });
+
+  canvas.value.on('object:modified', (e) => { 
+    saveCanvasState();
+  });
+
+  canvas.value.on('object:removed', (e) => { 
+    saveCanvasState();
+  });
+});
 </script>
 
 <style scoped>
