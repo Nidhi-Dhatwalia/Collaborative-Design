@@ -62,11 +62,11 @@
 </template>
 
 <script setup>
-import plans from '../components/dashboard/plans.vue';
-import features from '../components/dashboard/features.vue';
-import featureReadyToPrint from '../components/dashboard/featureReadyToPrint.vue';
-import getStarted from '../components/dashboard/getStarted.vue';
-import footerPage from './dashboard/footerPage.vue';
+import plans from '../dashboard/plans.vue';
+import features from  '../dashboard/features.vue';
+import featureReadyToPrint from  '../dashboard/featureReadyToPrint.vue';
+import getStarted from '../dashboard/getStarted.vue';
+import footerPage from '../dashboard/footerPage.vue';
 
 const buttons = [
   { label: "Pricing", route: "/plans", class: "custom-btn" },

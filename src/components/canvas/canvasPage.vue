@@ -56,13 +56,13 @@
 <script setup>
 import { ref, onMounted } from 'vue';
 import * as fabric  from "fabric"; 
-import { db } from '../firebase'; 
+import { db } from '@/firebase.js';
 import { useGlobalCanvas } from '@/composables/globalCanvas'; 
 import { useDesignUtils } from '@/utils/designUtils';
 import { useDrawingUtils } from '@/utils/drawingUtils';
 import { useImageUtils } from '@/utils/imageUtils';
-import elementsPage from '../components/elementsPage.vue';
-import drawingComponent from '../components/drawingComponent.vue';
+import elementsPage from '../canvas/elementsPage.vue';
+import drawingComponent from '../canvas/drawingComponent.vue';
 import { ref as firebaseRef, set, onValue } from 'firebase/database';
  
 
@@ -137,20 +137,27 @@ const loadCanvasFromFirebase = () => {
       }
 
       isDataLoadingFromFirebase = true;
+      let timeoutTriggered = false;
 
       const timeout = setTimeout(() => {
-        console.warn("loadFromJSON callback NOT triggered in 2s, resetting flag manually");
+        console.warn("loadFromJSON callback NOT triggered in 3s, resetting flag manually");
         isDataLoadingFromFirebase = false;
-      }, 2000);
+        timeoutTriggered = true;
+      }, 3000);
 
       // Ensure the data is properly structured
       if (canvasData && canvasData.objects) {
         canvas.value.loadFromJSON(canvasData, () => {
-          clearTimeout(timeout);
+          if (!timeoutTriggered) {
+            clearTimeout(timeout);
+          } else {
+            console.warn("Callback triggered after timeout!");
+          }
+
           console.log("loadFromJSON callback triggered");
 
           setTimeout(() => {
-            canvas.value.renderAll(); 
+            canvas.value.renderAll();
 
             setTimeout(() => {
               // Ensure events are set after render
@@ -161,7 +168,7 @@ const loadCanvasFromFirebase = () => {
               isDataLoadingFromFirebase = false;
               console.log("Canvas fully loaded. Flag reset:", isDataLoadingFromFirebase);
             }, 100);
-          }, 200);
+          }, 100);
         });
       }  
     } else {
@@ -170,6 +177,7 @@ const loadCanvasFromFirebase = () => {
     }
   });
 };
+
 
 // Toggle shapes menu visibility
 const toggleShapesMenu = () => (showShapesMenu.value = !showShapesMenu.value);

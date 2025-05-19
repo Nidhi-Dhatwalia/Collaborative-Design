@@ -14,9 +14,9 @@ const handleDrawingSettings = (canvas, settings) => {
   canvas.isDrawingMode = true;
   canvas.freeDrawingBrush.color = settings.color || 'black';
   canvas.freeDrawingBrush.width = settings.weight || 12;
-  canvas.freeDrawingBrush.fill = 'transparent';
-  console.log("Brush fill color is set to:", canvas.freeDrawingBrush.fill);
-
+ canvas.freeDrawingBrush.fill = 'transparent';
+  
+ console.log("Brush fill color:", canvas.freeDrawingBrush.fill);
   setCanvasCursor(canvas);
 };
 

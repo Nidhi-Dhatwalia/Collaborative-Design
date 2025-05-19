@@ -1,13 +1,13 @@
  
 import { createRouter, createWebHistory } from 'vue-router'
-import dashboardPage from './components/dashboardPage.vue';
-import canvasPage from './components/canvasPage.vue';
-import savedDesign from './components/savedDesign.vue';
-import resumeTemplate from './components/resumeTemplate.vue';
+import dashboardPage from './components/dashboard/dashboardPage.vue';
+import canvasPage from './components/canvas/canvasPage.vue';
+import savedDesign from './components/canvas/savedDesign.vue';
+import resumeTemplate from './components/resumeTemplate/resumeTemplate.vue';
 import ModernResume from './components/resumeTemplate/ModernResume.vue';
 import ProfessionalResume from './components/resumeTemplate/ProfessionalResume.vue';
 import MinimalistResume from  './components/resumeTemplate/MinimalistResume.vue';
-import excelSheet from './components/excelSheet.vue';
+import excelSheet from './components/canvas/excelSheet.vue';
 import loginPage from './components/login/loginPage.vue';
  
 

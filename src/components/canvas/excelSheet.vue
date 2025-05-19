@@ -47,9 +47,9 @@
 
 <script setup>
 import { ref, onMounted, watch } from "vue";
-import { db } from "../firebase";
+import { db } from '@/firebase';
 import { ref as dbRef, set, onValue } from "firebase/database";
-import sideBar from "../composables/sideBar.vue";
+import sideBar from '@/composables/sideBar.vue';
 
 // Spreadsheet config
 const rows = 50;

@@ -61,8 +61,8 @@
 import { ref, onMounted, watch } from 'vue';
 import * as fabric from 'fabric';
 
-import { useGlobalCanvas } from '../composables/globalCanvas';
-import textSettings from '../components/textSettings.vue';
+import { useGlobalCanvas } from '@/composables/globalCanvas';
+import textSettings from '../dashboard/dashboardPage.vue';
 
  
 const { canvas, initCanvas } = useGlobalCanvas();
