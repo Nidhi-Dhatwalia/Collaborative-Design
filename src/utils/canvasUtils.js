@@ -1,5 +1,4 @@
-import { ref } from 'vue';
-import * as fabric from "fabric";
+import { ref } from 'vue'; 
  
 const saveCanvasState = (canvas) => {
   if (!canvas) return;

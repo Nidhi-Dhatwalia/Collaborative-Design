@@ -58,11 +58,10 @@
 </template>
 
 <script setup>
-import { ref, onMounted, watch } from 'vue';
-import * as fabric from 'fabric';
+import { ref, onMounted, watch } from 'vue'; 
 
 import { useGlobalCanvas } from '@/composables/globalCanvas';
-import textSettings from '../dashboard/dashboardPage.vue';
+import textSettings from '../canvas/textSettings.vue';
 
  
 const { canvas, initCanvas } = useGlobalCanvas();

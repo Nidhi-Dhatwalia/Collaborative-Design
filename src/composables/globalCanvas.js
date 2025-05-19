@@ -1,5 +1,4 @@
-import { ref, onMounted } from "vue"; 
-import * as fabric  from "fabric";  
+import { ref, onMounted } from "vue";  
 
 const canvas = ref(null);
 

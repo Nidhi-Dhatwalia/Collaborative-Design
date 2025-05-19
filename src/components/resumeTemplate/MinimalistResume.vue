@@ -24,7 +24,7 @@
     <v-row>
       <v-col cols="12">
         <v-divider></v-divider>
-        <v-text class="editable-section-title">Experience</v-text>
+        <span class="editable-section-title">Experience</span>   
         <v-divider></v-divider>
         <v-card class="experience-item">
           <v-text-field
@@ -48,7 +48,7 @@
     <v-row>
       <v-col cols="12">
         <v-divider></v-divider>
-        <v-text class="editable-section-title">Skills</v-text>
+        <span class="editable-section-title">Skills</span>  
         <v-divider></v-divider>
         <v-textarea
           v-model="skills"
@@ -67,9 +67,11 @@
     </v-row>
 
     <v-row>
-      <v-btn @click="goBack" color="primary" outlined class="back-btn">
-        Back
-      </v-btn>
+      <router-link to="/resume">
+        <v-btn color="primary" outlined class="back-btn">
+          Back
+        </v-btn>
+      </router-link>
     </v-row>
   </v-container>
 </template>
@@ -139,9 +141,7 @@ const downloadResume = () => {
   doc.save('resume.pdf');
 };
 
-function goBack() {
-  window.history.back();  
-}
+ 
 </script>
 
 <style scoped>

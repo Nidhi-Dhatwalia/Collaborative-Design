@@ -67,8 +67,7 @@
 </template>
 
 <script setup>
-import { ref, computed } from 'vue';
-import * as fabric from 'fabric';
+import { ref, computed } from 'vue'; 
 
 const emit = defineEmits(['apply', 'close']);
 

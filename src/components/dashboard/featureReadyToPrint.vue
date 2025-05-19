@@ -9,7 +9,6 @@
         Design and print your own posters, invites, cards and more.
          Everything you design in Canva is ready to send to the printer, or to print from home.
         </p>
-
         <div class="button-group">
           <v-btn color="primary" class="btn">Start Designing</v-btn>
           <v-btn color="secondary" class="btn">Browse Printables </v-btn>

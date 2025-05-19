@@ -23,7 +23,7 @@
 
     <v-row>
       <v-col cols="12"> 
-        <v-text class="editable-section-title">Experience</v-text>
+        <span class="editable-section-title">Experience</span>
         <v-card class="experience-item">
           <v-text-field
             v-model="experience.position"
@@ -49,13 +49,14 @@
       </v-btn>
     </v-row>
     <v-row>
-      <v-btn @click="goBack" color="primary" outlined class="back-btn">
-        Back
-      </v-btn>
+         <router-link to="/resume">
+        <v-btn color="primary" outlined class="back-btn">
+          Back
+        </v-btn>
+      </router-link>
     </v-row>
   </v-container>
 </template>
-
 
 <script setup>
 import { ref } from "vue";
@@ -103,10 +104,7 @@ const downloadResume = () => {
 
   doc.save('resume.pdf');  
 };
-
-function goBack() {
-  window.history.back();  
-}
+ 
 </script>
 
 <style scoped>

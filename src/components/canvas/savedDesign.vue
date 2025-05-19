@@ -8,7 +8,6 @@
         </p>
       </v-col>
     </v-row>
-
     <v-row justify="center" class="design-preview">
       <v-col cols="12" md="10">
         <v-card elevation="3" class="pa-3">
@@ -44,8 +43,7 @@
   </v-container>
 </template>
 <script setup>
-import { ref, onMounted } from 'vue'
-import { Canvas } from 'fabric' 
+import { ref, onMounted } from 'vue' 
 
 let canvasInstance = null
 const savedDesigns = ref([])  

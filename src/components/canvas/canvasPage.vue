@@ -44,7 +44,7 @@
 
         <div class="dashboard-container">
           <div class="canvas-wrapper">
-            <canvas id="my-canvas" width="600" height="500"></canvas>
+            <canvas id="my-canvas"></canvas>
           </div>
         </div>
       </v-container>
@@ -54,15 +54,14 @@
 
 
 <script setup>
-import { ref, onMounted } from 'vue';
-import * as fabric  from "fabric"; 
+import { ref, onMounted } from 'vue'; 
 import { db } from '@/firebase.js';
 import { useGlobalCanvas } from '@/composables/globalCanvas'; 
 import { useDesignUtils } from '@/utils/designUtils';
 import { useDrawingUtils } from '@/utils/drawingUtils';
 import { useImageUtils } from '@/utils/imageUtils';
 import elementsPage from '../canvas/elementsPage.vue';
-import drawingComponent from '../canvas/drawingComponent.vue';
+import drawingComponent from '../canvas/drawingComponent.vue'
 import { ref as firebaseRef, set, onValue } from 'firebase/database';
  
 
@@ -157,9 +156,7 @@ const loadCanvasFromFirebase = () => {
           console.log("loadFromJSON callback triggered");
 
           setTimeout(() => {
-            canvas.value.renderAll();
-
-            setTimeout(() => {
+            canvas.value.renderAll(); 
               // Ensure events are set after render
               canvas.value.on('object:added', saveCanvasState);
               canvas.value.on('object:modified', saveCanvasState);
@@ -168,7 +165,7 @@ const loadCanvasFromFirebase = () => {
               isDataLoadingFromFirebase = false;
               console.log("Canvas fully loaded. Flag reset:", isDataLoadingFromFirebase);
             }, 100);
-          }, 100);
+      
         });
       }  
     } else {

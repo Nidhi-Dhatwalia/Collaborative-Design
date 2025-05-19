@@ -1,6 +1,4 @@
-import { ref } from 'vue';
-import * as fabric from 'fabric';
-
+import { ref } from 'vue'; 
 const handleDrawingSettings = (canvas, settings) => {
   if (!settings) {
     console.warn("No drawing settings provided.");
