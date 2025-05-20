@@ -16,7 +16,7 @@
       </div>
       
       <v-img
-        src="src/assets/ready-to-print.jpg"
+        src="@/assets/ready-to-print.jpg"
         alt="Team Collaboration"
         max-height="400"
          

@@ -4,13 +4,13 @@
     <div class="content-wrapper">
  
       <v-img
-  :src="require('@/assets/team_collaboration.jpg')"
-  alt="Team Collaboration"
-  max-height="400"
-  contain
-  class="feature-image"
-/>
-
+        src="remoteCollaborationImg"
+        alt="Team Collaboration"
+        max-height="400"
+         
+        contain
+        class="feature-image" 
+      ></v-img>
 
   
       <div class="text-section">
@@ -29,6 +29,10 @@
     </div>
   </div>
 </template>
+
+<script setup>
+import remoteCollaborationImg from '@/assets/remote-collaboration.jpg'
+</script>
 
 <style scoped>
 .features-container { 

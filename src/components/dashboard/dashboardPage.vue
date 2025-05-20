@@ -15,7 +15,7 @@
       <v-container fluid class="inner-container">
         <v-sheet height="100vh" color="white" class="custom-sheet">
           <v-img
-            src="src/assets/remote-collaboration.jpg"
+            src="@/assets/remote-collaboration.jpg"
             alt="Image description"
             max-height="400"
             width="100%"
