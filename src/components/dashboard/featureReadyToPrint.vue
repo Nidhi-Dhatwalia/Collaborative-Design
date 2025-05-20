@@ -16,7 +16,7 @@
       </div>
       
       <v-img
-        src="@/assets/ready-to-print.jpg"
+        :src="readyToPrint"
         alt="Team Collaboration"
         max-height="400"
          
@@ -28,6 +28,11 @@
     
   </div>
 </template>
+
+<script setup>
+import readyToPrint from '@/assets/ready-to-print.jpg'
+</script>
+
 
 <style scoped>
 .features-container { 

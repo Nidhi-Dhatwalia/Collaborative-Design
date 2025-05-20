@@ -4,7 +4,7 @@
     <div class="content-wrapper">
  
       <v-img
-        src="remoteCollaborationImg"
+        :src="remoteCollaborationImg"
         alt="Team Collaboration"
         max-height="400"
          

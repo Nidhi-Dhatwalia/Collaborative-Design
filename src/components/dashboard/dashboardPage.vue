@@ -15,7 +15,7 @@
       <v-container fluid class="inner-container">
         <v-sheet height="100vh" color="white" class="custom-sheet">
           <v-img
-            src="@/assets/remote-collaboration.jpg"
+            :src="remoteCollaboration"
             alt="Image description"
             max-height="400"
             width="100%"
@@ -62,6 +62,9 @@
 </template>
 
 <script setup>
+import remoteCollaboration from '@/assets/remote-collaboration.jpg'
+
+
 import plans from '../dashboard/plans.vue';
 import features from  '../dashboard/features.vue';
 import featureReadyToPrint from  '../dashboard/featureReadyToPrint.vue';
