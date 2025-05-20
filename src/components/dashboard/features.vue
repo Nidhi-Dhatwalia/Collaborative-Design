@@ -4,13 +4,13 @@
     <div class="content-wrapper">
  
       <v-img
-        src="src/assets/team_collaboration.jpg"
-        alt="Team Collaboration"
-        max-height="400"
-         
-        contain
-        class="feature-image" 
-      ></v-img>
+  :src="require('@/assets/team_collaboration.jpg')"
+  alt="Team Collaboration"
+  max-height="400"
+  contain
+  class="feature-image"
+/>
+
 
   
       <div class="text-section">
