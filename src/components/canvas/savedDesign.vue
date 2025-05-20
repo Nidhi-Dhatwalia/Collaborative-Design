@@ -43,19 +43,21 @@
   </v-container>
 </template>
 <script setup>
-import { ref, onMounted } from 'vue' 
+import { ref, onMounted } from 'vue'
 
 let canvasInstance = null
-const savedDesigns = ref([])  
-const isModified = ref(false)  
+const savedDesigns = ref([])
+const isModified = ref(false)
 
 onMounted(() => {
   const storedDesigns = JSON.parse(localStorage.getItem('savedDesigns')) || []
   savedDesigns.value = storedDesigns
 
   const canvasElement = document.getElementById('preview-canvas')
-  if (canvasElement) {
-    canvasInstance = new Canvas(canvasElement)
+
+ 
+  if (canvasElement && window.fabric) {
+    canvasInstance = new fabric.Canvas(canvasElement)
 
     canvasInstance.on('object:modified', () => {
       isModified.value = true
@@ -68,7 +70,7 @@ onMounted(() => {
     })
   }
 
-  if (savedDesigns.value.length > 0) {
+  if (savedDesigns.value.length > 0 && canvasInstance) {
     loadDesign(savedDesigns.value[0])
   }
 })
@@ -76,7 +78,7 @@ onMounted(() => {
 const loadDesign = (design) => {
   if (canvasInstance) {
     canvasInstance.clear()
-    canvasInstance.loadFromJSON(design).then(() => {
+    canvasInstance.loadFromJSON(design, () => {
       canvasInstance.renderAll()
       fitCanvasToViewport()
     })
@@ -110,6 +112,7 @@ const saveCurrentDesign = () => {
   }
 }
 </script>
+
 
 
 <style scoped>

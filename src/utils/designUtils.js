@@ -19,19 +19,7 @@ const uploadCanvas = (canvas, savedDesigns) => {
 
   canvas.clear();
 };
-
-const downloadCanvas = (canvas) => {
-  const dataURL = canvas.toDataURL({
-    format: "png",
-    quality: 1,
-  });
-
-  const link = document.createElement("a");
-  link.href = dataURL;
-  link.download = "my-canvas.png";
-  link.click();
-};
-
+  
 export const useDesignUtils = () => {
   const savedDesigns = ref([]);
 
@@ -39,13 +27,10 @@ export const useDesignUtils = () => {
     uploadCanvas(canvas, savedDesigns);
   };
 
-  const download = (canvas) => {
-    downloadCanvas(canvas);
-  };
+ 
 
   return {
     savedDesigns,
-    upload,
-    download,
+    upload, 
   };
 };

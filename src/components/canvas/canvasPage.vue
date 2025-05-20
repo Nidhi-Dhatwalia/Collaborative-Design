@@ -286,6 +286,7 @@ onMounted(() => {
   loadCanvasFromFirebase();
 
   // Event listeners for object modifications on the canvas
+ 
   canvas.value.on('object:added', (e) => { 
     saveCanvasState();
   });

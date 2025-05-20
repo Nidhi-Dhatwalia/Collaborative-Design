@@ -65,7 +65,7 @@ import textSettings from '../canvas/textSettings.vue';
 
  
 const { canvas, initCanvas } = useGlobalCanvas();
-const selectedColor = ref('#000000');
+const selectedColor = ref('#000000'); //Set defauult color
 const isObjectSelected = ref(false);
 const showTextDialog = ref(false);
 
@@ -75,7 +75,7 @@ const saveCanvasState = () => {
     const currentState = canvas.value.toJSON();
     const jsonState = JSON.stringify(currentState);
     localStorage.setItem('savedDesign', jsonState);
-    console.log('Canvas saved to localStorage');
+    console.log('Canaved to lvas socalStorage');
   } catch (error) {
     console.error('Error saving canvas state:', error);
   }
@@ -87,6 +87,7 @@ onMounted(() => {
   canvas.value.renderAll();
 
   // Load saved design from localStorage  
+
   const savedDesign = localStorage.getItem('savedDesign');
   if (savedDesign) {
     const savedState = JSON.parse(savedDesign);
@@ -153,7 +154,7 @@ const findEmptyPosition = (width, height) => {
   }
 
   if (attempts >= 100) {
-    console.warn('Unable to find empty position after 100 attempts.');
+  return;
   }
 
   return { x, y };
@@ -250,7 +251,7 @@ const zoomObject = (scaleFactor) => {
     activeObject.scaleY *= scaleFactor;
     activeObject.setCoords();
     canvas.value.renderAll();
-    saveCanvasState();
+   saveCanvasState();
   } else {
     console.warn('No object selected for zoom operation.');
   }
@@ -264,7 +265,7 @@ const zoomOut = () => zoomObject(0.9);
 const editSelected = () => {
   const activeObject = canvas.value.getActiveObject();
   if (activeObject) {
-    activeObject.set({ stroke: 'yellow', strokeWidth: 5 });
+    activeObject.set({ stroke: 'black', strokeWidth: 2 });
     canvas.value.renderAll();
     saveCanvasState();
   }
