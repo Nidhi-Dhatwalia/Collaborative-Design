@@ -1,36 +1,40 @@
 <template>
   <v-app>
-    <sideBar />
-    <v-container fluid class="pa-0">
-      <div class="toolbar">
-        <h2 class="text-h5 font-weight-bold">Excel Style Sheet</h2>
-      </div>
-
-      <div
-        v-if="selectedCell.row !== null && selectedCell.col !== null"
-        class="format-toolbar"
-      >
-        <v-btn
+     <sideBar />
+      <v-app-bar>
+      <v-toolbar fluid class="gradient-toolbar px-6 ">
+        
+      <v-row align="center" justify="space-evenly" >
+      <div class="text-h5 white--text " >Excel Style Sheet </div>
+ 
+      <div>
+         <v-btn
           @click="toggleBold"
-          :color="cellStyles[selectedCell.row]?.[selectedCell.col]?.isBold ? 'primary' : 'secondary'"
+          :color="cellStyles[selectedCell.row]?.[selectedCell.col]?.isBold ? 'black' : 'blue'"
           class="format-btn"
           small
           >Bold</v-btn
         >
+      </div>
+      <div>
         <v-btn
           @click="toggleItalic"
-          :color="cellStyles[selectedCell.row]?.[selectedCell.col]?.isItalic ? 'primary' : 'secondary'"
+          :color="cellStyles[selectedCell.row]?.[selectedCell.col]?.isItalic ? 'black' : 'blue'"
           class="format-btn"
           small
           >Italic</v-btn
         >
+      </div>
+      <div>
         <v-btn
           @click="toggleUnderline"
-          :color="cellStyles[selectedCell.row]?.[selectedCell.col]?.isUnderline ? 'primary' : 'secondary'"
+          :color="cellStyles[selectedCell.row]?.[selectedCell.col]?.isUnderline ? 'black' : 'blue'"
           class="format-btn"
           small
           >Underline</v-btn
         >
+      </div>
+      <div>
         <v-select
           v-model="fontSize"
           :items="fontSizes"
@@ -39,6 +43,8 @@
           class="format-select"
           hide-details
         />
+      </div>
+      <div>
         <v-select
           v-model="alignment"
           :items="alignments"
@@ -47,6 +53,23 @@
           class="format-select"
           hide-details
         />
+      </div><div>
+        <v-btn class="btn-style" text  @click="saveToLocalStorage">Save</v-btn> 
+      </div>
+    </v-row>
+  </v-toolbar>
+    </v-app-bar>
+    <v-container fluid class="pa-0">
+      <div class="toolbar">
+      
+      </div>
+
+      <div
+        v-if="selectedCell.row !== null && selectedCell.col !== null"
+        class="format-toolbar"
+      >
+       
+     
       </div>
 
       <div class="excel-wrapper">
@@ -88,6 +111,8 @@
               @click="selectCell(rowIndex, colIndex)"
               @input="autoSaveCell(rowIndex, colIndex)"
             />
+
+        
           </div>
         </div>
       </div>
@@ -253,15 +278,26 @@ const autoSaveCell = (row, col) => {
 
   set(dbRef(db, `sheetData/${row}/${col}`), value);
 };
+
+const saveToLocalStorage = () => {
+  localStorage.setItem("excelSheetData", JSON.stringify(sheetData.value));
+  localStorage.setItem("excelCellStyles", JSON.stringify(cellStyles.value));
+  alert("Sheet saved locally!");
+};
 </script>
 
 <style scoped>
-html,
-body,
-.v-container {
-  height: 100%;
-  margin: 0;
-  padding: 0;
+ 
+.gradient-toolbar {
+  background: linear-gradient(90deg, #01c2cc, #397dd9,#7a41e6);  
+  color: white;
+
+}
+
+.btn-style{
+  background-color: #d1cbda;
+  color: black;
+  margin-right: 10px;
 }
 .toolbar {
   display: flex;
@@ -274,22 +310,28 @@ body,
 .format-toolbar {
   display: flex;
   gap: 10px;
-  margin: 12px 0 12px 120px;
+  margin: 40px 10px 12px 180px;
   align-items: center;
 }
+
 .format-btn {
   font-size: 14px;
   min-width: 60px;
   height: 32px;
+  background-color: #d1cbda;
+  color: black;
+  font-weight: bold;
 }
+
 .format-select {
   width: 120px;
 }
 .excel-wrapper {
+  margin-top: 30px; 
   height: calc(100vh - 140px);
   overflow: auto;
   border: 1px solid #ccc;
-  margin-left: 120px;
+  margin-left: 140px;
   min-width: 100%;
   box-sizing: border-box;
 }
@@ -320,14 +362,15 @@ body,
   font-family: Arial, sans-serif;
 }
 .row-header {
-  background-color: #ddd;
+  background-color: #dcd6f7;
+ 
   font-weight: bold;
   display: flex;
   align-items: center;
   justify-content: center;
 }
 .col-header {
-  background-color: #ddd;
+  background-color: #dcd6f7;
   font-weight: bold;
   display: flex;
   align-items: center;

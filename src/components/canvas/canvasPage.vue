@@ -2,9 +2,17 @@
 <template>
   <v-app>
     <v-app-bar color="black lighten-4">
-      <v-toolbar-title class="text-h4" style="color: white">
-        Collabie
-      </v-toolbar-title>
+      <v-toolbar flat class="gradient-toolbar px-4 py-2">
+    <v-row align="center" justify="space-between" class="w-100">
+    
+      <div class="text-h5 white--text pl-10" >Collabie</div>
+ 
+      <div>
+        <v-btn class="btn-style" text  @click="upload">Save</v-btn>
+        <v-btn class="btn-style" text @click="downloadCanvas">Download</v-btn>
+      </div>
+    </v-row>
+  </v-toolbar>
     </v-app-bar>
 
     <v-main>
@@ -45,7 +53,8 @@
 
         <v-container fluid class="canvas-container">
           <div class="canvas-wrapper">
-            <canvas id="my-canvas" width="600" height="500"></canvas>
+            <canvas id="my-canvas" width="1000" height="600"></canvas>
+            
           </div>
         </v-container>
       </v-container>
@@ -75,6 +84,9 @@ const imageInput = ref(null);
 const isCanvasReady = ref(false);
 
 let isDataLoadingFromFirebase = false;
+
+
+
 
 // Save data to Firebase
 const syncCanvasWithFirebase = (canvasState) => {
@@ -269,6 +281,7 @@ const handleDrawingSettings = (settings) => {
     return;
   }
   applySettings(canvas.value, settings);
+  
 };
 
 const {
@@ -277,12 +290,18 @@ const {
 
 // Upload the design to local storage
 const upload = () => {
+  canvas.value.off('object:added');
+  canvas.value.off('object:modified');
+  canvas.value.off('object:removed');
   const designData = canvas.value.toJSON();
   const localDesigns = JSON.parse(localStorage.getItem('savedDesigns')) || [];
   localDesigns.push(designData);
   localStorage.setItem('savedDesigns', JSON.stringify(localDesigns));
   canvas.value.clear();
-  canvas.value.renderAll();
+  canvas.value.on('object:added', saveCanvasState);
+  canvas.value.on('object:modified', saveCanvasState);
+  canvas.value.on('object:removed', saveCanvasState);
+  exitDrawingMode();
 };
 
 // Handle action based on menu item
@@ -291,17 +310,22 @@ const handleAction = (item) => {
     item.action();
   }
 };
+const exitDrawingMode = () => {
+  if (!canvas.value) return;
+  canvas.value.isDrawingMode = false;
+  canvas.value.defaultCursor = 'default';
+  isDrawingMode.value = false;
+};
+
 
 // Icons list for the menu
 const iconsList = ref([
   { icon: 'mdi-home', label: 'Home', actionType: 'route', action: '/dashboard' },
   { icon: 'mdi-file-plus', label: 'New Design', actionType: 'function', action: createNewDesign },
   { icon: 'mdi-shape', label: 'Shapes', actionType: 'function', action: toggleShapesMenu },
-  { icon: 'mdi-pencil', label: 'Draw', actionType: 'function', action: toggleDrawingModeHandler },
-  { icon: 'mdi-cloud-upload', label: 'Save', actionType: 'function', action: upload },
+  { icon: 'mdi-pencil', label: 'Draw', actionType: 'function', action: toggleDrawingModeHandler }, 
   { icon: 'mdi-image', label: 'Media', actionType: 'function', action: triggerImageUpload },
-  { icon: 'mdi-content-save', label: 'Saved Designs', actionType: 'route', action: '/save' },
-  { icon: 'mdi-download', label: 'Download', actionType: 'function', action: downloadCanvas },
+  { icon: 'mdi-content-save', label: 'Saved Designs', actionType: 'route', action: '/save' }, 
 ]);
 
 onMounted(() => {
@@ -331,18 +355,45 @@ onMounted(() => {
   canvas.value.on('object:removed', (e) => { 
     saveCanvasState();
   });
+
+
+  
 });
 </script>
 
 <style scoped>
 .v-main {
   height: 100vh;
+  overflow: hidden;
+}
+.gradient-toolbar {
+  background: linear-gradient(90deg, #01c2cc, #397dd9,#7a41e6); 
+  color: white;
 }
 
-.v-container {
-  flex: 1;
-  height: 100%;
+.btn-style{
+  background-color: #d1cbda;
+  color: black;
+  margin-right: 10px;
+}
+.main-container {
   display: flex;
+  height: 100%;
+  flex-wrap: nowrap;
+}
+
+.nav-list-left {
+  padding-top: 10px;
+}
+
+.nav-list-item-action,
+.nav-link {
+  cursor: pointer;
+}
+
+.nav-link {
+  text-decoration: none;
+  color: inherit;
 }
 
 .v-list-item {
@@ -355,30 +406,109 @@ onMounted(() => {
 }
 
 .canvas-container {
+  flex: 1;
   display: flex;
   justify-content: center;
   align-items: center;
-  width: 100%;
   height: 100%;
+  padding: 10px;
+  overflow: auto;
 }
 
 .canvas-wrapper {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  border: 1px solid #ccc;
-  background-color: white;
-  padding: 10px;
+  border: 1px solid black;
+  max-width: 100%;
+  width: 1000px;
+  height: auto;
+  margin-top: 40px;
 }
 
 canvas#my-canvas {
-  max-width: 100%;
+  width: 100%;
+  height: auto;
   max-height: 600px;
+  display: block;
+  margin: 0 auto;
 }
 
-.v-navigation-drawer {
-  position: relative;
-  margin: 20px 0px;
+ 
+.v-navigation-drawer:first-of-type {
+  width: 150px !important;
+  position: relative;   
+  margin: 20px 0;
+}
+
+.v-navigation-drawer:nth-of-type(2) {
+  width: 100px !important;
+}
+ 
+@media (max-width: 1024px) {
+  .v-navigation-drawer:first-of-type {
+    width: 120px !important;
+    margin: 10px 0;  
+  }
+  .v-navigation-drawer:nth-of-type(2) {
+    width: 80px !important;
+  }
+
+  .canvas-wrapper {
+    width: 800px;
+    margin-top: 20px;
+  }
+}
+
+ 
+@media (max-width: 600px) {
+  .main-container {
+    flex-direction: column;
+    height: auto;
+  }
+
+ 
+  .v-navigation-drawer:nth-of-type(2) {
+    display: none !important;
+  }
+ 
+  .v-navigation-drawer:first-of-type {
+    width: 100% !important;
+    height: 50px !important;
+    margin: 0;
+    flex-shrink: 0;
+    position: fixed !important;
+    top: 0;
+    left: 0;
+    flex-direction: row !important;
+    overflow-x: auto;
+    display: flex !important;
+    align-items: center;
+    padding-left: 10px;
+    z-index: 1000;
+  }
+
+ 
+  .v-navigation-drawer:first-of-type .v-list {
+    display: flex !important;
+    flex-direction: row !important;
+    width: 100%;
+    padding: 0;
+    margin: 0;
+  }
+
+ 
+  .v-navigation-drawer:first-of-type .v-list-item {
+    min-width: 60px;
+    margin-right: 10px;
+    padding: 0 5px;
+  }
+
+  .canvas-wrapper {
+    width: 100% !important;
+    margin-top: 10px !important;
+    border: none !important;
+  }
+
+  canvas#my-canvas {
+    max-height: none;
+  }
 }
 </style>
- 

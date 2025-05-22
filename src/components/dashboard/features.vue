@@ -2,7 +2,7 @@
   <div class="features-container">
     <div class="content-wrapper">
       <v-img
-        :src="remoteCollaborationImg"
+        :src="designWithOthers"
         alt="Team Collaboration"
         max-height="400"
         contain
@@ -27,7 +27,7 @@
 </template>
 
 <script setup>
-import remoteCollaborationImg from '@/assets/remote-collaboration.jpg'
+import designWithOthers from '@/assets/design_with_others.jpg'
 </script>
 
 <style scoped>
@@ -46,14 +46,14 @@ import remoteCollaborationImg from '@/assets/remote-collaboration.jpg'
   width: 60%;   
   max-width: 100%;
   height: auto;
-  border-radius: 8px;
+  border-radius: 8px;   
 }
 
 .text-section { 
   margin-top: 20px;
   padding: 2rem; 
   border-radius: 8px; 
-  max-width: 600px;
+  max-width: 600px;   
 }
 
 .title {

@@ -21,7 +21,7 @@
           v-model="password"
           label="Password"
           :type="passwordVisible ? 'text' : 'password'"
-          prepend-icon="mdi-lock" 
+          prepend-icon="mdi-lock"
           outlined
           dense
           class="mb-4 text-field-hover"
@@ -30,7 +30,7 @@
         ></v-text-field>
 
         <v-btn
-          color="primary"
+          color="deep-purple accent-2"
           block
           type="submit"
           :loading="loading"
@@ -47,6 +47,12 @@
         <v-alert v-if="success" type="success" class="mt-3" dismissible>
           {{ success }}
         </v-alert>
+
+        <!-- Sign up link -->
+        <div class="signup">
+          <span>New to the platform?</span>
+          <router-link to="/signup" class="signup-link">Sign up now.</router-link>
+        </div>
       </v-form>
     </v-card>
   </v-container>
@@ -56,7 +62,7 @@
 import { ref } from 'vue';
 import { signInWithEmailAndPassword } from 'firebase/auth';
 import { auth } from '@/firebase';
-import { useRouter } from 'vue-router';        
+import { useRouter } from 'vue-router';
 
 const email = ref('');
 const password = ref('');
@@ -147,5 +153,20 @@ const togglePasswordVisibility = () => {
 
 .v-alert {
   margin-top: 10px;
+}
+
+.signup {
+  margin-top: 20px;
+  font-size: 14px;
+  text-align: center;
+}
+
+.signup-link {
+  color: rgb(22, 61, 236);
+  text-decoration: none;
+}
+
+.signup-link:hover {
+  text-decoration: underline;
 }
 </style>

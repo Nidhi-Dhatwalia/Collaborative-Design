@@ -52,6 +52,7 @@ import readyToPrint from '@/assets/ready-to-print.jpg'
   padding: 2rem;
   border-radius: 8px;
   max-width: 600px;
+  
 }
 
 .title {

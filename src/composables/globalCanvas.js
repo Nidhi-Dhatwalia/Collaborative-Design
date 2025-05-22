@@ -16,9 +16,7 @@ const initCanvas = (canvasId = "my-canvas", width = 800, height = 600) => {
       selection: true,  
     });
   }
-   
-  canvas.value.setWidth(width);
-  canvas.value.setHeight(height);
+
    
   canvas.value.renderAll();
   

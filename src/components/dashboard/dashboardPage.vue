@@ -22,7 +22,7 @@
       </v-app-bar>
 
       <v-container fluid class="inner-container pa-0">
-        <v-sheet height="100vh" color="white" class="custom-sheet pa-4 d-flex flex-column align-center justify-center">
+        <v-sheet height="100vh"  class="custom-sheet pa-4 d-flex flex-column align-center justify-center">
           <v-responsive max-width="600" aspect-ratio="16/9" class="mb-6 w-100">
             <v-img
               :src="remoteCollaboration"
@@ -88,24 +88,26 @@ const buttons = [
   { label: "Features", route: "/features", class: "custom-btn" },
   { label: "Our partners", route: "/feature", class: "custom-btn" },
   { label: "About us", route: "/getStarted", class: "custom-btn" },
-   { label: "Sign In ", route: "/signin", class: "custom-btn" },
-  { label: "Log In ", route: "/ ", class: "login-btn" }
+   { label: "Sign In ", route: "/signup", class: "custom-btn" },
+  { label: "Log In ", route: "/", class: "login-btn" }
 ];
 
 const iconButtons = [
   { label: "Resume", route: "/resume", class: "icon-button", icon: "mdi-file-document", color: "deep-purple-accent-4" },
   { label: "Whiteboard", route: "/canvas", class: "icon-button", icon: "mdi-clipboard-outline", color: "indigo darken-3" },
   { label: "Sheet", route: "/sheet", class: "icon-button", icon: "mdi-table", color: "pink darken-2" },
-  { label: "More", route: "/", class: "icon-button", icon: "mdi-dots-horizontal", color: "pink darken-2" }
+  { label: "More", route: "/dashboard", class: "icon-button", icon: "mdi-dots-horizontal", color: "pink darken-2" }
 ];
 </script>
 
 <style scoped>
+ 
 .home-container {
   width: 100%;
-  min-height: 100vh;
+  min-height: 100vh; 
 }
-
+ 
+  
 .image-with-margin {
   margin-top: 0;
   max-width: 100%;
@@ -151,7 +153,7 @@ const iconButtons = [
 
 .icon-button {
   height: 130px;
-  width: 160px;
+  width: 200px;
   border-radius: 50%;
   display: flex;
   flex-direction: column;

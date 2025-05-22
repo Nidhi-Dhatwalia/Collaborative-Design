@@ -1,5 +1,5 @@
 <template>
-  <v-container class="saved-designs" fluid>
+  <v-container class="saved-designs" >
     <v-row justify="center">
       <v-col cols="12" md="8" class="text-center">
         <h3>Saved Designs</h3>
@@ -9,11 +9,10 @@
       </v-col>
     </v-row>
 
-    <v-row justify="center" class="design-preview">
-      <v-col cols="12" md="10">
-        <v-card elevation="3" class="pa-3">
-          <canvas id="preview-canvas" width="750" height="550"></canvas>
-        </v-card>
+    <!-- Canvas Centered Without Box -->
+    <v-row justify="center" class="canvas-center">
+      <v-col cols="auto">
+        <canvas id="preview-canvas" width="1000" height="500"></canvas>
       </v-col>
     </v-row>
 
@@ -170,10 +169,15 @@ h3 {
   color: #757575;
 }
 
+.canvas-center {
+  margin-bottom: 20px;
+}
+
 canvas {
   border: 1px solid #ccc;
   border-radius: 8px;
-  width: 100%;
+  display: block;
+  margin: 0 auto;
   max-width: 100%;
   height: auto;
 }

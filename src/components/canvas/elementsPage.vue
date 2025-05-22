@@ -75,15 +75,6 @@ const saveCanvasState = () => {
 
 onMounted(() => {
   initCanvas()
-  canvas.value.renderAll()
-  const savedDesign = localStorage.getItem('savedDesign')
-  if (savedDesign) {
-    const savedState = JSON.parse(savedDesign)
-    canvas.value.loadFromJSON(savedState, () => {
- 
-      canvas.value.renderAll()
-    })
-  }
 
   canvas.value.on('selection:created', () => { isObjectSelected.value = true })
   canvas.value.on('selection:updated', () => { isObjectSelected.value = true })

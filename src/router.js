@@ -8,8 +8,9 @@ import ModernResume from './components/resumeTemplate/ModernResume.vue';
 import ProfessionalResume from './components/resumeTemplate/ProfessionalResume.vue';
 import MinimalistResume from  './components/resumeTemplate/MinimalistResume.vue';
 import excelSheet from './components/canvas/excelSheet.vue';
+import excelData from './components/canvas/excelData.vue';
 import loginPage from './components/login/loginPage.vue';
-import signinPage from './components/login/signinPage.vue'; 
+import signUpPage from './components/login/signUpPage.vue'; 
 
 //Dashboard Router-Links 
 import plans from './components/dashboard/plans.vue';
@@ -44,6 +45,11 @@ const routes = [
     name: 'excelSheet',
     component:  excelSheet,
   },
+    {
+    path: '/excel',
+    name: 'excelData',
+    component:  excelData,
+  },
   {
     path: '/modernResume',
     name: 'ModernResume',
@@ -65,9 +71,9 @@ const routes = [
     component: loginPage,
   }, 
     {
-    path: '/signin',
-    name: 'signinPage', 
-    component: signinPage,
+    path: '/signup',
+    name: 'signUpPage', 
+    component: signUpPage,
   }, 
 
 
