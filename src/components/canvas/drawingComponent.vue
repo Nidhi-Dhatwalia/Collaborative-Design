@@ -62,3 +62,24 @@ const closeDialog = () => {
   dialog.value = false;
 };
 </script>
+
+<style scoped>
+.responsive-color-picker {
+  width: 100% !important;
+  max-width: 350px;
+  margin: auto;
+}
+
+.responsive-slider {
+  width: 100%;
+  max-width: 350px;
+  margin: auto;
+}
+
+@media (max-width: 600px) {
+  .v-dialog {
+    max-width: 95% !important;
+    max-height: 90vh !important;
+  }
+}
+</style>

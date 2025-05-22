@@ -76,7 +76,6 @@
   </v-container>
 </template>
 
-
 <script setup>
 import { ref } from 'vue';
 import { jsPDF } from 'jspdf';
@@ -140,19 +139,20 @@ const downloadResume = () => {
 
   doc.save('resume.pdf');
 };
-
- 
 </script>
 
 <style scoped>
 .resume-editor {
   font-family: 'Arial', sans-serif;
   width: 50vw;
+  max-width: 700px;
+  min-width: 300px;
   margin: 50px auto;
   padding: 30px;
   background-color: #ffffff;
   border-radius: 12px;
   box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+  box-sizing: border-box;
 }
 
 .back-btn {
@@ -194,5 +194,112 @@ const downloadResume = () => {
   font-size: 18px;
   padding: 12px 20px;
   border-radius: 5px;
+}
+
+/* Responsive Adjustments */
+@media (max-width: 1024px) {
+  .resume-editor {
+    width: 70vw;
+    padding: 20px;
+  }
+
+  .editable-header {
+    font-size: 30px;
+  }
+
+  .editable-subheader {
+    font-size: 20px;
+  }
+
+  .editable-section-title {
+    font-size: 20px;
+  }
+
+  .editable-item {
+    font-size: 16px;
+  }
+
+  .editable-details {
+    font-size: 14px;
+  }
+
+  .download-btn {
+    font-size: 16px;
+    padding: 10px 18px;
+  }
+}
+
+@media (max-width: 768px) {
+  .resume-editor {
+    width: 90vw;
+    margin: 20px auto;
+    padding: 15px;
+  }
+
+  .editable-header {
+    font-size: 26px;
+  }
+
+  .editable-subheader {
+    font-size: 18px;
+  }
+
+  .editable-section-title {
+    font-size: 18px;
+  }
+
+  .editable-item {
+    font-size: 14px;
+  }
+
+  .editable-details {
+    font-size: 13px;
+    padding-left: 10px;
+  }
+
+  .download-btn {
+    font-size: 14px;
+    padding: 10px 15px;
+  }
+
+  .back-btn {
+    font-size: 14px;
+    padding: 8px 15px;
+  }
+}
+
+@media (max-width: 480px) {
+  .resume-editor {
+    width: 95vw;
+    margin: 10px auto;
+    padding: 10px;
+  }
+
+  .editable-header {
+    font-size: 22px;
+  }
+
+  .editable-subheader {
+    font-size: 16px;
+  }
+
+  .editable-section-title {
+    font-size: 16px;
+  }
+
+  .editable-item {
+    font-size: 13px;
+  }
+
+  .editable-details {
+    font-size: 12px;
+    padding-left: 5px;
+  }
+
+  .download-btn,
+  .back-btn {
+    font-size: 13px;
+    padding: 8px 12px;
+  }
 }
 </style>

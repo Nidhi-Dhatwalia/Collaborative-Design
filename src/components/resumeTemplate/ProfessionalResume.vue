@@ -20,9 +20,9 @@
         ></v-text-field>
       </v-col>
     </v-row>
- 
+
     <v-row class="section">
-      <v-col cols="12" class="vertical-line"> 
+      <v-col cols="12" class="vertical-line">
         <v-divider class="editable-section-title"></v-divider>
         <span class="editable-section-title">Professional Experience</span>
         <v-divider class="editable-section-title"></v-divider>
@@ -79,7 +79,7 @@
         ></v-text-field>
       </v-col>
     </v-row>
- 
+
     <v-row justify="center">
       <v-btn @click="downloadResume" color="success" class="download-btn" large>
         Download Resume
@@ -87,7 +87,7 @@
     </v-row>
 
     <v-row>
-       <router-link to="/resume">
+      <router-link to="/resume">
         <v-btn color="primary" outlined class="back-btn">
           Back
         </v-btn>
@@ -159,19 +159,20 @@ function downloadResume() {
 
   doc.save('resume.pdf');
 }
-
- 
 </script>
 
 <style scoped>
 .professional {
   font-family: 'Arial', sans-serif;
   width: 60vw;
+  max-width: 900px;
+  min-width: 300px;
   margin: 50px auto;
   padding: 30px;
   background-color: #f4f7fc;
   border-radius: 12px;
   box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+  box-sizing: border-box;
 }
 
 .editable-header {
@@ -217,6 +218,7 @@ function downloadResume() {
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
+  gap: 20px;
 }
 
 .vertical-line {
@@ -244,5 +246,51 @@ function downloadResume() {
   font-size: 16px;
   padding: 10px 20px;
   border-radius: 5px;
+}
+
+/* Responsive styling */
+@media (max-width: 960px) {
+  .professional {
+    width: 90vw;
+    padding: 20px;
+    margin: 30px auto;
+  }
+}
+
+@media (max-width: 720px) {
+  .section {
+    flex-direction: column;
+  }
+  .vertical-line {
+    padding-left: 10px;
+  }
+  .vertical-line::before {
+    left: 5px;
+    width: 2px;
+  }
+  .editable-header {
+    font-size: 28px;
+  }
+  .editable-subheader {
+    font-size: 20px;
+  }
+  .editable-section-title {
+    font-size: 18px;
+  }
+  .editable-item {
+    font-size: 16px;
+  }
+  .editable-details {
+    font-size: 14px;
+    padding-left: 10px;
+  }
+  .download-btn {
+    font-size: 16px;
+    padding: 10px 16px;
+  }
+  .back-btn {
+    font-size: 14px;
+    padding: 8px 16px;
+  }
 }
 </style>

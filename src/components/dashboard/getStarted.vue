@@ -19,6 +19,8 @@
   display: flex;
   align-items: center;
   justify-content: center;
+  padding: 0 2rem;
+  box-sizing: border-box;
 }
 
 .content-wrapper {
@@ -26,18 +28,55 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 1.5rem;  
+  gap: 1.5rem;
+  max-width: 600px;
+  margin: 0 auto;
 }
 
 .title {
   font-family: 'Cursive', sans-serif;
   font-size: 3rem;
-  margin: 0;  
+  margin: 0;
 }
 
 .start-btn {
-  border-radius: 30px; 
-  font-size: 1.2rem; 
-  text-transform: none;  
+  border-radius: 30px;
+  font-size: 1.2rem;
+  text-transform: none;
+  padding: 0.75rem 2.5rem;
+  transition: background-color 0.3s ease;
+}
+
+/* Responsive styles */
+@media (max-width: 768px) {
+  .custom-container {
+    height: 60vh;
+    padding: 0 1.5rem;
+  }
+
+  .title {
+    font-size: 2.2rem;
+  }
+
+  .start-btn {
+    font-size: 1rem;
+    padding: 0.6rem 2rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .custom-container {
+    height: 50vh;
+    padding: 0 1rem;
+  }
+
+  .title {
+    font-size: 1.8rem;
+  }
+
+  .start-btn {
+    font-size: 0.9rem;
+    padding: 0.5rem 1.5rem;
+  }
 }
 </style>

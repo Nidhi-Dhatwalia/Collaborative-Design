@@ -1,3 +1,4 @@
+
 <template>
   <v-app>
     <v-app-bar color="black lighten-4">
@@ -42,11 +43,11 @@
 
         <drawingComponent v-if="isDrawingMode" @applyDrawingSettings="handleDrawingSettings" />
 
-        <div class="dashboard-container">
+        <v-container fluid class="canvas-container">
           <div class="canvas-wrapper">
-            <canvas id="my-canvas"></canvas>
+            <canvas id="my-canvas" width="600" height="500"></canvas>
           </div>
-        </div>
+        </v-container>
       </v-container>
     </v-main>
   </v-app>
@@ -82,6 +83,8 @@ const syncCanvasWithFirebase = (canvasState) => {
   }
 
   const canvasRef = firebaseRef(db, 'canvasDesigns');
+
+    // console.log("canvasRef",canvasRef)
   set(canvasRef, canvasState)
     .then(() => {
       console.log('Canvas data saved to Firebase.');
@@ -113,16 +116,23 @@ const saveCanvasState = () => {
     console.warn("Canvas is not initialized. Skipping save.");
     return;
   }
+ 
+  canvas.value.getObjects().forEach(obj => {
+    if (obj.type === 'path') {
+      obj.set({ fill: 'transparent' });
+    }
+  });
+
   const rawCanvasState = canvas.value.toJSON();
   const cleanedState = removeUndefined(rawCanvasState);
   syncCanvasWithFirebase(cleanedState);
 };
 
+
 // Load Data from Firebase
 const loadCanvasFromFirebase = () => {
   const canvasRef = firebaseRef(db, 'canvasDesigns');
-  console.log("Loading canvas data from Firebase...");
-
+  // console.log("Loading canvas data from Firebase...");
   onValue(canvasRef, (snapshot) => {
     if (snapshot.exists()) {
       const canvasData = snapshot.val();
@@ -147,26 +157,34 @@ const loadCanvasFromFirebase = () => {
       // Ensure the data is properly structured
       if (canvasData && canvasData.objects) {
         canvas.value.loadFromJSON(canvasData, () => {
-          if (!timeoutTriggered) {
-            clearTimeout(timeout);
-          } else {
-            console.warn("Callback triggered after timeout!");
-          }
+  if (!timeoutTriggered) {
+    clearTimeout(timeout);
+  } else {
+    console.warn("Callback triggered after timeout!");
+  }
 
-          console.log("loadFromJSON callback triggered");
+  console.log("loadFromJSON callback triggered");
 
-          setTimeout(() => {
-            canvas.value.renderAll(); 
-              // Ensure events are set after render
-              canvas.value.on('object:added', saveCanvasState);
-              canvas.value.on('object:modified', saveCanvasState);
-              canvas.value.on('object:removed', saveCanvasState);
+  // Fix all paths fill here 
+  canvas.value.getObjects().forEach(obj => {
+    if (obj.type === 'path' && (obj.fill === 'black' || obj.fill === null || obj.fill === undefined)) {
+      obj.set({ fill: 'transparent' });  
+    }
+  });
 
-              isDataLoadingFromFirebase = false;
-              console.log("Canvas fully loaded. Flag reset:", isDataLoadingFromFirebase);
-            }, 100);
-      
-        });
+  setTimeout(() => {
+    canvas.value.renderAll(); 
+    // Ensure events are set after render
+    canvas.value.on('object:added', saveCanvasState);
+    canvas.value.on('object:modified', saveCanvasState);
+    canvas.value.on('object:removed', saveCanvasState);
+
+    isDataLoadingFromFirebase = false;
+    console.log("Canvas fully loaded. Flag reset:", isDataLoadingFromFirebase);
+  }, 100);
+
+});
+
       }  
     } else {
       console.log("Firebase: No canvas data found");
@@ -177,7 +195,7 @@ const loadCanvasFromFirebase = () => {
 
 
 // Toggle shapes menu visibility
-const toggleShapesMenu = () => (showShapesMenu.value = !showShapesMenu.value);
+const toggleShapesMenu = () => showShapesMenu.value = !showShapesMenu.value;
 
 // Download canvas as an image
 const downloadCanvas = () => {
@@ -194,16 +212,36 @@ const downloadCanvas = () => {
 
 // Create a new design  
 const createNewDesign = () => {
+
+  //  Save current design to localStorage before clearing
+  const currentDesign = canvas.value.toJSON();
+  const existingDesigns = JSON.parse(localStorage.getItem('savedDesigns')) || [];
+  existingDesigns.push(currentDesign);
+  localStorage.setItem('savedDesigns', JSON.stringify(existingDesigns));
+
+  //   Remove event listeners
   canvas.value.off('object:added');
   canvas.value.off('object:modified');
   canvas.value.off('object:removed');
+
+  //  Clear canvas
   canvas.value.clear();
-  syncCanvasWithFirebase(canvas.value.toJSON());
-  localStorage.removeItem("savedDesign");
+
+  //  Sync blank canvas to Firebase
+const canvasRef = firebaseRef(db, 'canvasDesigns');
+  set(canvasRef, {})  
+    .then(() => {
+      console.log('Firebase cleared'); 
+      syncCanvasWithFirebase(canvas.value.toJSON());
+    });
+
+  //  Re-attach event listeners
   canvas.value.on('object:added', saveCanvasState);
   canvas.value.on('object:modified', saveCanvasState);
   canvas.value.on('object:removed', saveCanvasState);
+ 
 };
+
 
 // Toggle drawing mode
 const toggleDrawingModeHandler = () => {
@@ -239,15 +277,12 @@ const {
 
 // Upload the design to local storage
 const upload = () => {
-  if (!canvas.value) {
-    console.warn("Canvas is not initialized. Cannot upload.");
-    return;
-  }
   const designData = canvas.value.toJSON();
   const localDesigns = JSON.parse(localStorage.getItem('savedDesigns')) || [];
   localDesigns.push(designData);
   localStorage.setItem('savedDesigns', JSON.stringify(localDesigns));
   canvas.value.clear();
+  canvas.value.renderAll();
 };
 
 // Handle action based on menu item
@@ -260,10 +295,10 @@ const handleAction = (item) => {
 // Icons list for the menu
 const iconsList = ref([
   { icon: 'mdi-home', label: 'Home', actionType: 'route', action: '/dashboard' },
-  { icon: 'mdi-plus', label: 'New Design', actionType: 'function', action: createNewDesign },
-  { icon: 'mdi-shape-outline', label: 'Elements', actionType: 'function', action: toggleShapesMenu },
+  { icon: 'mdi-file-plus', label: 'New Design', actionType: 'function', action: createNewDesign },
+  { icon: 'mdi-shape', label: 'Shapes', actionType: 'function', action: toggleShapesMenu },
   { icon: 'mdi-pencil', label: 'Draw', actionType: 'function', action: toggleDrawingModeHandler },
-  { icon: 'mdi-cloud-upload', label: 'Upload', actionType: 'function', action: upload },
+  { icon: 'mdi-cloud-upload', label: 'Save', actionType: 'function', action: upload },
   { icon: 'mdi-image', label: 'Media', actionType: 'function', action: triggerImageUpload },
   { icon: 'mdi-content-save', label: 'Saved Designs', actionType: 'route', action: '/save' },
   { icon: 'mdi-download', label: 'Download', actionType: 'function', action: downloadCanvas },
@@ -278,9 +313,7 @@ onMounted(() => {
   console.log('Canvas initialized:', initializedCanvas);
   canvas.value = initializedCanvas;
   isCanvasReady.value = true;
-
-  canvas.value.setWidth(800);
-  canvas.value.setHeight(600);
+ 
   canvas.value.renderAll();
 
   loadCanvasFromFirebase();
@@ -302,19 +335,50 @@ onMounted(() => {
 </script>
 
 <style scoped>
+.v-main {
+  height: 100vh;
+}
+
+.v-container {
+  flex: 1;
+  height: 100%;
+  display: flex;
+}
+
 .v-list-item {
   border-radius: 8px;
   transition: background-color 0.2s ease;
 }
+
 .v-list-item:hover {
   background-color: #f0f0ff;
 }
-.canvas-wrapper {
-  border: 1px solid black;
-  margin-top: 40px;
+
+.canvas-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  height: 100%;
 }
+
+.canvas-wrapper {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border: 1px solid #ccc;
+  background-color: white;
+  padding: 10px;
+}
+
+canvas#my-canvas {
+  max-width: 100%;
+  max-height: 600px;
+}
+
 .v-navigation-drawer {
   position: relative;
   margin: 20px 0px;
 }
 </style>
+ 

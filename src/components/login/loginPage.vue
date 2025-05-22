@@ -56,7 +56,7 @@
 import { ref } from 'vue';
 import { signInWithEmailAndPassword } from 'firebase/auth';
 import { auth } from '@/firebase';
-import { useRouter } from 'vue-router'; // Ensure you import useRouter
+import { useRouter } from 'vue-router';        
 
 const email = ref('');
 const password = ref('');

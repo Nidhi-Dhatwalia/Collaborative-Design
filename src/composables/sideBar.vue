@@ -6,6 +6,7 @@
         :key="index"
         :to="item.to"
         class="sidebar-item"
+        link
       >
         <v-icon class="sidebar-icon">{{ item.icon }}</v-icon>
         <v-list-item-title class="sidebar-text">{{ item.label }}</v-list-item-title>
@@ -26,7 +27,7 @@ export default {
         { icon: 'mdi-clipboard-outline', label: 'Whiteboard', to: '/canvas' },
         { icon: 'mdi-content-save', label: 'Saved Design', to: '/save' }
       ]
-    };
+    }
   }
 }
 </script>
@@ -37,19 +38,8 @@ export default {
   flex-direction: column;
   align-items: center;
   padding: 12px 20px;
-  text-decoration: none;
-  transition: background-color 0.3s ease, transform 0.3s ease;
   margin-top: 20px;
-}
-
-.sidebar-item:hover {
-  background-color: #34495e;
-  cursor: pointer;
-  transform: translateX(10px);  
-}
-
-.sidebar-item:hover .sidebar-icon {
-  background-color: #2980b9;
+  text-decoration: none;
 }
 
 .sidebar-icon {
@@ -62,16 +52,36 @@ export default {
   transition: background-color 0.3s ease;
 }
 
+.sidebar-item:hover {
+  background-color: #34495e;
+  cursor: pointer;
+  transform: translateX(10px);
+}
+
+.sidebar-item:hover .sidebar-icon {
+  background-color: #2980b9;
+}
+
 .sidebar-text {
   font-size: 16px;
-  color: rgb(0, 0, 0);
   font-weight: 500;
   text-align: center;
-  transition: color 0.3s ease;
+  color: black;
 }
 
  
-.v-list-item-title {
-  padding: 0;
+@media (max-width: 600px) {
+  .sidebar-text {
+    display: none;
+  }
+  .sidebar-icon {
+    padding: 12px;
+    font-size: 20px;
+    margin-bottom: 0;
+  }
+  .sidebar-item {
+    padding: 10px 0;
+    margin-top: 12px;
+  }
 }
 </style>

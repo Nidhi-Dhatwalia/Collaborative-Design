@@ -1,20 +1,47 @@
 import { ref } from 'vue'; 
+
 const handleDrawingSettings = (canvas, settings) => {
   if (!settings) {
     console.warn("No drawing settings provided.");
     return;
   }
 
+  // Create pencil brush if not already created
   if (!canvas.freeDrawingBrush) {
     canvas.freeDrawingBrush = new fabric.PencilBrush(canvas);
   }
 
+  // ✅ Always attach path:created only once
+  if (!canvas.__drawingEventAttached) {
+    canvas.on('path:created', (event) => {
+  if (event && event.path) {
+    event.path.set({
+      fill: 'transparent', // ✅ Use 'transparent' instead of '' or null
+      stroke: canvas.freeDrawingBrush.color,
+      strokeWidth: canvas.freeDrawingBrush.width,
+    });
+
+    // Just to be safe — set again directly
+    event.path.fill = 'transparent';
+
+    canvas.renderAll();
+    console.log("Fixed fill:", event.path.fill);
+  }
+});
+
+    canvas.__drawingEventAttached = true;
+  }
+
+  // Apply current settings
   canvas.isDrawingMode = true;
   canvas.freeDrawingBrush.color = settings.color || 'black';
-  canvas.freeDrawingBrush.width = settings.weight || 12;
- canvas.freeDrawingBrush.fill = 'transparent';
-  
- console.log("Brush fill color:", canvas.freeDrawingBrush.fill);
+  canvas.freeDrawingBrush.width = settings.weight || 2;
+
+  // Optional: Clear default prototype fill globally
+  if (fabric.Path.prototype.fill !== '') {
+    fabric.Path.prototype.fill = '';
+  }
+
   setCanvasCursor(canvas);
 };
 
@@ -36,6 +63,7 @@ export const useDrawingUtils = () => {
   const drawingMode = ref(false);
 
   const applySettings = (canvas, settings) => {
+    console.log("Settings received:", settings.color, settings.weight);
     handleDrawingSettings(canvas, settings);
   };
 

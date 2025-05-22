@@ -82,8 +82,8 @@ export default {
 <style scoped>
 .container {
   margin-top: 50px;
-  width: 90%; /* Ensure full width */
-  padding: 0; /* Remove unnecessary padding */
+  width: 90%; 
+  padding: 0; 
 }
 
 .text-none {
@@ -92,7 +92,7 @@ export default {
 
 .v-card {
   height: 100%;
-  width: 100%; /* Ensure the card takes full width */
+  width: 100%; 
 }
 
 .v-col {
@@ -108,6 +108,7 @@ export default {
   display: flex;
   justify-content: space-between;
   align-items: stretch;
+ 
 }
 
 .v-card {

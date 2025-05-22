@@ -49,7 +49,7 @@
       </v-btn>
     </v-row>
     <v-row>
-         <router-link to="/resume">
+      <router-link to="/resume">
         <v-btn color="primary" outlined class="back-btn">
           Back
         </v-btn>
@@ -73,38 +73,38 @@ const experience = ref({
 });
 
 const downloadResume = () => {
-  const doc = new jsPDF(); 
+  const doc = new jsPDF();
 
-  const imgPath = 'your-image-url-here';  
-  doc.addImage(imgPath, 'JPEG', 15, 15, 30, 30); 
+  const imgPath = 'your-image-url-here';  // Replace with actual image URL or remove if unused
+  // Uncomment the next line if you have an image to add
+  // doc.addImage(imgPath, 'JPEG', 15, 15, 30, 30);
 
-  doc.setFont("helvetica", "bold");   
-  doc.setFontSize(20);  
-  doc.text(header.value.name, 30, 30);   
-  doc.setFontSize(18);  
-  doc.text(header.value.title, 20, 40);  
+  doc.setFont("helvetica", "bold");
+  doc.setFontSize(20);
+  doc.text(header.value.name, 30, 30);
+  doc.setFontSize(18);
+  doc.text(header.value.title, 20, 40);
 
-  doc.setDrawColor(0, 0, 0); 
-  doc.setLineWidth(0.5);  
-  doc.line(20, 45, 190, 45);  
+  doc.setDrawColor(0, 0, 0);
+  doc.setLineWidth(0.5);
+  doc.line(20, 45, 190, 45);
 
-  doc.setFont("times", "bold");   
+  doc.setFont("times", "bold");
   doc.setFontSize(22);
-  doc.text('Experience', 20, 60);  
+  doc.text('Experience', 20, 60);
 
   doc.setFontSize(16);
   const details = experience.value.details.split('\n');
   let yPosition = 70;
   details.forEach((line) => {
     doc.text(line, 20, yPosition);
-    yPosition += 10; 
+    yPosition += 10;
   });
 
-  doc.line(20, yPosition + 5, 190, yPosition + 5);  
+  doc.line(20, yPosition + 5, 190, yPosition + 5);
 
-  doc.save('resume.pdf');  
+  doc.save('resume.pdf');
 };
- 
 </script>
 
 <style scoped>
@@ -116,6 +116,7 @@ const downloadResume = () => {
   background-color: #f4f7fc;
   border-radius: 12px;
   box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+  box-sizing: border-box;
 }
 
 .editable-header {
@@ -157,5 +158,125 @@ const downloadResume = () => {
   font-size: 18px;
   padding: 12px 20px;
   border-radius: 5px;
+}
+
+.back-btn {
+  font-size: 16px;
+  margin-top: 10px;
+  padding: 10px 20px;
+  border-radius: 5px;
+}
+
+/* Responsive Styles */
+@media (max-width: 1024px) {
+  .resume-editor {
+    width: 70vw;
+    padding: 20px;
+  }
+
+  .editable-header {
+    font-size: 30px;
+  }
+
+  .editable-subheader {
+    font-size: 20px;
+  }
+
+  .editable-section-title {
+    font-size: 20px;
+  }
+
+  .editable-item {
+    font-size: 16px;
+  }
+
+  .editable-details {
+    font-size: 14px;
+    padding-left: 15px;
+  }
+
+  .download-btn {
+    font-size: 16px;
+    padding: 10px 18px;
+  }
+
+  .back-btn {
+    font-size: 14px;
+    padding: 8px 18px;
+  }
+}
+
+@media (max-width: 768px) {
+  .resume-editor {
+    width: 90vw;
+    margin: 30px auto;
+    padding: 15px;
+  }
+
+  .editable-header {
+    font-size: 26px;
+  }
+
+  .editable-subheader {
+    font-size: 18px;
+  }
+
+  .editable-section-title {
+    font-size: 18px;
+  }
+
+  .editable-item {
+    font-size: 14px;
+  }
+
+  .editable-details {
+    font-size: 13px;
+    padding-left: 10px;
+  }
+
+  .download-btn {
+    font-size: 14px;
+    padding: 10px 15px;
+  }
+
+  .back-btn {
+    font-size: 14px;
+    padding: 8px 15px;
+  }
+}
+
+@media (max-width: 480px) {
+  .resume-editor {
+    width: 95vw;
+    margin: 20px auto;
+    padding: 10px;
+  }
+
+  .editable-header {
+    font-size: 22px;
+  }
+
+  .editable-subheader {
+    font-size: 16px;
+  }
+
+  .editable-section-title {
+    font-size: 16px;
+  }
+
+  .editable-item {
+    font-size: 13px;
+  }
+
+  .editable-details {
+    font-size: 12px;
+    padding-left: 5px;
+  }
+
+  .download-btn,
+  .back-btn {
+    font-size: 13px;
+    padding: 8px 12px;
+  }
 }
 </style>
