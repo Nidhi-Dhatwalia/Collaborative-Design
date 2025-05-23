@@ -21,7 +21,7 @@
         </v-row>
       </v-app-bar>
 
-      <v-container fluid class="inner-container pa-0">
+      <v-container fluid class="inner-container pa-15">
         <v-sheet height="100vh"  class="custom-sheet pa-4 d-flex flex-column align-center justify-center">
           <v-responsive max-width="600" aspect-ratio="16/9" class="mb-6 w-100">
             <v-img
@@ -109,7 +109,7 @@ const iconButtons = [
  
   
 .image-with-margin {
-  margin-top: 0;
+  margin-top: 190px;
   max-width: 100%;
   height: auto;
   border-radius: 8px;

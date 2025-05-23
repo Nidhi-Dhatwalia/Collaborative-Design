@@ -278,15 +278,36 @@ const autoSaveCell = (row, col) => {
 
   set(dbRef(db, `sheetData/${row}/${col}`), value);
 };
-
 const saveToLocalStorage = () => {
-  localStorage.setItem("excelSheetData", JSON.stringify(sheetData.value));
-  localStorage.setItem("excelCellStyles", JSON.stringify(cellStyles.value));
-  alert("Sheet saved locally!");
-   console.log("Saved sheetData:", sheetData.value);
-  console.log("Saved cellStyles:", cellStyles.value);
+  // Save current data to localStorage
+  const timestamp = new Date().toISOString(); // For unique key every time
+  localStorage.setItem(`excelSheetData_${timestamp}`, JSON.stringify(sheetData.value));
+  localStorage.setItem(`excelCellStyles_${timestamp}`, JSON.stringify(cellStyles.value));
+
+  alert("Sheet saved locally!"); 
+
+    set(dbRef(db, "sheetData"), null);
+  set(dbRef(db, "cellStyles"), null);
+
+  // Clear all cells
+  for (let i = 0; i < rows; i++) {
+    for (let j = 0; j < cols; j++) {
+      sheetData.value[i][j] = "";
+      cellStyles.value[i][j] = {
+        isBold: false,
+        isItalic: false,
+        isUnderline: false,
+        fontSize: 16,
+        alignment: "center",
+      };
+    }
+  }
+
+  // Clear selection
+  selectedCell.value = { row: null, col: null };
 };
-</script>
+
+  </script>
 
 <style scoped>
  
