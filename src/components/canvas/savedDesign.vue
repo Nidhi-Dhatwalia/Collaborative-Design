@@ -42,7 +42,7 @@
       </v-col>
 
       <v-col cols="auto">
-        <v-btn color="success" @click="$router.push('/canvas')">
+        <v-btn color="success" @click="$router.push('/dashboard')">
           Back to Canvas
         </v-btn>
       </v-col>

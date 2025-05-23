@@ -283,6 +283,8 @@ const saveToLocalStorage = () => {
   localStorage.setItem("excelSheetData", JSON.stringify(sheetData.value));
   localStorage.setItem("excelCellStyles", JSON.stringify(cellStyles.value));
   alert("Sheet saved locally!");
+   console.log("Saved sheetData:", sheetData.value);
+  console.log("Saved cellStyles:", cellStyles.value);
 };
 </script>
 

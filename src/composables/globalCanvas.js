@@ -2,7 +2,7 @@ import { ref, onMounted } from "vue";
 
 const canvas = ref(null);
 
-const initCanvas = (canvasId = "my-canvas", width = 800, height = 600) => {
+const initCanvas = (canvasId = "my-canvas") => {
   const canvasElement = document.getElementById(canvasId);
   
   if (!canvasElement) {
@@ -16,7 +16,6 @@ const initCanvas = (canvasId = "my-canvas", width = 800, height = 600) => {
       selection: true,  
     });
   }
-
    
   canvas.value.renderAll();
   

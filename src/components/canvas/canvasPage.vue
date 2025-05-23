@@ -147,9 +147,14 @@ const loadCanvasFromFirebase = () => {
   // console.log("Loading canvas data from Firebase...");
   onValue(canvasRef, (snapshot) => {
     if (snapshot.exists()) {
+      isDataLoadingFromFirebase = true;
       const canvasData = snapshot.val();
 
       console.log("Firebase data received:", canvasData);
+
+      canvas.value.off('object:added');
+      canvas.value.off('object:modified');
+      canvas.value.off('object:removed');
 
       if (!canvas.value) {
         console.error("canvas.value is NULL before load");
@@ -169,23 +174,12 @@ const loadCanvasFromFirebase = () => {
       // Ensure the data is properly structured
       if (canvasData && canvasData.objects) {
         canvas.value.loadFromJSON(canvasData, () => {
-  if (!timeoutTriggered) {
-    clearTimeout(timeout);
-  } else {
-    console.warn("Callback triggered after timeout!");
-  }
 
   console.log("loadFromJSON callback triggered");
 
-  // Fix all paths fill here 
-  canvas.value.getObjects().forEach(obj => {
-    if (obj.type === 'path' && (obj.fill === 'black' || obj.fill === null || obj.fill === undefined)) {
-      obj.set({ fill: 'transparent' });  
-    }
-  });
-
   setTimeout(() => {
-    canvas.value.renderAll(); 
+    canvas.value.renderAll();  
+   
     // Ensure events are set after render
     canvas.value.on('object:added', saveCanvasState);
     canvas.value.on('object:modified', saveCanvasState);
@@ -364,7 +358,7 @@ onMounted(() => {
 <style scoped>
 .v-main {
   height: 100vh;
-  overflow: hidden;
+  overflow: auto;
 }
 .gradient-toolbar {
   background: linear-gradient(90deg, #01c2cc, #397dd9,#7a41e6); 
@@ -417,16 +411,13 @@ onMounted(() => {
 
 .canvas-wrapper {
   border: 1px solid black;
-  max-width: 100%;
-  width: 1000px;
+   
   height: auto;
   margin-top: 40px;
 }
 
 canvas#my-canvas {
-  width: 100%;
-  height: auto;
-  max-height: 600px;
+  width: 100%; 
   display: block;
   margin: 0 auto;
 }

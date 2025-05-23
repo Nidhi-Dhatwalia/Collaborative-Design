@@ -1,5 +1,5 @@
 <template>
-  <v-dialog v-model="dialog" max-width="400px"  max-height="700px">
+  <v-dialog v-model="dialog" max-width="400px"  max-height="400px">
     <v-card>
       <v-card-title class="headline">Drawing Settings</v-card-title>
       <v-card-text>
