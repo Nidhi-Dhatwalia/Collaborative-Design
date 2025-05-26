@@ -2,6 +2,7 @@
   <div class="features-container">
     <div class="content-wrapper">
       <div class="text-section">
+            <v-icon size ="x-large"> mdi-printer </v-icon>
         <h2 class="title">Ready-to-print designs</h2>
         <p class="description">
           Design and print your own posters, invites, cards and more.
@@ -30,18 +31,18 @@ import readyToPrint from '@/assets/ready-to-print.jpg'
 
 <style scoped>
 .features-container {
-  padding: 80px;
+  padding: 50px;
+  background-color: #f5f5f5;
 }
 
 .content-wrapper {
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  gap: 90px;
+  justify-content: center; 
 }
 
 .feature-image {
-  width: 60%;
+  width: 40%;
   max-width: 100%;
   height: auto;
   border-radius: 8px;
@@ -51,7 +52,7 @@ import readyToPrint from '@/assets/ready-to-print.jpg'
   margin-top: 20px;
   padding: 2rem;
   border-radius: 8px;
-  max-width: 600px;
+  max-width: 700px;
   
 }
 

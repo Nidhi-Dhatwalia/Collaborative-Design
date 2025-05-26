@@ -52,7 +52,7 @@
 
             <div class="login">
               <span>New to the platform? </span>
-              <router-link to="/" class="login-link">Login</router-link>
+              <router-link to="/login" class="login-link">Login</router-link>
             </div>
           </v-form>
         </v-card-text>
@@ -77,7 +77,7 @@ import { useRouter } from "vue-router";
 import signupImage from "@/assets/signup_image.jpg";
 
 export default {
-  name: "SignUpPage",
+  name: "signUpPage",
   setup() {
     const router = useRouter();
 
@@ -156,7 +156,7 @@ const handleSignUp = async () => {
 <style scoped>
 .fill-height {
   min-height: 100vh;
-  background: linear-gradient(135deg, #508ae6, #9064ce);
+  background: #f3f3f3;
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
   color: #222;
   display: flex;

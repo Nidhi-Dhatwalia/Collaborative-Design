@@ -10,6 +10,7 @@
       ></v-img>
 
       <div class="text-section">
+        <v-icon size ="x-large"> mdi-chat-plus </v-icon>
         <h2 class="title">Design with Others</h2>
         <p class="description">
           Invite friends and family to design with you, or set your whole team up to work together.
@@ -33,6 +34,7 @@ import designWithOthers from '@/assets/design_with_others.jpg'
 <style scoped>
 .features-container { 
   padding: 80px;
+  background-color: #ffffff;
 }
 
 .content-wrapper {

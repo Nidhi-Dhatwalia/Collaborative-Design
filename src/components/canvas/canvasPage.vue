@@ -314,10 +314,10 @@ const exitDrawingMode = () => {
 
 // Icons list for the menu
 const iconsList = ref([
-  { icon: 'mdi-home', label: 'Home', actionType: 'route', action: '/dashboard' },
+  { icon: 'mdi-home', label: 'Home', actionType: 'route', action: '/home' },
   { icon: 'mdi-file-plus', label: 'New Design', actionType: 'function', action: createNewDesign },
   { icon: 'mdi-shape', label: 'Shapes', actionType: 'function', action: toggleShapesMenu },
-  { icon: 'mdi-pencil', label: 'Draw', actionType: 'function', action: toggleDrawingModeHandler }, 
+  { icon: 'mdi-draw', label: 'Draw', actionType: 'function', action: toggleDrawingModeHandler }, 
   { icon: 'mdi-image', label: 'Media', actionType: 'function', action: triggerImageUpload },
   { icon: 'mdi-content-save', label: 'Saved Designs', actionType: 'route', action: '/save' }, 
 ]);
@@ -361,12 +361,12 @@ onMounted(() => {
   overflow: auto;
 }
 .gradient-toolbar {
-  background: linear-gradient(90deg, #01c2cc, #397dd9,#7a41e6); 
+   background-color:  #7f7fd5 ;
   color: white;
 }
 
 .btn-style{
-  background-color: #d1cbda;
+  background-color: #ffffff;
   color: black;
   margin-right: 10px;
 }

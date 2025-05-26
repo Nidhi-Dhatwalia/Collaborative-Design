@@ -1,9 +1,9 @@
 <template>
   <div class="container">
-    <!-- Sidebar Navbar -->
+ 
     <div class="sidebar">
       <div class="nav-links">
-        <router-link to="/dashboard" class="nav-link">
+        <router-link to="/home" class="nav-link">
           <v-btn class="template-btn" elevation="2" rounded size="large">
             <v-icon left>mdi-home</v-icon>
             Home
@@ -32,7 +32,7 @@
       </div>
     </div>
 
-    <!-- Main Content -->
+ 
     <div class="main-content">
       <div class="resume-editor">
         <h1>My Resume</h1>
@@ -147,8 +147,7 @@ h1 {
   transform: scale(1.05);
   box-shadow: 0 8px 15px rgba(0, 0, 0, 0.2);
 }
-
-/* ---------------------- Responsive Design ----------------------- */
+ 
 @media (max-width: 1024px) {
   .sidebar {
     width: 200px;

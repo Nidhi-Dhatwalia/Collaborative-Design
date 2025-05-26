@@ -1,6 +1,7 @@
  
 import { createRouter, createWebHistory } from 'vue-router'
 import dashboardPage from './components/dashboard/dashboardPage.vue';
+import homePage from './components/homePage/homePage.vue';
 import canvasPage from './components/canvas/canvasPage.vue';
 import savedDesign from './components/canvas/savedDesign.vue';
 import resumeTemplate from './components/resumeTemplate/resumeTemplate.vue';
@@ -13,7 +14,7 @@ import loginPage from './components/login/loginPage.vue';
 import signUpPage from './components/login/signUpPage.vue'; 
 
 //Dashboard Router-Links 
-import plans from './components/dashboard/plans.vue';
+import topSection from './components/dashboard/topSection.vue';
 import features from './components/dashboard/features.vue';
 import featureReadyToPrint from './components/dashboard/featureReadyToPrint.vue';
 import getStarted from './components/dashboard/getStarted.vue';
@@ -21,10 +22,16 @@ import getStarted from './components/dashboard/getStarted.vue';
 
 const routes = [
   {
-    path: '/dashboard',
+    path: '/',
     name: 'Dashboard',
     component: dashboardPage,
   },
+ {
+    path: '/home',
+    name: 'homePage',
+    component: homePage,
+  },
+
   {
     path: '/canvas',
     name: 'canvasPage',
@@ -66,7 +73,7 @@ const routes = [
     component: MinimalistResume,
   },
   {
-    path: '/',
+    path: '/login',
     name: 'loginPage',
     component: loginPage,
   }, 
@@ -79,12 +86,12 @@ const routes = [
 
   
   //dashboard Paths 
-  
   {
-    path: '/plans',
-    name: 'plans',
-    component: plans,
+    path: '/topSection',
+    name: 'topSection',
+    component: topSection,
   },
+  
   {
     path: '/features',
     name: 'features',
@@ -106,5 +113,7 @@ const router = createRouter({
   history: createWebHistory(),
   routes
 })
+
+
 
 export default router

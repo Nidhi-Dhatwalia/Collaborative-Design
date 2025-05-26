@@ -12,7 +12,7 @@
 
 <style scoped>
 .custom-container {
-  background: linear-gradient(to right, #07b9d0, #543cf7, #7a2bea);
+  background: linear-gradient(to right, #5dc8d6, #6a57e7, #8444dd);
   color: white;
   height: 70vh;
   width: 100%;
@@ -20,6 +20,7 @@
   align-items: center;
   justify-content: center;
   padding: 0 2rem;
+  margin-top: 10px;
   box-sizing: border-box;
 }
 
@@ -45,9 +46,12 @@
   text-transform: none;
   padding: 0.75rem 2.5rem;
   transition: background-color 0.3s ease;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
-/* Responsive styles */
+ 
 @media (max-width: 768px) {
   .custom-container {
     height: 60vh;

@@ -55,6 +55,7 @@
               <span>New to the platform ?    </span>
               <router-link to="/signup" class="signup-link">Sign up now.</router-link>
             </div>
+                 <router-link to="/">  Back to Dashboard  </router-link>
           </v-form>
         </v-card>
       </div>
@@ -116,7 +117,7 @@ const login = async () => {
     const user = userCredential.user;
     console.log('Login Success:', user.email);
     success.value = `Welcome ${user.email}!`;
-    router.push({ name: 'Dashboard' });
+    router.push({ name: 'homePage' });
   } catch (err) {
     console.error('Login Error:', err.message);
     error.value = err.message;
@@ -137,7 +138,12 @@ const togglePasswordVisibility = () => {
   display: flex;
   justify-content: center;
   align-items: center;
-    background: linear-gradient(135deg, #a475d6 0%, #2c6bd8 100%);
+    background: #f3f3f3;
+}
+.btn-style {
+  background-color: #4a0fc7;
+  color: white;
+  margin-top: 20px;
 }
 
 .outer-wrapper {

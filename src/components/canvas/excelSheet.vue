@@ -1,407 +1,295 @@
 <template>
   <v-app>
-     <sideBar />
-      <v-app-bar>
-      <v-toolbar fluid class="gradient-toolbar px-6 ">
-        
-      <v-row align="center" justify="space-evenly" >
-      <div class="text-h5 white--text " >Excel Style Sheet </div>
- 
-      <div>
-         <v-btn
-          @click="toggleBold"
-          :color="cellStyles[selectedCell.row]?.[selectedCell.col]?.isBold ? 'black' : 'blue'"
-          class="format-btn"
-          small
-          >Bold</v-btn
-        >
-      </div>
-      <div>
-        <v-btn
-          @click="toggleItalic"
-          :color="cellStyles[selectedCell.row]?.[selectedCell.col]?.isItalic ? 'black' : 'blue'"
-          class="format-btn"
-          small
-          >Italic</v-btn
-        >
-      </div>
-      <div>
-        <v-btn
-          @click="toggleUnderline"
-          :color="cellStyles[selectedCell.row]?.[selectedCell.col]?.isUnderline ? 'black' : 'blue'"
-          class="format-btn"
-          small
-          >Underline</v-btn
-        >
-      </div>
-      <div>
-        <v-select
-          v-model="fontSize"
-          :items="fontSizes"
-          label="Font Size"
-          dense
-          class="format-select"
-          hide-details
-        />
-      </div>
-      <div>
-        <v-select
-          v-model="alignment"
-          :items="alignments"
-          label="Align"
-          dense
-          class="format-select"
-          hide-details
-        />
-      </div><div>
-        <v-btn class="btn-style" text  @click="saveToLocalStorage">Save</v-btn> 
-      </div>
-    </v-row>
-  </v-toolbar>
+    <v-app-bar color="indigo-darken-3" dark>
+      <v-btn icon @click="goBack">
+        <v-icon>mdi-arrow-left</v-icon>
+      </v-btn>
+      <v-toolbar-title>Realtime Excel Sheet</v-toolbar-title>
     </v-app-bar>
-    <v-container fluid class="pa-0">
-      <div class="toolbar">
-      
-      </div>
 
-      <div
-        v-if="selectedCell.row !== null && selectedCell.col !== null"
-        class="format-toolbar"
-      >
-       
-     
-      </div>
+    <v-main>
+      <v-container fluid class="d-flex pa-0">
+        <!-- Sidebar -->
+        <v-navigation-drawer
+          app
+          permanent
+          width="240"
+          color="slate-darken-2"
+          class="pa-4 text-white"
+        >
+          <div class="sidebar-title">Cell Styles</div>
 
-      <div class="excel-wrapper">
-        <div class="row header-row">
-          <div class="cell row-header"></div>
-          <div class="cell col-header" v-for="col in colLabels" :key="col">
-            {{ col }}
-          </div>
-        </div>
+          <v-divider class="my-2"></v-divider>
 
-        <div class="row" v-for="(row, rowIndex) in rows" :key="rowIndex">
-          <div class="cell row-header">{{ rowIndex + 1 }}</div>
-          <div
-            class="cell"
-            v-for="(col, colIndex) in cols"
-            :key="colIndex"
-            :class="{
-              selected:
-                selectedCell.row === rowIndex && selectedCell.col === colIndex,
-            }"
+          <v-btn
+            block
+            color="indigo"
+            class="mb-2"
+            @click="toggleBold"
           >
-            <input
-              type="text"
-              v-model="sheetData[rowIndex][colIndex]"
-              class="cell-input"
-              :style="{
-                fontWeight:
-                  cellStyles[rowIndex]?.[colIndex]?.isBold ? 'bold' : 'normal',
-                fontStyle:
-                  cellStyles[rowIndex]?.[colIndex]?.isItalic ? 'italic' : 'normal',
-                textDecoration:
-                  cellStyles[rowIndex]?.[colIndex]?.isUnderline
-                    ? 'underline'
-                    : 'none',
-                fontSize:
-                  cellStyles[rowIndex]?.[colIndex]?.fontSize + 'px' || '16px',
-                textAlign: cellStyles[rowIndex]?.[colIndex]?.alignment || 'center',
-              }"
-              @click="selectCell(rowIndex, colIndex)"
-              @input="autoSaveCell(rowIndex, colIndex)"
-            />
+            Bold
+          </v-btn>
+          <v-btn
+            block
+            color="indigo"
+            class="mb-2"
+            @click="toggleItalic"
+          >
+            Italic
+          </v-btn>
+          <v-btn
+            block
+            color="indigo"
+            class="mb-4"
+            @click="toggleUnderline"
+          >
+            Underline
+          </v-btn>
 
-        
+          <v-select
+            v-model="alignment"
+            :items="alignments"
+            label="Text Align"
+            variant="solo-filled"
+            color="indigo"
+            class="mb-4"
+          ></v-select>
+
+          <v-select
+            v-model="fontSize"
+            :items="[12, 14, 16, 18, 20, 24, 28]"
+            label="Font Size"
+            variant="solo-filled"
+            color="indigo"
+          ></v-select>
+
+          <v-btn
+            block
+            color="yellow-darken-2"
+            class="mt-6"
+            @click="saveToLocalStorage"
+          >
+            Save to Local
+          </v-btn>
+        </v-navigation-drawer>
+
+        <!-- Excel Sheet -->
+        <v-container fluid class="excel-wrapper">
+          <!-- Column Headers -->
+          <div class="row">
+            <div class="cell row-header"></div>
+            <div
+              v-for="col in columns"
+              :key="'header-' + col"
+              class="cell col-header"
+            >
+              {{ String.fromCharCode(65 + col) }}
+            </div>
           </div>
-        </div>
-      </div>
-    </v-container>
+
+          <!-- Sheet Rows -->
+          <div
+            v-for="(row, rowIndex) in rows"
+            :key="'row-' + rowIndex"
+            class="row"
+          >
+            <div class="cell row-header">{{ rowIndex + 1 }}</div>
+            <div
+              v-for="(col, colIndex) in columns"
+              :key="rowIndex + '-' + colIndex"
+              class="cell"
+              :class="{ selected: selectedCell.row === rowIndex && selectedCell.col === colIndex }"
+              @click="selectCell(rowIndex, colIndex)"
+              :style="getCellStyle(rowIndex, colIndex)"
+            >
+              <input
+                class="cell-input"
+                v-model="sheetData[rowIndex][colIndex]"
+                @input="autoSaveCell(rowIndex, colIndex)"
+              />
+            </div>
+          </div>
+        </v-container>
+      </v-container>
+    </v-main>
   </v-app>
 </template>
 
 <script setup>
-import { ref, onMounted, watch } from "vue";
+import { ref, reactive, watch } from "vue";
+import { useRouter } from "vue-router";
 import { db } from "@/firebase";
-import { ref as dbRef, set, onValue } from "firebase/database";
-import sideBar from "@/composables/sideBar.vue";
+import { ref as dbRef, onValue, set } from "firebase/database";
 
-const rows = 50;
-const cols = 26;
-const colLabels = Array.from({ length: cols }, (_, i) =>
-  String.fromCharCode(65 + i)
-);
+// Constants
+const rows = 20;
+const columns = 10;
+const router = useRouter();
 
-const sheetData = ref([]);
-const cellStyles = ref([]);
-
-for (let i = 0; i < rows; i++) {
-  sheetData.value.push(Array.from({ length: cols }, () => ""));
-  cellStyles.value.push(
-    Array.from({ length: cols }, () => ({
+const sheetData = ref(Array.from({ length: rows }, () => Array(columns).fill("")));
+const cellStyles = ref(
+  Array.from({ length: rows }, () =>
+    Array.from({ length: columns }, () => ({
       isBold: false,
       isItalic: false,
       isUnderline: false,
-      fontSize: 16,
+      fontSize: 14,
       alignment: "center",
     }))
-  );
-}
+  )
+);
 
-onMounted(() => {
-  const dataRef = dbRef(db, "sheetData");
-  const styleRef = dbRef(db, "cellStyles");
+const selectedCell = reactive({ row: null, col: null });
 
-  onValue(dataRef, (snapshot) => {
-    if (snapshot.exists()) {
-      const fetchedData = snapshot.val();
-      sheetData.value = Array.from({ length: rows }, (_, i) =>
-        fetchedData[i] || Array(cols).fill("")
-      );
-    }
-  });
-
-  onValue(styleRef, (snapshot) => {
-    if (snapshot.exists()) {
-      const fetchedStyles = snapshot.val();
-      cellStyles.value = Array.from({ length: rows }, (_, i) =>
-        fetchedStyles[i] ||
-        Array.from({ length: cols }, () => ({
-          isBold: false,
-          isItalic: false,
-          isUnderline: false,
-          fontSize: 16,
-          alignment: "center",
-        }))
-      );
-    }
-  });
+// Realtime sync
+onValue(dbRef(db, "sheetData"), (snapshot) => {
+  if (snapshot.exists()) {
+    sheetData.value = snapshot.val();
+  }
 });
 
-const selectedCell = ref({ row: null, col: null });
+onValue(dbRef(db, "cellStyles"), (snapshot) => {
+  if (snapshot.exists()) {
+    cellStyles.value = snapshot.val();
+  }
+});
 
+// Selection and formatting
 const selectCell = (row, col) => {
-  selectedCell.value = { row, col };
-
-  if (!cellStyles.value[row]) {
-    cellStyles.value[row] = [];
-  }
-  if (!cellStyles.value[row][col]) {
-    cellStyles.value[row][col] = {
-      isBold: false,
-      isItalic: false,
-      isUnderline: false,
-      fontSize: 16,
-      alignment: "center",
-    };
-  }
-
-  fontSize.value = cellStyles.value[row][col].fontSize || 16;
-  alignment.value = cellStyles.value[row][col].alignment || "center";
+  selectedCell.row = row;
+  selectedCell.col = col;
 };
 
-const fontSizes = [12, 14, 16, 18, 20, 24];
-const fontSize = ref(16);
+const getCellStyle = (row, col) => {
+  const style = cellStyles.value[row][col];
+  return {
+    fontWeight: style.isBold ? "bold" : "normal",
+    fontStyle: style.isItalic ? "italic" : "normal",
+    textDecoration: style.isUnderline ? "underline" : "none",
+    fontSize: `${style.fontSize}px`,
+    textAlign: style.alignment,
+  };
+};
 
+const fontSize = ref(14);
 watch(fontSize, (newSize) => {
-  const { row, col } = selectedCell.value;
+  const { row, col } = selectedCell;
   if (row !== null && col !== null) {
     cellStyles.value[row][col].fontSize = newSize;
-    set(dbRef(db, `cellStyles/${row}/${col}/fontSize`), newSize);
+    set(dbRef(db, `cellStyles/${row}/${col}/fontSize`), newSize).catch(console.error);
   }
 });
 
-const alignments = ["left", "center", "right"];
 const alignment = ref("center");
-
+const alignments = ["left", "center", "right"];
 watch(alignment, (newAlign) => {
-  const { row, col } = selectedCell.value;
+  const { row, col } = selectedCell;
   if (row !== null && col !== null) {
     cellStyles.value[row][col].alignment = newAlign;
-    set(dbRef(db, `cellStyles/${row}/${col}/alignment`), newAlign);
+    set(dbRef(db, `cellStyles/${row}/${col}/alignment`), newAlign).catch(console.error);
   }
 });
 
 const toggleBold = () => {
-  const { row, col } = selectedCell.value;
+  const { row, col } = selectedCell;
   if (row !== null && col !== null) {
-    const newBold = !cellStyles.value[row][col].isBold;
-    cellStyles.value[row][col].isBold = newBold;
-    set(dbRef(db, `cellStyles/${row}/${col}/isBold`), newBold);
+    const current = cellStyles.value[row][col].isBold;
+    cellStyles.value[row][col].isBold = !current;
+    set(dbRef(db, `cellStyles/${row}/${col}/isBold`), !current).catch(console.error);
   }
 };
 
 const toggleItalic = () => {
-  const { row, col } = selectedCell.value;
+  const { row, col } = selectedCell;
   if (row !== null && col !== null) {
-    const newItalic = !cellStyles.value[row][col].isItalic;
-    cellStyles.value[row][col].isItalic = newItalic;
-    set(dbRef(db, `cellStyles/${row}/${col}/isItalic`), newItalic);
+    const current = cellStyles.value[row][col].isItalic;
+    cellStyles.value[row][col].isItalic = !current;
+    set(dbRef(db, `cellStyles/${row}/${col}/isItalic`), !current).catch(console.error);
   }
 };
 
 const toggleUnderline = () => {
-  const { row, col } = selectedCell.value;
+  const { row, col } = selectedCell;
   if (row !== null && col !== null) {
-    const newUnderline = !cellStyles.value[row][col].isUnderline;
-    cellStyles.value[row][col].isUnderline = newUnderline;
-    set(dbRef(db, `cellStyles/${row}/${col}/isUnderline`), newUnderline);
+    const current = cellStyles.value[row][col].isUnderline;
+    cellStyles.value[row][col].isUnderline = !current;
+    set(dbRef(db, `cellStyles/${row}/${col}/isUnderline`), !current).catch(console.error);
   }
 };
 
 const autoSaveCell = (row, col) => {
-  const value = sheetData.value[row][col];
-
-  if (!cellStyles.value[row]) {
-    cellStyles.value[row] = [];
-  }
-  if (!cellStyles.value[row][col]) {
-    cellStyles.value[row][col] = {
-      isBold: false,
-      isItalic: false,
-      isUnderline: false,
-      fontSize: 16,
-      alignment: "center",
-    };
-  }
-
-  if (value === "") {
-    cellStyles.value[row][col] = {
-      isBold: false,
-      isItalic: false,
-      isUnderline: false,
-      fontSize: 16,
-      alignment: "center",
-    };
-    set(dbRef(db, `cellStyles/${row}/${col}`), cellStyles.value[row][col]);
-  }
-
-  set(dbRef(db, `sheetData/${row}/${col}`), value);
+  set(dbRef(db, `sheetData/${row}/${col}`), sheetData.value[row][col]).catch(console.error);
 };
+
 const saveToLocalStorage = () => {
- 
-  const timestamp = new Date().toISOString(); 
-  localStorage.setItem(`excelSheetData_${timestamp}`, JSON.stringify(sheetData.value));
-  localStorage.setItem(`excelCellStyles_${timestamp}`, JSON.stringify(cellStyles.value));
-
-  alert("Sheet saved !"); 
-
-    set(dbRef(db, "sheetData"), null);
-  set(dbRef(db, "cellStyles"), null);
-
-  // Clear all cells
-  for (let i = 0; i < rows; i++) {
-    for (let j = 0; j < cols; j++) {
-      sheetData.value[i][j] = "";
-      cellStyles.value[i][j] = {
-        isBold: false,
-        isItalic: false,
-        isUnderline: false,
-        fontSize: 16,
-        alignment: "center",
-      };
-    }
-  }
-
-  // Clear selection
-  selectedCell.value = { row: null, col: null };
+  localStorage.setItem("excelSheet", JSON.stringify(sheetData.value));
+  localStorage.setItem("excelStyles", JSON.stringify(cellStyles.value));
 };
 
-  </script>
+const goBack = () => {
+  router.push("/home");
+};
+</script>
 
 <style scoped>
- 
-.gradient-toolbar {
-  background: linear-gradient(90deg, #01c2cc, #397dd9,#7a41e6);  
-  color: white;
-
-}
-
-.btn-style{
-  background-color: #d1cbda;
-  color: black;
-  margin-right: 10px;
-}
-.toolbar {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 16px;
-  margin-left: 120px;
-  background-color: #f5f5f5;
-}
-.format-toolbar {
-  display: flex;
-  gap: 10px;
-  margin: 40px 10px 12px 180px;
-  align-items: center;
-}
-
-.format-btn {
-  font-size: 14px;
-  min-width: 60px;
-  height: 32px;
-  background-color: #d1cbda;
-  color: black;
-  font-weight: bold;
-}
-
-.format-select {
-  width: 120px;
-}
 .excel-wrapper {
-  margin-top: 30px; 
-  height: calc(100vh - 140px);
   overflow: auto;
-  border: 1px solid #ccc;
-  margin-left: 140px;
-  min-width: 100%;
-  box-sizing: border-box;
+  background-color: #f1f5f9;
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
 }
+
 .row {
   display: flex;
-  min-width: max-content;
-  flex-wrap: nowrap;
 }
+
 .cell {
-  border: 1px solid #ccc;
-  box-sizing: border-box;
-  width: 140px;
-  height: 50px;
+  width: 120px;
+  height: 32px;
+  border: 1px solid #cbd5e1;
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 4px;
+  box-sizing: border-box;
 }
+
 .cell-input {
   width: 100%;
   height: 100%;
   border: none;
+  padding: 0 8px;
   outline: none;
-  font-size: 16px;
-  text-align: center;
-  box-sizing: border-box;
   background: transparent;
-  font-family: Arial, sans-serif;
+  font-family: inherit;
+  font-size: inherit;
+  text-align: inherit;
 }
+
 .row-header {
-  background-color: #dcd6f7;
- 
+  width: 50px;
+  background-color: #e2e8f0;
   font-weight: bold;
   display: flex;
-  align-items: center;
   justify-content: center;
+  align-items: center;
 }
+
 .col-header {
-  background-color: #dcd6f7;
+  background-color: #e2e8f0;
   font-weight: bold;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  text-align: center;
 }
+
 .selected {
-  border: 2px solid #1976d2;
-  padding: 3px;
-  background-color: #e3f2fd;
+  background-color: #e0e7ff !important;
+}
+
+.sidebar-title {
+  font-size: 1.2rem;
+  font-weight: 600;
+  margin-bottom: 12px;
+  text-align: center;
+  color: #facc15;
 }
 </style>
