@@ -2,8 +2,7 @@
   <v-container class="pa-4">
     <h2 class="text-h5 font-weight-bold mb-4">Saved Excel Sheets</h2>
 
-    <v-btn color="secondary" class="mb-4" @click="goBack">Back</v-btn>
-    <v-btn color="primary" class="mb-4 ml-2" @click="fetchSavedSheets">Refresh</v-btn>
+    <v-btn color="secondary" class="mb-4" @click="goBack">Back</v-btn> 
 
     <div v-if="savedSheets.length === 0">
       <p>No saved sheets found.</p>
@@ -14,8 +13,6 @@
         v-for="sheet in savedSheets"
         :key="sheet.key"
       >
-      
-
         <v-btn color="green" size="small" @click="() => loadSheet(sheet.key)">
           Load {{ savedSheets.indexOf(sheet) + 1 }}
         </v-btn>
@@ -31,7 +28,7 @@
       </v-list-item>
     </v-list>
 
-    <!-- Sheet Display -->
+ 
     <div v-if="sheetData.length" class="excel-wrapper">
       <div class="row header-row">
         <div class="cell row-header"></div>
@@ -44,7 +41,7 @@
         <div class="cell row-header">{{ rowIndex + 1 }}</div>
         <div
           class="cell"
-          v-for="(cell, colIndex) in row"
+          v-for="(col, colIndex) in colLabels"
           :key="colIndex"
           :style="{
             fontWeight: cellStyles[rowIndex]?.[colIndex]?.isBold ? 'bold' : 'normal',
@@ -54,7 +51,7 @@
             textAlign: cellStyles[rowIndex]?.[colIndex]?.alignment || 'center',
           }"
         >
-          {{ cell }}
+          {{ row[colIndex] || '' }}
         </div>
       </div>
     </div>
@@ -70,10 +67,12 @@ const router = useRouter();
 const savedSheets = ref([]);
 const sheetData = ref([]);
 const cellStyles = ref([]);
+ 
 const colLabels = Array.from({ length: 26 }, (_, i) =>
   String.fromCharCode(65 + i)
 );
 
+ 
 const fetchSavedSheets = () => {
   savedSheets.value = [];
 
@@ -90,6 +89,7 @@ const fetchSavedSheets = () => {
   savedSheets.value.reverse();
 };
 
+// Load a selected sheet
 const loadSheet = (key) => {
   const data = localStorage.getItem(key);
   const styleKey = key.replace("excelSheetData_", "excelCellStyles_");
@@ -118,14 +118,13 @@ const loadSheet = (key) => {
   }
 };
 
-// Delete saved sheet data and styles from localStorage and update list & clear display if loaded sheet deleted
+// Delete a saved sheet
 const deleteSheet = (key) => {
   const styleKey = key.replace("excelSheetData_", "excelCellStyles_");
 
   localStorage.removeItem(key);
   localStorage.removeItem(styleKey);
 
-  // If the currently loaded sheet is deleted, clear the display
   if (sheetData.value.length && key === savedSheets.value.find(s => s.key === key)?.key) {
     sheetData.value = [];
     cellStyles.value = [];
@@ -134,11 +133,12 @@ const deleteSheet = (key) => {
   fetchSavedSheets();
 };
 
-// Navigate back to /sheet route
+ 
 const goBack = () => {
   router.push("/sheet");
 };
 
+ 
 onMounted(fetchSavedSheets);
 </script>
 

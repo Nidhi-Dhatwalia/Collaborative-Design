@@ -45,7 +45,7 @@
           </v-list>
         </v-navigation-drawer>
 
-        <v-navigation-drawer width="100">
+        <v-navigation-drawer width="100" >
           <elementsPage v-if="showShapesMenu" />
         </v-navigation-drawer>
 

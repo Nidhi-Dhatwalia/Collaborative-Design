@@ -87,9 +87,9 @@ const buttons = [
   { label: "Pricing", route: "/plans", class: "custom-btn" },
   { label: "Features", route: "/features", class: "custom-btn" },
   { label: "Our partners", route: "/feature", class: "custom-btn" },
-  { label: "About us", route: "/getStarted", class: "custom-btn" },
-   { label: "Sign In ", route: "/signup", class: "custom-btn" },
-  { label: "Log In ", route: "/", class: "login-btn" }
+  { label: "About us", route: "/getStarted", class: "custom-btn" }, 
+  { label: "Log Out ", route: "/", class: "login-btn" },
+
 ];
 
 const iconButtons = [
@@ -106,7 +106,6 @@ const iconButtons = [
   width: 100%;
   min-height: 100vh; 
 }
- 
   
 .image-with-margin {
   margin-top: 190px;

@@ -100,38 +100,41 @@ export default {
     ];
 
     const auth = getAuth();
+const handleSignUp = async () => {
+  errorMessage.value = "";
+  successMessage.value = "";
 
-    const handleSignUp = async () => {
-      errorMessage.value = "";
+  const isValid = form.value?.validate();
+  if (!isValid) return;
+
+  loading.value = true;
+
+  try {
+    const userCredential = await createUserWithEmailAndPassword(
+      auth,
+      email.value.trim(),
+      password.value
+    );
+    successMessage.value = "Registration successful! You can now sign in.";
+    console.log("Registered user:", userCredential.user);
+
+    // Clear fields
+    email.value = "";
+    password.value = "";
+
+    // Delay for 2 seconds to show success message, then redirect to login page
+    setTimeout(() => {
       successMessage.value = "";
+      router.push("/dashboard");
+    }, 2000);
 
-      const isValid = form.value?.validate();
-      if (!isValid) return;
-
-      loading.value = true;
-
-      try {
-        const userCredential = await createUserWithEmailAndPassword(
-          auth,
-          email.value.trim(),
-          password.value
-        );
-        successMessage.value = "Registration successful! You can now sign in.";
-        console.log("Registered user:", userCredential.user);
-
-        // Clear fields
-        email.value = "";
-        password.value = "";
-
-         
-        router.push("/dashboard");
-      } catch (error) {
-        console.error("Registration failed:", error);
-        errorMessage.value = error.message || "Registration failed.";
-      } finally {
-        loading.value = false;
-      }
-    };
+  } catch (error) {
+    console.error("Registration failed:", error);
+    errorMessage.value = error.message || "Registration failed.";
+  } finally {
+    loading.value = false;
+  }
+};
 
     return {
       email,

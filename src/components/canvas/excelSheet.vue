@@ -279,12 +279,12 @@ const autoSaveCell = (row, col) => {
   set(dbRef(db, `sheetData/${row}/${col}`), value);
 };
 const saveToLocalStorage = () => {
-  // Save current data to localStorage
-  const timestamp = new Date().toISOString(); // For unique key every time
+ 
+  const timestamp = new Date().toISOString(); 
   localStorage.setItem(`excelSheetData_${timestamp}`, JSON.stringify(sheetData.value));
   localStorage.setItem(`excelCellStyles_${timestamp}`, JSON.stringify(cellStyles.value));
 
-  alert("Sheet saved locally!"); 
+  alert("Sheet saved !"); 
 
     set(dbRef(db, "sheetData"), null);
   set(dbRef(db, "cellStyles"), null);
