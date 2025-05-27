@@ -16,6 +16,7 @@
               :error="!!textError"
               :error-messages="textError"
               @input="textError = ''"
+                @keydown.enter.prevent="applySettings"
               outlined
               dense
             />

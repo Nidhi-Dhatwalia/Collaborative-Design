@@ -117,6 +117,9 @@ const login = async () => {
     const user = userCredential.user;
     console.log('Login Success:', user.email);
     success.value = `Welcome ${user.email}!`;
+
+  localStorage.setItem('authToken', user.uid);
+
     router.push({ name: 'homePage' });
   } catch (err) {
     console.error('Login Error:', err.message);

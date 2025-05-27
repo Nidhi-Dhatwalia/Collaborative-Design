@@ -1,8 +1,7 @@
 <template>
   <v-app class="gradient-bg">
- 
-    <v-app-bar color="white" flat >
-      <v-toolbar-title class="text-primary font-weight-bold "> 
+    <v-app-bar color="white" flat>
+      <v-toolbar-title class="text-primary font-weight-bold">
         Team<span class="font-weight-regular">work</span>
       </v-toolbar-title>
 
@@ -12,32 +11,42 @@
         <v-col
           v-for="(button, index) in buttons"
           :key="index"
-          cols="auto" 
+          cols="auto"
         >
-          <router-link :to="button.route" class="no-underline">
-            <v-btn :class="button.class" small text>
+          <template v-if="button.route">
+            <router-link :to="button.route" class="no-underline">
+              <v-btn :class="button.class" small text>
+                {{ button.label }}
+              </v-btn>
+            </router-link>
+          </template>
+          <template v-else>
+            <v-btn
+              :class="button.class"
+              small
+              text
+              @click="button.action ? button.action() : null"
+            >
               {{ button.label }}
             </v-btn>
-          </router-link>
+          </template>
         </v-col>
       </v-row>
     </v-app-bar>
 
- 
-  <v-container class="py-12 mt-13" >
-  <v-row align="center" justify="center" style="min-height: 250px;">
-    <v-col cols="12" md="6" class="text-center">
-      <h2>
-        <span class="text-primary font-weight-bold mt-8">Teamwork</span> – the best way to work together.
-      </h2>
-      <p class="mt-4 gradient-text" >
-        What Will you design today?
-      </p>
-    </v-col>
-  </v-row>
-</v-container>
+    <v-container class="container" fluid>
+      <v-row align="center" justify="center" style="min-height: 250px;">
+        <v-col cols="12" md="6" class="text-center">
+          <h2>
+            <span class="text-primary font-weight-bold mt-8">Teamwork</span> – the best way to work together.
+          </h2>
+          <p class="mt-4 gradient-text">
+            What Will you design today?
+          </p>
+        </v-col>
+      </v-row>
+    </v-container>
 
-  
     <v-container class="mt-6">
       <v-row dense justify="center" align="center" class="gap-4">
         <v-col
@@ -65,45 +74,55 @@
         </v-col>
       </v-row>
     </v-container>
-  </v-app>
 
-  <imageSection />
-  <getStarted />
+    <imageSection />
+    <featureReadyToPrint />
+    <getStarted />
+  </v-app>
 </template>
 
-
-
 <script setup>
+import { auth } from '@/firebase';
+import { useRouter } from 'vue-router';
 import imageSection from "@/components/homePage/imagesSection.vue";
+import featureReadyToPrint from "@/components/dashboard/featureReadyToPrint.vue";
 import getStarted from "@/components/dashboard/getStarted.vue";
+
+const router = useRouter();
+
+function logoutUser() {
+  auth.signOut().then(() => {
+    localStorage.removeItem('authToken');
+    router.push({ name: 'loginPage' });
+  }).catch((error) => {
+    console.error('Logout error:', error);
+  });
+}
 
 const buttons = [
   { label: "Features", route: "/features", class: "custom-btn" },
   { label: "Our partners", route: "/feature", class: "custom-btn" },
   { label: "About us", route: "/getStarted", class: "custom-btn" },
-  { label: "Log Out", route: "/", class: "login-btn", action:logoutUser },
+  { label: "Log Out", class: "login-btn", action: logoutUser },
 ];
 
 const iconButtons = [
   { label: "Resume", route: "/resume", class: "icon-button", icon: "mdi-account-box", color: "deep-purple accent-4" },
   { label: "Whiteboard", route: "/canvas", class: "icon-button", icon: "mdi-clipboard-outline", color: "indigo darken-3" },
   { label: "Sheet", route: "/sheet", class: "icon-button", icon: "mdi-file-excel", color: "pink darken-2" },
-  { label: "Canvas Data ", route: "/save", class: "icon-button", icon: "mdi-note-text", color: "secondary" },
-   { label: "Excel Data ", route: "/excel", class: "icon-button", icon: "mdi-table-edit", color: "secondary" },
+  { label: "Canvas Data", route: "/save", class: "icon-button", icon: "mdi-note-text", color: "secondary" },
+  { label: "Excel Data", route: "/excel", class: "icon-button", icon: "mdi-table-edit", color: "secondary" },
   { label: "More", route: "/", class: "icon-button", icon: "mdi-dots-horizontal", color: "pink darken-2" }
 ];
-
-
-function logoutUser() { 
-  localStorage.removeItem('isLoggedIn'); 
-  router.push({ name: 'loginPage' });
-}
 </script>
 
+<style scoped>
+.container {
+  background-color: #e7f2fc;
+  padding: 20px 0px;
+  margin-top: 70px;
+}
 
-
-<style scoped> 
- 
 .custom-btn {
   text-transform: none;
   font-weight: 600;
@@ -134,15 +153,13 @@ function logoutUser() {
   box-shadow: 0 4px 15px rgba(48, 63, 159, 0.4);
 }
 
- 
 .icon-col {
-  margin: 0 12px; 
+  margin: 0 12px;
   display: flex;
   flex-direction: column;
   align-items: center;
 }
 
- 
 .icon-button {
   background-color: transparent;
   border-radius: 50%;
@@ -152,22 +169,21 @@ function logoutUser() {
   align-items: center;
   justify-content: center;
   transition: transform 0.3s ease, box-shadow 0.3s ease;
-  cursor: pointer; 
+  cursor: pointer;
   border: 2px solid transparent;
 }
 
 .icon-button:hover {
   transform: scale(1.1);
   box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
-  border-color: #1a237e;  
+  border-color: #1a237e;
 }
 
- 
 .v-icon {
   transition: color 0.3s ease;
 }
 
-  .icon-label {
+.icon-label {
   color: #424242;
   text-transform: capitalize;
   font-weight: 500;
@@ -181,7 +197,6 @@ function logoutUser() {
   color: #1a237e;
 }
 
- 
 h2 {
   font-weight: 700;
   font-size: 2.25rem;
@@ -194,13 +209,12 @@ h2 .text-primary {
   color: #3f51b5;
 }
 
-.gradient-text { 
-   font-weight: 600; 
+.gradient-text {
+  font-weight: 600;
   font-size: 28px;
   color: #2d7cc7;
 }
 
- 
 p {
   font-size: 1.125rem;
   color: #616161;
@@ -208,17 +222,15 @@ p {
   margin-top: 12px;
 }
 
- 
 .v-container.py-12 {
   padding-top: 3rem !important;
   padding-bottom: 3rem !important;
 }
- 
+
 .mt-13 {
   margin-top: 52px;
 }
 
- 
 @media (max-width: 960px) {
   h2 {
     font-size: 1.75rem;
@@ -234,5 +246,4 @@ p {
     font-size: 0.8rem;
   }
 }
-
 </style>

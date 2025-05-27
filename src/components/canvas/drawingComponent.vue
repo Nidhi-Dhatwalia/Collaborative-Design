@@ -1,6 +1,6 @@
 <template>
-  <v-dialog v-model="dialog" max-width="400px" max-height="400px">
-    <v-card>
+  <v-dialog v-model="dialog" max-width="400px" max-height="500px"  @keydown.enter="applySettings" >
+    <v-card  >
       <v-card-title class="headline">Drawing Settings</v-card-title>
       <v-card-text>
         <v-container>

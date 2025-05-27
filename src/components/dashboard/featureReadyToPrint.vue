@@ -32,7 +32,7 @@ import readyToPrint from '@/assets/ready-to-print.jpg'
 <style scoped>
 .features-container {
   padding: 50px;
-  background-color: #f5f5f5;
+  background-color: #e7f2fc;
 }
 
 .content-wrapper {

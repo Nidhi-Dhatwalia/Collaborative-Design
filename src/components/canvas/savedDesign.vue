@@ -8,8 +8,7 @@
           <v-list class="design-list">
             <v-list-item
               v-for="(design, index) in savedDesigns"
-              :key="index"
-              :class="{ selected: selectedDesignIndex === index }"
+              :key="index" 
               class="mb-2 rounded-md transition-all"
               elevation="1"
             >
@@ -29,9 +28,8 @@
               </div>
             </v-list-item>
           </v-list>
-        </div>
-
-        <!-- Back to Canvas Button in Sidebar bottom -->
+          
+        <!-- Back Button     -->
         <v-btn
           color="success"
           class="mt-6 small-btn"
@@ -40,6 +38,8 @@
         >
           Back to Canvas
         </v-btn>
+        </div>
+
       </v-col>
 
       <!-- Canvas Preview Area -->

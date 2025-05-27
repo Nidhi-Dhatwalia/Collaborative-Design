@@ -1,303 +1,180 @@
 <template>
-  <v-container class="pa-4" fluid>
+  <div class="sheet-app">
+    <header class="navbar">
+      <router-link to="/home">
+        <v-icon>mdi-arrow-left</v-icon>
+      </router-link>
+      <h1 class="title">Excel Data </h1>
+    </header>
 
+    <div class="content">
+      <!-- Sidebar -->
+      <aside class="sidebar">
+        <h3>Load Sheets</h3>
+        <div v-if="savedSheets.length === 0" class="no-sheets">No saved sheets found</div>
+        <ul v-else>
+          <li v-for="(sheet, index) in savedSheets" :key="sheet.key" class="sheet-item">
+            <button class="load-btn" @click="loadSheet(sheet.key)">
+            Excel Sheet   {{ index + 1 }}
+            </button>
+            <v-icon class="delete-btn" @click="deleteSheet(sheet.key)">mdi-delete</v-icon>
+          </li>
+        </ul>
+      </aside>
 
-
-    <v-row>
-      <!-- Sidebar with saved sheets list -->
-      <v-col cols="12" md="4" class="sidebar">
-        <div v-if="savedSheets.length === 0" class="no-sheets-msg">
-          <p>No saved sheets found.</p>
-        </div>
-
-        <v-list dense>
-              <h2 class="text-h5 font-weight-bold mb-4">Saved Excel Sheets</h2>
-          <v-list-item
-            v-for="(sheet, index) in savedSheets"
-            :key="sheet.key"
-            class="mb-2 rounded-md transition-all"
-            :class="{ 'selected': selectedSheetKey === sheet.key }"
-            elevation="1"
-          >
-            <div
-              class="design-item d-flex justify-space-between align-center w-100"
-              @click="loadSheet(sheet.key)"
-            >
-              <div class="design-title font-weight-medium">
-                Sheet {{  index + 1 }}
-              </div>
-              <v-icon
-                color="red"
-                class="delete-icon"
-                @click.stop="deleteSheet(sheet.key)"
-                aria-label="Delete sheet"
-              >
-                mdi-delete
-              </v-icon>
-              
-            </div>
-          </v-list-item>
-    <v-btn color="secondary" class="mb-4" @click="goBack"> <v-icon > mdi-arrow-left   </v-icon>   Back </v-btn>
-        </v-list>
-      </v-col>
-
-      <!-- Main content area -->
-      <v-col cols="12" md="8" class="main-content">
-        <div v-if="sheetData.length" class="excel-wrapper">
-          <div class="row header-row">
-            <div class="cell row-header"></div>
-            <div class="cell col-header" v-for="col in colLabels" :key="col">
-              {{ col }}
-            </div>
-          </div>
-
-          <div class="row" v-for="(row, rowIndex) in sheetData" :key="rowIndex">
-            <div class="cell row-header">{{ rowIndex + 1 }}</div>
-            <div
-              class="cell"
-              v-for="(col, colIndex) in colLabels"
-              :key="colIndex"
-              :style="{
-                fontWeight: cellStyles[rowIndex]?.[colIndex]?.isBold ? 'bold' : 'normal',
-                fontStyle: cellStyles[rowIndex]?.[colIndex]?.isItalic ? 'italic' : 'normal',
-                textDecoration: cellStyles[rowIndex]?.[colIndex]?.isUnderline ? 'underline' : 'none',
-                fontSize: (cellStyles[rowIndex]?.[colIndex]?.fontSize || 16) + 'px',
-                textAlign: cellStyles[rowIndex]?.[colIndex]?.alignment || 'center',
-              }"
-            >
-              {{ row[colIndex] || '' }}
-            </div>
-          </div>
-        </div>
-
-        <div v-else class="empty-message">
-          <p>Choose a sheet to see it.</p>
-        </div>
-      </v-col>
-    </v-row>
-  </v-container>
+      <!-- Sheet display -->
+      <main class="sheet-wrapper">
+        <div ref="hotContainer" class="hot-container"></div>
+      </main>
+    </div>
+  </div>
 </template>
 
 <script setup>
 import { ref, onMounted } from "vue";
-import { useRouter } from "vue-router";
+import Handsontable from "handsontable";
+import "handsontable/dist/handsontable.full.min.css";
 
-const router = useRouter();
+const hotContainer = ref(null);
+let hotInstance = null;
 
 const savedSheets = ref([]);
-const sheetData = ref([]);
-const cellStyles = ref([]);
-const selectedSheetKey = ref(null);
 
-const colLabels = Array.from({ length: 26 }, (_, i) =>
-  String.fromCharCode(65 + i)
-);
-
-const fetchSavedSheets = () => {
+// Fetch all saved sheets keys starting with "sheetData_"
+function fetchSavedSheets() {
   savedSheets.value = [];
-
   for (let i = 0; i < localStorage.length; i++) {
     const key = localStorage.key(i);
-    if (key.startsWith("excelSheetData_")) {
-      savedSheets.value.push({
-        key,
-        date: new Date(key.replace("excelSheetData_", "")).toLocaleString(),
-      });
+    if (key.startsWith("sheetData_")) {
+      savedSheets.value.push({ key });
     }
   }
+  savedSheets.value.sort((a, b) => (a.key < b.key ? 1 : -1)); // newest first
+}
 
-  savedSheets.value.reverse();
-};
-
-const loadSheet = (key) => {
-  selectedSheetKey.value = key;
-
-  const data = localStorage.getItem(key);
-  const styleKey = key.replace("excelSheetData_", "excelCellStyles_");
-  const styles = localStorage.getItem(styleKey);
-
-  if (data) {
-    try {
-      sheetData.value = JSON.parse(data);
-    } catch (e) {
-      sheetData.value = [];
-      console.error("Error parsing sheet data", e);
-    }
-  } else {
-    sheetData.value = [];
+// Load sheet data into Handsontable
+function loadSheet(key) {
+  const data = JSON.parse(localStorage.getItem(key));
+  if (data && hotInstance) {
+    hotInstance.loadData(data);
   }
+}
 
-  if (styles) {
-    try {
-      cellStyles.value = JSON.parse(styles);
-    } catch (e) {
-      cellStyles.value = [];
-      console.error("Error parsing cell styles", e);
-    }
-  } else {
-    cellStyles.value = [];
-  }
-};
+ 
+function deleteSheet(key) {
+  localStorage.removeItem(key); 
+  fetchSavedSheets();
+   
+}
 
-const deleteSheet = (key) => {
-  const styleKey = key.replace("excelSheetData_", "excelCellStyles_");
-
-  localStorage.removeItem(key);
-  localStorage.removeItem(styleKey);
-
-  if (selectedSheetKey.value === key) {
-    sheetData.value = [];
-    cellStyles.value = [];
-    selectedSheetKey.value = null;
-  }
+onMounted(() => { 
+  hotInstance = new Handsontable(hotContainer.value, {
+    data: Handsontable.helper.createEmptySpreadsheetData(30, 20),
+    rowHeaders: true,
+    colHeaders: true,
+    width: "100%",
+    height: "calc(100vh - 64px)", // navbar height subtracted
+    rowHeights: 30,
+    colWidths: 100,
+    licenseKey: "non-commercial-and-evaluation",
+    readOnly: true,
+  });
 
   fetchSavedSheets();
-};
-
-const goBack = () => {
-  router.push("/sheet");
-};
-
-onMounted(fetchSavedSheets);
+});
 </script>
 
-
-
 <style scoped>
-/* Sidebar styling */
-.sidebar {
-  border-right: 1px solid #ddd;
-  max-height: 75vh;
-  max-width: 280px;
-  overflow-y: auto;
-  padding-right: 12px;
-  background: #fafafa;
-  box-shadow: inset -2px 0 5px -2px rgba(0,0,0,0.1);
-  border-radius: 0 8px 8px 0;
-}
-
-/* Main content styling */
-.main-content {
-  max-height: 75vh;
-  overflow: auto;
-  padding-left: 20px;
-  background: #fff;
-  border-radius: 8px;
-  box-shadow: 0 0 10px rgb(0 0 0 / 0.05);
-}
-
-/* Excel wrapper styling */
-.excel-wrapper {
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-  user-select: none;
-  border: 1px solid #ccc;
-  min-height: 400px;
-  border-radius: 8px;
-  background: white;
-  box-shadow: inset 0 0 10px #eee;
-  padding: 8px;
-}
-
-/* Row styling */
-.row {
+.sheet-app {
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+  height: 100vh;
   display: flex;
-  min-width: max-content;
+  flex-direction: column;
 }
 
-/* Cell styling */
-.cell {
-  border: 1px solid #ddd;
-  width: 140px;
-  height: 50px;
+.navbar {
   display: flex;
   align-items: center;
-  justify-content: center;
-  padding: 6px 8px;
-  background-color: #fff;
+  background-color: #1976d2;
+  color: white;
+  padding: 12px 24px;
+  height: 64px;
+  flex-shrink: 0;
+}
+
+.title {
+  margin: 0 auto;
+  font-size: 1.5rem;
+}
+
+.content {
+  flex-grow: 1;
+  display: flex;
   overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-  transition: background-color 0.2s ease;
 }
 
-.cell:hover {
-  background-color: #f9f9f9;
+.sidebar {
+  width: 260px;
+  background: #f5f5f5;
+  padding: 16px;
+  overflow-y: auto;
+  border-right: 1px solid #ddd;
 }
 
-/* Header cells */
-.row-header,
-.col-header {
-  background-color: #f5f5f5;
-  font-weight: 700;
-  font-size: 0.9rem;
-  color: #333;
+.no-sheets {
+  color: #777;
+  font-style: italic;
 }
 
-/* List item selected */
-.v-list-item.selected {
-  background-color: #d1e9ff !important;
-  border-left: 4px solid #1976d2;
-  transition: background-color 0.3s ease;
+ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
 }
 
-/* List item hover */
-.v-list-item:hover {
-  background-color: #e3f2fd;
-  cursor: pointer;
-}
-
-/* Design item container */
-.design-item {
-  cursor: pointer;
-  user-select: none;
-  padding: 10px 16px;
-  border-radius: 10px;
-  transition: background-color 0.3s, box-shadow 0.3s;
+.sheet-item {
   display: flex;
   justify-content: space-between;
+  margin-bottom: 8px;
   align-items: center;
-  width: 100%;
-  box-shadow: 0 0 0 transparent;
 }
 
-.design-item:hover {
-  background-color: #bbdefb;
-  box-shadow: 0 4px 10px rgba(25, 118, 210, 0.3);
-}
-
-/* Title text */
-.design-title {
-  font-size: 1rem;
-  font-weight: 600;
-  color: #0d47a1;
-}
-
-/* Delete icon styling */
-.delete-icon {
+.load-btn {
+  background: none;
+  border: none;
+  color: #1976d2;
   cursor: pointer;
-  font-size: 22px;
-  transition: color 0.2s ease;
-  color: #e53935;
-  user-select: none;
+  text-align: left;
+  padding: 4px;
+  font-size:16px;
+  font-weight: bold;
 }
 
-.delete-icon:hover {
-  color: #b00020;
+.load-btn:hover {
+  text-decoration: underline;
 }
 
-/* Empty message */
-.empty-message {
-  font-size: 1.2rem;
-  font-weight: 600;
-  color: #666;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+.delete-btn { 
+  border: none;
+  color: red;
+  padding: 4px 8px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 24px;
+}
+
+.delete-btn:hover {
+  background: #b00020;
+}
+
+.sheet-wrapper {
+  flex-grow: 1;
+  padding: 16px;
+  overflow: auto;
+}
+
+.hot-container {
+  border: 1px solid #ccc;
   height: 100%;
-  min-height: 400px;
-  user-select: none;
-  text-align: center;
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
- 
 </style>

@@ -125,7 +125,7 @@ const handleSignUp = async () => {
     // Delay for 2 seconds to show success message, then redirect to login page
     setTimeout(() => {
       successMessage.value = "";
-      router.push("/dashboard");
+      router.push("/loginPage");
     }, 2000);
 
   } catch (error) {

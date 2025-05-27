@@ -9,15 +9,17 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@handsontable/vue3": "^15.3.0",
     "@mdi/font": "^7.4.47",
     "firebase": "^11.6.1",
+    "handsontable": "^15.3.0",
     "jspdf": "^3.0.1",
     "vite-plugin-vuetify": "^2.1.1",
     "vue": "^3.5.13",
     "vue-color": "^3.0.1",
     "vue-router": "^4.5.1",
-    "vuetify": "^3.8.3",
-    "xlsx": "^0.18.5"
+    "vue3-excel-editor": "^1.0.60",
+    "vuetify": "^3.8.3"
   },
   "devDependencies": {
     "@vitejs/plugin-vue": "^5.2.3",

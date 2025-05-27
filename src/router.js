@@ -1,5 +1,18 @@
  
-import { createRouter, createWebHistory } from 'vue-router'
+import { createRouter, createWebHistory } from 'vue-router' 
+
+
+const requireNoAuth = (to, from, next) => {
+  if (localStorage.getItem('authToken')) { 
+    next({ name: 'homePage' });
+  } else {
+    next();
+  }
+};
+
+
+
+
 import dashboardPage from './components/dashboard/dashboardPage.vue';
 import homePage from './components/homePage/homePage.vue';
 import canvasPage from './components/canvas/canvasPage.vue';
@@ -25,6 +38,7 @@ const routes = [
     path: '/',
     name: 'Dashboard',
     component: dashboardPage,
+      
   },
  {
     path: '/home',
@@ -76,6 +90,7 @@ const routes = [
     path: '/login',
     name: 'loginPage',
     component: loginPage,
+  beforeEnter: requireNoAuth,
   }, 
     {
     path: '/signup',
@@ -113,7 +128,6 @@ const router = createRouter({
   history: createWebHistory(),
   routes
 })
-
 
 
 export default router
