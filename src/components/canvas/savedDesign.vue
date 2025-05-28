@@ -45,14 +45,15 @@
       <!-- Canvas Preview Area -->
       <v-col cols="12" md="10" class="canvas-wrapper py-6 px-6">
         <div class="canvas-area">
-          <div v-if="selectedDesignIndex===null" class="text-center my-6 justify-center">
+          <div v-show="selectedDesignIndex===null" class="text-center my-6 justify-center">
             <v-icon size="64" color="grey lighten-2">mdi-image</v-icon>
             <h4 class="mt-2">No Design Selected</h4>
              
           
           <p> Please select a design from the sidebar to preview it.</p> 
           </div>
-          <canvas id="preview-canvas" width="900" height="500"></canvas>
+          <canvas id="preview-canvas" width="900" height="500"   v-show="selectedDesignIndex !== null"
+></canvas>
 
 
           
@@ -71,12 +72,7 @@ const selectedDesignIndex = ref(null)
 const isModified = ref(false)
 
 onMounted(() => {
-  try {
-    savedDesigns.value = JSON.parse(localStorage.getItem('savedDesigns')) || []
-  } catch (e) {
-    console.error('Error loading designs:', e)
-  }
-
+  
   const canvasElement = document.getElementById('preview-canvas')
   if (canvasElement) {
     canvasInstance = new fabric.Canvas(canvasElement)
@@ -85,8 +81,13 @@ onMounted(() => {
     canvasInstance.on('object:added', () => isModified.value = true)
     canvasInstance.on('object:removed', () => isModified.value = true)
   }
- 
+    try {
+      savedDesigns.value = JSON.parse(localStorage.getItem('savedDesigns')) || []
+    } catch (e) {
+      console.error('Error loading designs:', e)
+    }
 })
+ 
 
 const loadDesign = (design, index) => {
   selectedDesignIndex.value = index
@@ -172,7 +173,7 @@ const fitCanvasToViewport = () => {
 }
 
 .canvas-area {
-  width: 100%;
+  width: 57%;
   overflow-x: auto;
   border: 1px solid #000000;
   border-radius: 12px;
