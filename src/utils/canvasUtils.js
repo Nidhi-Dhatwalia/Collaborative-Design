@@ -5,7 +5,6 @@ const saveCanvasState = (canvas) => {
 
   // Get the current state of the canvas as a JSON object
   const currentState = canvas.toJSON(); 
-
   localStorage.setItem("savedDesign", JSON.stringify(currentState));
 };
 

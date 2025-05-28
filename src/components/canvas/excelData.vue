@@ -40,7 +40,7 @@ let hotInstance = null;
 
 const savedSheets = ref([]);
 
-// Fetch all saved sheets keys starting with "sheetData_"
+// Fetch all saved sheets 
 function fetchSavedSheets() {
   savedSheets.value = [];
   for (let i = 0; i < localStorage.length; i++) {
@@ -73,7 +73,7 @@ onMounted(() => {
     rowHeaders: true,
     colHeaders: true,
     width: "100%",
-    height: "calc(100vh - 64px)", // navbar height subtracted
+    height: "calc(100vh - 64px)", 
     rowHeights: 30,
     colWidths: 100,
     licenseKey: "non-commercial-and-evaluation",

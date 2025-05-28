@@ -11,17 +11,17 @@ const handleDrawingSettings = (canvas, settings) => {
     canvas.freeDrawingBrush = new fabric.PencilBrush(canvas);
   }
 
-  // ✅ Always attach path:created only once
+  // Always attach path:created  
   if (!canvas.__drawingEventAttached) {
     canvas.on('path:created', (event) => {
   if (event && event.path) {
     event.path.set({
-      fill: 'transparent', // ✅ Use 'transparent' instead of '' or null
+      fill: 'transparent',  
       stroke: canvas.freeDrawingBrush.color,
       strokeWidth: canvas.freeDrawingBrush.width,
     });
 
-    // Just to be safe — set again directly
+  
     event.path.fill = 'transparent';
 
     canvas.renderAll();
@@ -37,10 +37,7 @@ const handleDrawingSettings = (canvas, settings) => {
   canvas.freeDrawingBrush.color = settings.color || 'black';
   canvas.freeDrawingBrush.width = settings.weight || 2;
 
-  // Optional: Clear default prototype fill globally
-  if (fabric.Path.prototype.fill !== '') {
-    fabric.Path.prototype.fill = '';
-  }
+  
 
   setCanvasCursor(canvas);
 };

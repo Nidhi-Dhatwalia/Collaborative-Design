@@ -1,7 +1,7 @@
 <template>
   <v-container fluid class="login-page pa-0">
     <div class="outer-wrapper">
-      <!-- Login form div -->
+ 
       <div class="login-section">
         <v-card class="pa-8 login-card" outlined>
           <v-card-title class="text-center">

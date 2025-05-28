@@ -85,9 +85,11 @@ const handleSave = () => {
   localStorage.setItem(key, JSON.stringify(data));
   alert("Sheet saved successfully!");
 
+
   // Clear Handsontable
   const emptyData = Handsontable.helper.createEmptySpreadsheetData(30, 20);
   hotInstance.loadData(emptyData);
+
 
   // Remove data from Firebase
   const firebaseRef = dbRef(db, "sheetData");

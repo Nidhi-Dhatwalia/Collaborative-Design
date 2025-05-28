@@ -247,8 +247,7 @@ function downloadResume() {
   padding: 10px 20px;
   border-radius: 5px;
 }
-
-/* Responsive styling */
+ 
 @media (max-width: 960px) {
   .professional {
     width: 90vw;

@@ -75,9 +75,7 @@ const experience = ref({
 const downloadResume = () => {
   const doc = new jsPDF();
 
-  const imgPath = 'your-image-url-here';  // Replace with actual image URL or remove if unused
-  // Uncomment the next line if you have an image to add
-  // doc.addImage(imgPath, 'JPEG', 15, 15, 30, 30);
+  const imgPath = 'your-image-url-here';   
 
   doc.setFont("helvetica", "bold");
   doc.setFontSize(20);
@@ -167,7 +165,7 @@ const downloadResume = () => {
   border-radius: 5px;
 }
 
-/* Responsive Styles */
+ 
 @media (max-width: 1024px) {
   .resume-editor {
     width: 70vw;

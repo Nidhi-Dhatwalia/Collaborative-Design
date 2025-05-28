@@ -69,7 +69,7 @@ const closeDialog = () => {
   margin: auto;
 }
 
-/* RGB/HEX input field hide karna */
+ 
 .v-color-picker__input {
   display: none !important;
 }

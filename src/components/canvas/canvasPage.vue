@@ -1,7 +1,7 @@
 <template>
-  <v-app>
-    <v-app-bar color="black lighten-4">
-      <v-toolbar flat class="gradient-toolbar px-4 py-2">
+  <v-app fluid>
+    <v-app-bar >
+      <v-toolbar  class="gradient-toolbar px-6 py-2">
         <v-row align="center" justify="space-between" class="w-100">
           <router-link to="/home">
             <v-btn icon style="color: white">
@@ -200,7 +200,7 @@ const loadCanvasFromFirebase = () => {
       let timeoutTriggered = false;
 
       const timeout = setTimeout(() => {
-        console.warn("loadFromJSON callback NOT triggered in 3s, resetting flag manually");
+        console.log("loadFromJSON callback NOT triggered in 3s, resetting flag manually");
         isDataLoadingFromFirebase = false;
              isLoading.value = false;
         timeoutTriggered = true;
@@ -337,6 +337,7 @@ const iconsList = ref([
   {icon: "mdi-content-save", label: "Saved Designs",actionType: "route",action: "/save",  },
 ]);
 
+
 onMounted(() => {
   const initializedCanvas = initCanvas();
   if (!initializedCanvas) {
@@ -362,20 +363,18 @@ onMounted(() => {
 </script>
 
 <style scoped>
+ 
 .v-main {
   height: 100vh;
   overflow: auto;
 }
+
 .gradient-toolbar {
   background-color: #7f7fd5;
-  color: white;
+  color: white; 
 }
 
-.main-container {
-  display: flex;
-  height: 100%;
-  flex-wrap: nowrap;
-}
+ 
 
 .loading-overlay {
   position: absolute;
@@ -490,10 +489,7 @@ canvas#my-canvas {
 }
 
 @media (max-width: 600px) {
-  .main-container {
-    flex-direction: column;
-    height: auto;
-  }
+   
 
   .v-navigation-drawer:nth-of-type(2) {
     display: none !important;

@@ -195,8 +195,7 @@ const downloadResume = () => {
   padding: 12px 20px;
   border-radius: 5px;
 }
-
-/* Responsive Adjustments */
+ 
 @media (max-width: 1024px) {
   .resume-editor {
     width: 70vw;
