@@ -1,4 +1,3 @@
-
 <template>
   <v-app>
     <v-app-bar color="black lighten-4">
@@ -27,29 +26,47 @@
       />
       <v-container fluid class="d-flex pa-0">
         <v-navigation-drawer width="150" color="white">
-          <v-list dense nav>
-            <template v-for="(item, index) in iconsList" :key="index">
-              <router-link v-if="item.actionType === 'route'" :to="item.action">
-                <v-list-item>
-                  <v-btn outlined icon>
-                    <v-icon>{{ item.icon }}</v-icon>
-                  </v-btn>
-                  <v-list-item-title>{{ item.label }}</v-list-item-title>
-                </v-list-item>
-              </router-link>
-              <v-list-item v-else @click="() => handleAction(item)">
-                <v-btn outlined icon>
-                  <v-icon>{{ item.icon }}</v-icon>
-                </v-btn>
-                <v-list-item-title>{{ item.label }}</v-list-item-title>
-              </v-list-item>
-            </template>
-          </v-list>
-        </v-navigation-drawer>
+  <v-list dense nav>
+    <template v-for="(item, index) in iconsList" :key="index">
+      
+      <router-link
+        v-if="item.actionType === 'route'"
+        :to="item.action"
+        @click="selectedIndex = index"
+        style="text-decoration: none; color: inherit"
+      >
+        <v-list-item>
+          <v-btn outlined icon>
+            <v-icon >
+              {{ item.icon }}
+            </v-icon>
+          </v-btn>
+          <v-list-item-title>{{ item.label }}</v-list-item-title>
+        </v-list-item>
+      </router-link>
 
-        <v-navigation-drawer width="100">
-          <elementsPage v-if="showShapesMenu" />
-        </v-navigation-drawer>
+      <v-list-item v-else @click="() => { selectedIndex = index; handleAction(item); }">
+        <v-btn outlined icon>
+          <v-icon>
+            {{ item.icon }}
+          </v-icon>
+        </v-btn>
+        <v-list-item-title>{{ item.label }}</v-list-item-title>
+      </v-list-item>
+
+    </template>
+  </v-list>
+</v-navigation-drawer>
+
+
+    <v-slide-x-transition>
+    <div
+      v-show="showShapesMenu"
+      class="custom-sidebar"
+    >
+      <elementsPage />
+    </div>
+   </v-slide-x-transition>
 
         <drawingComponent
           v-if="isDrawingMode"
@@ -73,8 +90,7 @@
         <div class="right-sidebar">
           <v-btn class="btn-style" block @click="upload">Save</v-btn>
           <v-btn class="btn-style" block @click="downloadCanvas"
-            >Download</v-btn
-          >
+            >Download</v-btn>
           <v-btn class="btn-style" block @click="clearAll">Clear All</v-btn>
         </div>
       </v-container>
@@ -157,86 +173,75 @@ const saveCanvasState = () => {
   syncCanvasWithFirebase(cleanedState);
 };
 
-// Load Data from Firebase
-// Load Data from Firebase
+// Load Data from Firebase 
 const loadCanvasFromFirebase = () => {
-  isLoading.value = true;
-  const canvasRef = firebaseRef(db, "canvasDesigns");
-  
+    isLoading.value = true; 
+  const canvasRef = firebaseRef(db, 'canvasDesigns');
+  // console.log("Loading canvas data from Firebase...");
   onValue(canvasRef, (snapshot) => {
-    try {
-      if (snapshot.exists()) {
-        isDataLoadingFromFirebase = true;
-        const canvasData = snapshot.val();
+    if (snapshot.exists()) {
+      isDataLoadingFromFirebase = true;
+      const canvasData = snapshot.val();
 
-        console.log("Firebase data received:", canvasData);
+      console.log("Firebase data received:", canvasData);
 
-          canvas.value.off("object:added", saveCanvasState);
-          canvas.value.off("object:modified", saveCanvasState);
-          canvas.value.off("object:removed", saveCanvasState);
+      canvas.value.off('object:added');
+      canvas.value.off('object:modified');
+      canvas.value.off('object:removed');
 
-        if (!canvas.value) {
-          console.error("canvas.value is NULL before load");
-          isLoading.value = false;
-          return;
-        }
-
-        let timeoutTriggered = false;
-        const timeout = setTimeout(() => {
-          console.warn("loadFromJSON timeout - proceeding without callback");
-          timeoutTriggered = true;
-          isLoading.value = false;
-        }, 2000);
-
-        canvas.value.loadFromJSON(canvasData, () => {
-          if (timeoutTriggered) return;
-          clearTimeout(timeout);
-          
-          console.log("Canvas loaded successfully");
-          canvas.value.renderAll();
-          
-          // Reattach event listeners
-          canvas.value.on("object:added", saveCanvasState);
-          canvas.value.on("object:modified", saveCanvasState);
-          canvas.value.on("object:removed", saveCanvasState);
-          
-          isDataLoadingFromFirebase = false;
-          isLoading.value = false;
-        });
-      } else {
-        console.log("No data in Firebase - initializing empty canvas");
-        if (canvas.value) {
-          canvas.value.clear();
-          // Initialize with empty state if needed
-          const emptyState = {
-            objects: [],
-            background: 'white'
-          };
-          canvas.value.loadFromJSON(emptyState, () => {
-            canvas.value.renderAll();
-          });
-        }
-        isLoading.value = false;
+      if (!canvas.value) {
+        console.error("canvas.value is NULL before load");
+             isLoading.value = false;
+        isDataLoadingFromFirebase = false;
+        return;
       }
-    } catch (error) {
-      console.error("Error loading canvas:", error);
-      isLoading.value = false;
+
+      isDataLoadingFromFirebase = true;
+      let timeoutTriggered = false;
+
+      const timeout = setTimeout(() => {
+        console.warn("loadFromJSON callback NOT triggered in 3s, resetting flag manually");
+        isDataLoadingFromFirebase = false;
+             isLoading.value = false;
+        timeoutTriggered = true;
+      }, 3000);
+  // Ensure the data is properly structured
+      if (canvasData && canvasData.objects) {
+        canvas.value.loadFromJSON(canvasData, () => {
+
+  console.log("loadFromJSON callback triggered");
+
+  setTimeout(() => {
+    canvas.value.renderAll();  
+   
+    // Ensure events are set after render
+    canvas.value.on('object:added', saveCanvasState);
+    canvas.value.on('object:modified', saveCanvasState);
+    canvas.value.on('object:removed', saveCanvasState);
+
+    isDataLoadingFromFirebase = false;
+         isLoading.value = false;
+    console.log("Canvas fully loaded. Flag reset:", isDataLoadingFromFirebase);
+  }, 100);
+
+});
+      }  
+    } else {
+      console.log("Firebase: No canvas data found");
+      isDataLoadingFromFirebase = false;
+           isLoading.value = false;
     }
-  }, (error) => {
-    console.error("Firebase read failed:", error);
-    isLoading.value = false;
   });
 };
 
+       
+
 // Toggle shapes menu visibility
-const toggleShapesMenu = () => (showShapesMenu.value = !showShapesMenu.value);
+const toggleShapesMenu = () => (
+  showShapesMenu.value = !showShapesMenu.value);
 
 // Download canvas as an image
 const downloadCanvas = () => {
-  if (!canvas.value) {
-    console.warn("Canvas is not initialized. Cannot download.");
-    return;
-  }
   const dataUrl = canvas.value.toDataURL({ format: "png", quality: 1 });
   const link = document.createElement("a");
   link.href = dataUrl;
@@ -246,33 +251,18 @@ const downloadCanvas = () => {
 
 // Create a new design
 const createNewDesign = () => {
-  //  Save current design to localStorage before clearing
-  const currentDesign = canvas.value.toJSON();
-  const existingDesigns =
-    JSON.parse(localStorage.getItem("savedDesigns")) || [];
-  existingDesigns.push(currentDesign);
-  localStorage.setItem("savedDesigns", JSON.stringify(existingDesigns));
-
-  //   Remove event listeners
-  canvas.value.off("object:added");
-  canvas.value.off("object:modified");
-  canvas.value.off("object:removed");
-
-  //  Clear canvas
+  canvas.value.off('object:added');
+  canvas.value.off('object:modified');
+  canvas.value.off('object:removed');
   canvas.value.clear();
-
-  //  Sync blank canvas to Firebase
-  const canvasRef = firebaseRef(db, "canvasDesigns");
-  set(canvasRef, {}).then(() => {
-    console.log("Firebase cleared");
-    syncCanvasWithFirebase(canvas.value.toJSON());
-  });
-
-  //  Re-attach event listeners
-  canvas.value.on("object:added", saveCanvasState);
-  canvas.value.on("object:modified", saveCanvasState);
-  canvas.value.on("object:removed", saveCanvasState);
+  syncCanvasWithFirebase(canvas.value.toJSON());
+  localStorage.removeItem("savedDesign");
+  canvas.value.on('object:added', saveCanvasState);
+  canvas.value.on('object:modified', saveCanvasState);
+  canvas.value.on('object:removed', saveCanvasState);
 };
+
+
 const clearAll = () => {
   if (canvas.value) {
     canvas.value.clear();
@@ -301,6 +291,8 @@ const setCanvasCursor = () => {
     : "default";
 };
 
+
+
 // Apply drawing settings to the canvas
 const handleDrawingSettings = (settings) => {
   if (!canvas.value) {
@@ -325,22 +317,17 @@ const upload = () => {
   canvas.value.on("object:added", saveCanvasState);
   canvas.value.on("object:modified", saveCanvasState);
   canvas.value.on("object:removed", saveCanvasState);
-  exitDrawingMode();
+   
 };
 
 // Handle action based on menu item
-const handleAction = (item) => {
+const handleAction = (item) => { 
+ 
   if (item.actionType === "function" && typeof item.action === "function") {
     item.action();
   }
 };
-const exitDrawingMode = () => {
-  if (!canvas.value) return;
-  canvas.value.isDrawingMode = false;
-  canvas.value.defaultCursor = "default";
-  isDrawingMode.value = false;
-};
-
+ 
 // Icons list for the menu
 const iconsList = ref([
   { icon: "mdi-file-plus",label: "New Design",actionType: "function",action: createNewDesign, },
@@ -403,6 +390,8 @@ onMounted(() => {
   z-index: 10;
   pointer-events: none;  
 }
+
+
 
 .nav-list-left {
   padding-top: 10px;
@@ -479,7 +468,12 @@ canvas#my-canvas {
   background-color: #7f7fd5;
   color: white;
 }
-
+.custom-sidebar {
+  width: 100px;
+  background-color: #f5f5f5;
+  height: 100vh;
+  position: fixed;  
+}
 @media (max-width: 1024px) {
   .v-navigation-drawer:first-of-type {
     width: 120px !important;

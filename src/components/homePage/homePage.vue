@@ -92,7 +92,7 @@ const router = useRouter();
 
 function logoutUser() {
   auth.signOut().then(() => {
-    localStorage.removeItem('authToken');
+    localStorage.removeItem('userEmail');
     router.push({ name: 'loginPage' });
   }).catch((error) => {
     console.error('Logout error:', error);

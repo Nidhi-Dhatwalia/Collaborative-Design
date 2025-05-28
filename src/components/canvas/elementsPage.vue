@@ -51,6 +51,7 @@ const { canvas, initCanvas } = useGlobalCanvas()
 const selectedColor = ref('#000000')
 const isObjectSelected = ref(false)
 const showTextDialog = ref(false)
+const isDrawingMode = ref(false)
 
 const shapeButtons = [
   { type: 'rectangle', icon: 'mdi-rectangle' },
@@ -145,6 +146,7 @@ const createShape = (type) => {
   if (shape) {
     canvas.value.add(shape)
     canvas.value.renderAll()
+      disableDrawingMode(),
     saveCanvasState()
   }
 }
@@ -202,6 +204,15 @@ const deleteSelected = () => {
 const updateColor = (event) => {
   selectedColor.value = event.target.value
 }
+
+
+const disableDrawingMode = () => {
+  if (!canvas.value) return;
+
+  canvas.value.isDrawingMode = false;
+  isDrawingMode.value = false;
+  canvas.value.defaultCursor = "default";  
+};
 </script>
 
 <style scoped>

@@ -1,15 +1,14 @@
  
 import { createRouter, createWebHistory } from 'vue-router' 
 
-
 const requireNoAuth = (to, from, next) => {
-  if (localStorage.getItem('authToken')) { 
+  const storedEmail = localStorage.getItem('userEmail');
+  if (storedEmail) {
     next({ name: 'homePage' });
   } else {
     next();
   }
 };
-
 
 
 
