@@ -11,10 +11,10 @@
 </template>
 
 <style scoped>
-.custom-container {
-  background: linear-gradient(to right, #5dc8d6, #6a57e7, #8444dd);
-  color: white;
-  height: 70vh;
+.custom-container {  
+  background-color: #e7f1f8;
+  color: rgb(7, 7, 7);
+  height: 40vh;
   width: 100%;
   display: flex;
   align-items: center;
@@ -41,6 +41,8 @@
 }
 
 .start-btn {
+  background-color: rgb(34, 129, 207);
+  color: white;
   border-radius: 30px;
   font-size: 1.2rem;
   text-transform: none;

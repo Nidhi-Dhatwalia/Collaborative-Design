@@ -7,7 +7,7 @@
           Teamwork & Canvas Gallery
         </h2>
  
-        <v-sheet class="pa-4 rounded-lg gallery-bg mb-10 ">
+        <v-sheet class="pa-4 rounded-lg gallery-bg mb-0 ">
           <v-row
             justify="center"
             align="center"
@@ -23,7 +23,7 @@
               <v-img
                 :src="img"
                 alt="Image"
-                height="140"
+                height="160"
                 width="220"
                 class="rounded"
                 contain
@@ -54,10 +54,10 @@ const images = [
   text-align: center;
 }
 .mb-8 {
-  margin-bottom: 2rem;
+  margin-bottom: 1rem;
 }
 .mb-12 {
-  margin-bottom: 3rem;
+  margin-bottom: 1rem;
 }
 .rounded {
   border-radius: 12px;

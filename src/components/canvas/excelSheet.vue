@@ -2,12 +2,11 @@
   <div class="sheet-app">
     <!-- Navbar -->
     <header class="navbar">
-      
-      <router-link to="/home" > 
-      <v-icon color=white> mdi-arrow-left </v-icon>
-       </router-link>
+      <router-link to="/home">
+        <v-icon color="white">mdi-arrow-left</v-icon>
+      </router-link>
       <h1 class="title">Excel Sheet</h1>
-      <button class="save-button" @click="handleSave"> Save </button>
+      <button class="save-button" @click="handleSave">Save</button>
     </header>
 
     <!-- Sheet Container -->
@@ -21,9 +20,8 @@
 import { onMounted, ref } from "vue";
 import Handsontable from "handsontable";
 import "handsontable/dist/handsontable.full.min.css";
- 
 import { db } from "@/firebase";
-import { ref as dbRef, onValue, set,remove  } from "firebase/database";
+import { ref as dbRef, onValue, set, remove } from "firebase/database";
 
 const hotContainer = ref(null);
 let hotInstance = null;
@@ -43,16 +41,33 @@ onMounted(() => {
     manualColumnResize: true,
     manualRowResize: true,
     contextMenu: true,
-    mergeCells: true, 
+    mergeCells: true,
     dropdownMenu: true,
     filters: true,
     readOnly: false,
+    comments: true,
     autoWrapRow: true,
     autoWrapCol: true,
 
+    // Use the `cells` property to apply styles to cells
+    cells: (row, col) => {
+      const cellProperties = {};
+
+      // Apply font-style, font-size, and font-weight based on conditions
+      if (row === 0 && col === 0) {
+        // For the first cell
+        cellProperties.style = {
+          fontSize: '16px',
+          fontWeight: 'bold',
+          fontStyle: 'italic',
+        };
+      }
+
+      return cellProperties;
+    },
 
     afterChange(changes, source) {
-      if (source === "loadData") return;  
+      if (source === "loadData") return;
 
       const data = hotInstance.getData();
       set(firebaseRef, data)
@@ -65,7 +80,7 @@ onMounted(() => {
     },
   });
 
-  //  Load data from Firebase on mount
+  // Load data from Firebase on mount
   onValue(firebaseRef, (snapshot) => {
     const data = snapshot.val();
     console.log("Loaded data from Firebase:");
@@ -85,11 +100,9 @@ const handleSave = () => {
   localStorage.setItem(key, JSON.stringify(data));
   alert("Sheet saved successfully!");
 
-
   // Clear Handsontable
   const emptyData = Handsontable.helper.createEmptySpreadsheetData(30, 20);
   hotInstance.loadData(emptyData);
-
 
   // Remove data from Firebase
   const firebaseRef = dbRef(db, "sheetData");
@@ -101,9 +114,6 @@ const handleSave = () => {
       console.error("Error removing data from Firebase:", err);
     });
 };
- 
-
-
 </script>
 
 <style scoped>
@@ -137,6 +147,7 @@ const handleSave = () => {
   cursor: pointer;
   transition: background 0.2s ease;
 }
+
 .save-button:hover {
   background-color: #f0f0f0;
 }

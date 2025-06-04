@@ -76,12 +76,9 @@
 
           <v-col cols="12" sm="8" md="6" class="mb-2">
             <v-color-picker
-              v-model="color"
-              hide-canvas
-              hide-sliders
+              v-model="color" 
               hide-inputs
-              width="100%"
-              show-swatches
+              width="100%" 
               flat
             />
           </v-col>
@@ -118,6 +115,7 @@ const fontOptions = [
   'Courier New',
   'Roboto',
   'Tahoma',
+  'Ubuntu',
 ];
 
 const applySettings = () => {

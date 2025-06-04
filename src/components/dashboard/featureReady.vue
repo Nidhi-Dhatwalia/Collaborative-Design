@@ -1,19 +1,7 @@
 <template>
   <div class="features-container">
     <div class="content-wrapper">
-      <div class="text-section">
-            <v-icon size ="x-large"> mdi-printer </v-icon>
-        <h2 class="title">Ready-to-print designs</h2>
-        <p class="description">
-          Design and print your own posters, invites, cards and more.
-          Everything you design in Canva is ready to send to the printer, or to print from home.
-        </p>
-        <div class="button-group">
-          <v-btn color="primary" class="btn">Start Designing</v-btn>
-          <v-btn color="secondary" class="btn">Browse Printables</v-btn>
-        </div>
-      </div>
-
+      
       <v-img
         :src="readyToPrint"
         alt="Team Collaboration"
@@ -21,6 +9,15 @@
         contain
         class="feature-image"
       ></v-img>
+      
+      <div class="text-section"> 
+        <h2 class="title">Schedule and share your Designs instantly</h2>
+        <p class="description">
+          Design and print your own posters, invites, cards and more.
+          Everything you design in Canva is ready to send to the printer, or to print from home.
+        </p> 
+      </div>
+
     </div>
   </div>
 </template>
@@ -32,7 +29,7 @@ import readyToPrint from '@/assets/ready-to-print.jpg'
 <style scoped>
 .features-container {
   padding: 50px;
-  background-color: #e7f2fc;
+  background-color: #f8f8f8;
 }
 
 .content-wrapper {

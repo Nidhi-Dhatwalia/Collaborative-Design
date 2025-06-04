@@ -6,6 +6,8 @@ import {
   set,
   onValue
 } from "firebase/database";
+import { push, query, orderByChild, equalTo } from "firebase/database";
+
 import { getAuth } from 'firebase/auth';
 
 const firebaseConfig = {
@@ -23,4 +25,4 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const db = getDatabase(app);
 const auth = getAuth(app); 
-export { app, db, auth, ref, set, onValue };
+export { app, db, auth, ref, set, onValue, push, query, orderByChild, equalTo };

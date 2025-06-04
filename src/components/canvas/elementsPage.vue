@@ -1,27 +1,33 @@
 <template>
-  <v-container class="d-flex justify-center">
+  <v-container>
+    <div class="toolbar-wrapper"> 
+     <div class="icon-toolbar" >
     <v-row class="pa-0 ma-0" justify="center" align="center" wrap>
       <v-col
         cols="auto"
         class="mx-1 my-1"
         v-for="btn in shapeButtons"
         :key="btn.type"
+        :style="{ color: btn.color }"
       >
-        <v-btn icon @click="createShape(btn.type)" class="custom-icon-btn">
-          <v-icon size="24">{{ btn.icon }}</v-icon>
-        </v-btn>
+       
+          <v-icon @click="createShape(btn.type)" class="custom-icon-btn" size="25"  :style="{  color: btn.color, backgroundColor: btn.bgColor, }" >{{ btn.icon }}</v-icon>
       </v-col>
+  
       <v-col
         cols="auto"
         class="mx-1 my-1"
         v-for="btn in zoomButtons"
         :key="btn.action"
       >
-        <v-btn icon @click="btn.action === 'in' ? zoomIn() : zoomOut()" class="custom-icon-btn">
-          <v-icon size="24">{{ btn.icon }}</v-icon>
-        </v-btn>
+         
+          <v-icon  @click="btn.action === 'in' ? zoomIn() : zoomOut()" class="custom-icon-btn" size="25"  :style="{  color: btn.color, backgroundColor: btn.bgColor, }" >{{ btn.icon }}</v-icon>
+     
       </v-col>
     </v-row>
+
+     </div>
+    </div> 
   </v-container>
 
   <div v-show="isObjectSelected" class="color-picker-container">
@@ -48,21 +54,22 @@ import { useGlobalCanvas } from '@/composables/globalCanvas'
 import textSettings from '../canvas/textSettings.vue'
 
 const { canvas, initCanvas } = useGlobalCanvas()
+
 const selectedColor = ref('#000000')
 const isObjectSelected = ref(false)
 const showTextDialog = ref(false)
 const isDrawingMode = ref(false)
 
 const shapeButtons = [
-  { type: 'rectangle', icon: 'mdi-rectangle' },
-  { type: 'circle', icon: 'mdi-circle' },
-  { type: 'triangle', icon: 'mdi-triangle' },
-  { type: 'text', icon: 'mdi-format-text' }
+  { type: 'rectangle', icon: 'mdi-rectangle',   color: '#992bff'},
+  { type: 'circle', icon: 'mdi-circle' ,color: '#ff3b4b' },
+  { type: 'triangle', icon: 'mdi-triangle',  color: '#138eff' },
+  { type: 'text', icon: 'mdi-format-text',   color: '#0ba84a' }
 ]
 
 const zoomButtons = [
-  { action: 'in', icon: 'mdi-magnify-plus' },
-  { action: 'out', icon: 'mdi-magnify-minus' }
+  { action: 'in', icon: 'mdi-magnify-plus' ,color: '#11171d' },
+  { action: 'out', icon: 'mdi-magnify-minus', color: '#11171d'  }
 ]
 
 const saveCanvasState = () => {
@@ -216,18 +223,61 @@ const disableDrawingMode = () => {
 </script>
 
 <style scoped>
-.custom-icon-btn {
-  min-width: 40px;
-  min-height: 40px;
-  padding: 8px;
-  border: 1px solid #ccc;
+.toolbar-wrapper {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  z-index: 999;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.close-btn {
+  background-color: white;
+  border-radius: 50%;
+  width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 6px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+  cursor: pointer;
+}
+
+.icon-toolbar {
+  background-color: white;
+  border-radius: 30px;
+  padding: 10px 4px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+}
+
+.icon-button {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+  transition: transform 0.2s;
+}
+
+.icon-button:hover {
+  transform: scale(1.3);
+}
+
+.custom-icon-btn {  
   transition: 0.3s ease;
-  background-color: #f9f9f9;
+ 
 }
 
 .custom-icon-btn:hover {
-  background-color: #e0e0e0;
-  border-color: #999;
+  transform: scale(1.2);
 }
 
 .v-row {

@@ -118,7 +118,7 @@ const login = async () => {
     console.log('Login Success:', user.email);
     success.value = `Welcome ${user.email}!`;
 
-  localStorage.setItem('authToken', user.uid);
+    sessionStorage.setItem('userEmail', user.email);
 
     router.push({ name: 'homePage' });
   } catch (err) {

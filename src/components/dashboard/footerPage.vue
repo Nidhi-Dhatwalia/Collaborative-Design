@@ -27,13 +27,11 @@
       <v-row class="footer-bottom" justify="center">
         <v-col class="text-center" cols="12">
           <p>English (India) | © 2025 All Rights Reserved, Canva®</p>
-          <v-row justify="center" class="social-links">
-            <v-btn text href="#">Privacy policy</v-btn>
-            <v-btn text href="#">Terms</v-btn>
-            <v-btn text href="#"><v-icon>mdi-facebook</v-icon></v-btn>
-            <v-btn text href="#"><v-icon>mdi-twitter</v-icon></v-btn>
-            <v-btn text href="#"><v-icon>mdi-pinterest</v-icon></v-btn>
-            <v-btn text href="#"><v-icon>mdi-instagram</v-icon></v-btn>
+          <v-row justify="center" class="social-links"> 
+            <v-icon size="x-large"    href="#">mdi-facebook</v-icon> 
+            <v-icon  size="x-large"   href="#"> mdi-twitter</v-icon> 
+            <v-icon  size="x-large"   href="#"> mdi-pinterest</v-icon> 
+            <v-icon  size="x-large"    href="#"> mdi-instagram</v-icon> 
           </v-row>
         </v-col>
       </v-row>
@@ -43,7 +41,7 @@
 
 <script>
 export default {
-  name: 'FooterComponent',
+  name: 'footerPage',
   data() {
     return {
       footerSections: {
@@ -84,7 +82,7 @@ export default {
 </script>
 
 <style scoped>
-.footer {
+.footer { 
   padding: 3rem 1rem;
 }
 
@@ -124,8 +122,7 @@ export default {
 }
 
 /* Social icons */
-.social-links .v-btn {
-  min-width: 40px;
+.social-links .v-btn { 
   margin: 0 0.1rem;
 }
 

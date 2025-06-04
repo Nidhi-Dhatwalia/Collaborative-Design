@@ -47,7 +47,7 @@
       </v-row>
     </v-container>
 
-    <v-container fluid class="py-10" style="background-color: #f5f5f5;">
+    <v-container fluid class="py-10" style="background-color: #fafafa;">
       <v-row justify="center" class="text-center text-black" no-gutters>
         <div class="feature-div">
           <v-icon size="48" color="primary" class="feature-icon">mdi-lock</v-icon>
@@ -88,7 +88,7 @@ const buttons = [
 
 .login-btn {
   background-color: #1976d2;
-  color: #ffffff;
+  color: #fafafa;
 }
 
 .feature-div {

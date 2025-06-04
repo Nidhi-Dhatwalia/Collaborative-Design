@@ -9,32 +9,51 @@
         class="feature-image"
       ></v-img>
 
-      <div class="text-section">
-        <v-icon size ="x-large"> mdi-chat-plus </v-icon>
-        <h2 class="title">Design with Others</h2>
+      <div class="text-section"> 
+        <h2 class="title">Start with the perfect image dimensions
+</h2>
         <p class="description">
-          Invite friends and family to design with you, or set your whole team up to work together.
-          Our collaboration features let you comment and work in real-time on Presentations, Whiteboards,
-          Docs, Videos, or that birthday party planning.
+          The perfect sized image is always one click away.
+           Image dimensions for social media, display ads, blogs, emails, and infographics are available as clickable presets.
         </p>
-
-        <div class="button-group">
-          <v-btn color="primary" class="btn">Start Designing</v-btn>
-          <v-btn color="secondary" class="btn">Start Free Teams Trial</v-btn>
-        </div>
-      </div>
+       </div>
     </div>
   </div>
+
+   <div class="features-container ">
+    <div class="content-wrapper">
+      <div class="text-section"> 
+        <h2 class="title">Add text, graphics, and effects in seconds
+</h2>
+        <p class="description">
+         Create whatever you’ve imagined in seconds. Choose from 200+ fonts, 
+         100,000+ vectors and shapes, and play with photo effects until your graphic is perfect—no design experience required.
+        </p>
+ 
+      </div>
+      <v-img
+        :src="canvasTemplate"
+        alt="Team Collaboration"
+        max-height="400"
+        contain
+        class="feature-image"
+      ></v-img>
+
+      
+    </div>
+  </div>
+
 </template>
 
 <script setup>
 import designWithOthers from '@/assets/design_with_others.jpg'
+import canvasTemplate from '@/assets/canvas_template.jpg'
 </script>
 
 <style scoped>
 .features-container { 
   padding: 80px;
-  background-color: #ffffff;
+  background-color: #f8f8f8;
 }
 
 .content-wrapper {

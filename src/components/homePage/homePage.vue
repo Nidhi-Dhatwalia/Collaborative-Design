@@ -75,35 +75,42 @@
       </v-row>
     </v-container>
 
-    <imageSection />
-    <featureReadyToPrint />
+    <imageSection /> 
+    <features />
     <getStarted />
+    <footerPage />
   </v-app>
 </template>
 
 <script setup>
 import { auth } from '@/firebase';
+import { signOut } from 'firebase/auth';
 import { useRouter } from 'vue-router';
 import imageSection from "@/components/homePage/imagesSection.vue";
-import featureReadyToPrint from "@/components/dashboard/featureReadyToPrint.vue";
+import features from "@/components/dashboard/features.vue"; 
 import getStarted from "@/components/dashboard/getStarted.vue";
+import footerPage from "@/components/dashboard/footerPage.vue";
 
 const router = useRouter();
 
-function logoutUser() {
-  auth.signOut().then(() => {
-    localStorage.removeItem('userEmail');
+const logoutUser = async () => {
+  try { 
+    await signOut(auth); 
+    sessionStorage.removeItem('userEmail');
+ 
     router.push({ name: 'loginPage' });
-  }).catch((error) => {
-    console.error('Logout error:', error);
-  });
-}
+
+  } catch (error) { 
+    console.error('Logout Error:', error);
+  }
+};
+
 
 const buttons = [
   { label: "Features", route: "/features", class: "custom-btn" },
   { label: "Our partners", route: "/feature", class: "custom-btn" },
   { label: "About us", route: "/getStarted", class: "custom-btn" },
-  { label: "Log Out", class: "login-btn", action: logoutUser },
+  { label: "Log Out", class: "login-btn", action : logoutUser },
 ];
 
 const iconButtons = [
@@ -118,7 +125,7 @@ const iconButtons = [
 
 <style scoped>
 .container {
-  background-color: #e7f2fc;
+  background-color: #f3f8fd;
   padding: 20px 0px;
   margin-top: 70px;
 }

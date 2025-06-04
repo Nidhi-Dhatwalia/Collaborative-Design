@@ -52,7 +52,7 @@
           
           <p> Please select a design from the sidebar to preview it.</p> 
           </div>
-          <canvas id="preview-canvas" width="900" height="500"   v-show="selectedDesignIndex !== null"
+          <canvas id="preview-canvas" width="700" height="500"   v-show="selectedDesignIndex !== null"
 ></canvas>
 
 
@@ -173,7 +173,7 @@ const fitCanvasToViewport = () => {
 }
 
 .canvas-area {
-  width: 57%;
+  width: 77%;
   overflow-x: auto;
   border: 1px solid #000000;
   border-radius: 12px;
