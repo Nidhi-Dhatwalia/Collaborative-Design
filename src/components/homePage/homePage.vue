@@ -1,8 +1,8 @@
 <template>
   <v-app class="gradient-bg">
     <v-app-bar color="white" flat>
-      <v-toolbar-title class="text-primary font-weight-bold">
-        Team<span class="font-weight-regular">work</span>
+      <v-toolbar-title class="text-black font-weight-bold">
+        Colla<span class="font-weight-regular">bie</span>
       </v-toolbar-title>
 
       <v-spacer />
@@ -11,8 +11,8 @@
         <v-col
           v-for="(button, index) in buttons"
           :key="index"
-          cols="auto"
-        >
+          cols="auto">
+        
           <template v-if="button.route">
             <router-link :to="button.route" class="no-underline">
               <v-btn :class="button.class" small text>
@@ -38,13 +38,21 @@
       <v-row align="center" justify="center" style="min-height: 250px;">
         <v-col cols="12" md="6" class="text-center">
           <h2>
-            <span class="text-primary font-weight-bold mt-8">Teamwork</span> – the best way to work together.
+            <span class="text-primary font-weight-bold mt-8">Collabie</span> – the best way to work together.
           </h2>
           <p class="mt-4 gradient-text">
             What Will you design today?
           </p>
         </v-col>
+          <v-col>  
+              <v-img
+              :src="HomepageImage"
+              alt="image"
+              contain
+              />
+          </v-col>
       </v-row>
+      
     </v-container>
 
     <v-container class="mt-6">
@@ -91,6 +99,8 @@ import features from "@/components/dashboard/features.vue";
 import getStarted from "@/components/dashboard/getStarted.vue";
 import footerPage from "@/components/dashboard/footerPage.vue";
 
+import HomepageImage from '@/assets/images/homepage-image.jpg'; 
+
 const router = useRouter();
 
 const logoutUser = async () => {
@@ -107,8 +117,7 @@ const logoutUser = async () => {
 
 
 const buttons = [
-  { label: "Features", route: "/features", class: "custom-btn" },
-  { label: "Our partners", route: "/feature", class: "custom-btn" },
+  { label: "Features", route: "/features", class: "custom-btn" }, 
   { label: "About us", route: "/getStarted", class: "custom-btn" },
   { label: "Log Out", class: "login-btn", action : logoutUser },
 ];
@@ -125,19 +134,17 @@ const iconButtons = [
 
 <style scoped>
 .container {
-  background-color: #f3f8fd;
-  padding: 20px 0px;
+  background-color: #ffffff;
+  padding: 20px 100px;
   margin-top: 70px;
+  
 }
 
-.custom-btn {
-  text-transform: none;
-  font-weight: 600;
-  color: #2d7cc7;
+.custom-btn { 
+  color: #000000;
   transition: color 0.3s ease, text-decoration 0.3s ease;
   cursor: pointer;
-  font-size: 18px;
-  font-weight: bold;
+  font-size: 14px; 
 }
 
 .custom-btn:hover {
@@ -145,19 +152,18 @@ const iconButtons = [
   text-decoration: underline;
 }
 
-.login-btn {
-  text-transform: none;
-  font-weight: 600;
-  background-color: #2d7cc7;
-  color: #ffffff;
+.login-btn { 
+  background-color: #ffffff;
+  color: #000000;
   transition: background-color 0.3s ease, transform 0.2s ease, box-shadow 0.3s ease;
   cursor: pointer;
+  border: 1px solid #2b65f0;
 }
 
 .login-btn:hover {
-  background-color: #303f9f;
-  transform: translateY(-2px);
-  box-shadow: 0 4px 15px rgba(48, 63, 159, 0.4);
+  background-color: #2b65f0;
+  color: white;
+  transform: translateY(-2px); 
 }
 
 .icon-col {

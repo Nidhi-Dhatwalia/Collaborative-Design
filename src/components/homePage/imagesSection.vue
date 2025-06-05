@@ -1,75 +1,64 @@
 <template>
   <v-app>
     <v-main>
-      <v-container   fluid>
-        
-        <h2 class="text-center mb-8 text-primary font-weight-bold">
+      <v-container fluid>
+        <h2 class="heading">
           Teamwork & Canvas Gallery
         </h2>
- 
-        <v-sheet class="pa-4 rounded-lg gallery-bg mb-0 ">
-          <v-row
-            justify="center"
-            align="center"
-            dense
-            style="gap: 22px;"
+
+        <v-sheet class="gallery-container">
+          <v-carousel
+            cycle
+            height="500"
+            hide-delimiters
+            show-arrows-on-hover
+            class="carousel"
           >
-            <v-col
+            <v-carousel-item
               v-for="(img, i) in images"
               :key="i"
-              cols="auto"
-              style="max-width: 260px;"
             >
               <v-img
                 :src="img"
                 alt="Image"
-                height="160"
-                width="220"
-                class="rounded"
-                contain
+                cover
+                class="carousel-img"
               />
-            </v-col>
-          </v-row>
+            </v-carousel-item>
+          </v-carousel>
         </v-sheet>
-
       </v-container>
     </v-main>
   </v-app>
 </template>
-
 
 <script setup>
 const images = [
   new URL('@/assets/images/image1.jpg', import.meta.url).href,
   new URL('@/assets/images/image2.jpg', import.meta.url).href,
   new URL('@/assets/images/image3.jpg', import.meta.url).href,
-  new URL('@/assets/images/image4.jpg', import.meta.url).href,
   new URL('@/assets/images/image5.jpg', import.meta.url).href,
-  new URL('@/assets/images/image6.jpg', import.meta.url).href, 
 ];
 </script>
 
 <style scoped>
-.text-center {
+
+.heading {
   text-align: center;
+  margin: 2rem 0 1.5rem;
+  color: #246a99; 
+  font-weight: bold;
+  font-size: 32px;
 }
-.mb-8 {
-  margin-bottom: 1rem;
+
+ 
+.carousel {
+  overflow: hidden;
 }
-.mb-12 {
-  margin-bottom: 1rem;
-}
-.rounded {
-  border-radius: 12px;
-  transition: transform 0.3s ease;
-}
-.rounded:hover {
-  transform: scale(1.1);
-  cursor: pointer;
-  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
-}
-.gallery-bg { 
-  background-color: #f5f7fa;  
+
+.carousel-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
 }
 </style>
-

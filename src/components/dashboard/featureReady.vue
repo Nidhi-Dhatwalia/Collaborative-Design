@@ -1,14 +1,7 @@
 <template>
   <div class="features-container">
     <div class="content-wrapper">
-      
-      <v-img
-        :src="readyToPrint"
-        alt="Team Collaboration"
-        max-height="400"
-        contain
-        class="feature-image"
-      ></v-img>
+    
       
       <div class="text-section"> 
         <h2 class="title">Schedule and share your Designs instantly</h2>
@@ -17,25 +10,33 @@
           Everything you design in Canva is ready to send to the printer, or to print from home.
         </p> 
       </div>
-
+        
+      <v-img
+        :src="featureImage"
+        alt="Team Collaboration"
+        max-height="400"
+        contain
+        class="feature-image"
+      ></v-img>
     </div>
   </div>
 </template>
 
 <script setup>
-import readyToPrint from '@/assets/ready-to-print.jpg'
+import featureImage from '@/assets/feature-image.jpeg'
 </script>
 
 <style scoped>
 .features-container {
-  padding: 50px;
-  background-color: #f8f8f8;
+  padding: 0px 150px;
+  background-color: #fefefe;
 }
 
 .content-wrapper {
   display: flex;
   align-items: center;
   justify-content: center; 
+  gap: 50px;
 }
 
 .feature-image {

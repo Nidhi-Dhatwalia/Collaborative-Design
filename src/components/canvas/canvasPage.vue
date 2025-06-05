@@ -161,6 +161,7 @@ const saveCanvasState = () => {
     const rawCanvasState = canvas.value.toJSON();
     const cleanedState = removeUndefined(rawCanvasState);
     syncCanvasWithFirebase(cleanedState);
+   
 };
 
 // Load Data from Firebase 
@@ -326,8 +327,7 @@ const iconsList = ref([
     {icon: "mdi-content-save", label: "Saved Designs",actionType: "route",action: "/save",  },
 ]);
 
-
-
+ 
 provide('upload', upload);
 provide('downloadCanvas',downloadCanvas);
  

@@ -48,5 +48,47 @@ export function useImageUtils(canvas) {
     }
   };
 
-  return { handleImageUpload, triggerImageUpload, saveCanvasAsImage };
+
+    const addVideoToCanvas = (videoSrc) => {
+    if (!canvas.value) {
+      console.error('Canvas is not initialized!');
+      return;
+    }
+
+    const video = document.createElement('video');
+    video.src = videoSrc;
+    video.crossOrigin = 'anonymous';
+    video.autoplay = true;
+    video.muted = true;
+    video.loop = true;
+    video.play();
+
+    const tempCanvas = document.createElement('canvas');
+    const tempCtx = tempCanvas.getContext('2d');
+
+    const fabricVideoImage = new fabric.Image(tempCanvas, {
+      left: 100,
+      top: 100,
+      selectable: false,
+    });
+
+    video.addEventListener('loadeddata', () => {
+      tempCanvas.width = video.videoWidth;
+      tempCanvas.height = video.videoHeight;
+
+      const updateFrame = () => {
+        tempCtx.drawImage(video, 0, 0, tempCanvas.width, tempCanvas.height);
+        fabricVideoImage.setElement(tempCanvas);
+        fabricVideoImage.dirty = true;
+        canvas.value.renderAll();
+        requestAnimationFrame(updateFrame);
+      };
+
+      updateFrame();
+      canvas.value.add(fabricVideoImage);
+    });
+  };
+
+
+  return { handleImageUpload, triggerImageUpload, saveCanvasAsImage ,    addVideoToCanvas,};
 }

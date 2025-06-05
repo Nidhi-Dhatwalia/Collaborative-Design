@@ -32,13 +32,12 @@
               :rules="passwordRules"
             ></v-text-field>
 
-            <v-btn
-              color="deep-purple accent-2"
+            <v-btn 
               block
               type="submit"
               :loading="loading"
               :disabled="loading"
-              class="mb-4 btn-hover"
+              class="btn-style"
             >
               Login
             </v-btn>
@@ -141,10 +140,10 @@ const togglePasswordVisibility = () => {
   display: flex;
   justify-content: center;
   align-items: center;
-    background: #f3f3f3;
+  background: #ffffff;
 }
 .btn-style {
-  background-color: #4a0fc7;
+  background-color: #2b65f0;
   color: white;
   margin-top: 20px;
 }
@@ -183,7 +182,7 @@ const togglePasswordVisibility = () => {
 }
 
 .welcome-section {
-  background: linear-gradient(135deg, #ab88d1 0%, #5181d4 100%);
+  background: linear-gradient(135deg, #9549e7 0%, #0454de 100%);
   color: white;
   text-align: center;
 }
@@ -213,13 +212,14 @@ const togglePasswordVisibility = () => {
 }
 
 .v-btn {
+  background-color: #2b65f0;
   margin-top: 20px;
   transition: background-color 0.3s ease;
   color: #fff !important;
 }
 
 .v-btn:hover {
-  background-color: #4a0fc7 !important;
+  background-color: #09318f ;
 }
 
 .text-field-hover input {
@@ -234,7 +234,7 @@ const togglePasswordVisibility = () => {
 }
 
 .signup-link {
-  color: #6a11cb;
+  color: #2b65f0;
   text-decoration: none;
   font-weight: 600;
 }

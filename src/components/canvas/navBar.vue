@@ -10,8 +10,8 @@
       <v-divider vertical class="mx-8" />
 
       <div class="icon-group">
-        <v-icon class="icon" title="Undo">mdi-undo</v-icon>
-        <v-icon class="icon" title="Redo">mdi-redo</v-icon>
+        <!-- <v-icon class="icon" title="Undo" >mdi-undo</v-icon>
+        <v-icon class="icon" title="Redo"  >mdi-redo</v-icon> -->
         <v-icon class="icon" title="Save to Cloud" @click="upload">
           mdi-cloud-upload-outline
         </v-icon>
@@ -83,6 +83,7 @@ const downloadCanvas = inject("downloadCanvas");
 
 const isChatVisible = ref(false);
 
+ 
 const toggleChat = () => {
   isChatVisible.value = !isChatVisible.value; 
 };

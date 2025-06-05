@@ -1,167 +1,89 @@
 <template>
-  <div class="features-container">
-    <div class="content-wrapper">
-      <v-img
-        :src="designWithOthers"
-        alt="Team Collaboration"
-        max-height="400"
-        contain
-        class="feature-image"
-      ></v-img>
+  <div class="support__section">
+    <v-container>
+      <v-row>
+        <!-- Left Side: Image -->
+        <v-col cols="12" md="6">
+          <v-img
+            :src="supportImage"
+            alt="support-hero"
+            height="582"
+            width="1000"
+            class="support__image"
+            contain
+          />
+        </v-col>
 
-      <div class="text-section"> 
-        <h2 class="title">Start with the perfect image dimensions
-</h2>
-        <p class="description">
-          The perfect sized image is always one click away.
-           Image dimensions for social media, display ads, blogs, emails, and infographics are available as clickable presets.
-        </p>
-       </div>
-    </div>
+        <v-col
+          cols="12"
+          md="6"
+          class="support__detail d-flex flex-column justify-center align-center"
+        >
+          <div class="text-center px-4">
+            <v-rating :model-value="5" color="yellow-darken-3"></v-rating>
+            <h3 class="support__title">
+              Our Support Heroes Are Here For You 24/7/365 Via Email
+            </h3>
+            <p class="support__description">
+              24/7 support, because creativity doesn’t wait.
+               Whether it’s syncing issues or tool confusion, 
+               we’re one email away—every single day of the year.
+            </p>
+            <a class="btn-link" href="#">
+              Send us an email
+              <i class="bi bi-arrow-right right-arrow-icon"></i>
+            </a>
+          </div>
+        </v-col>
+      </v-row>
+    </v-container>
   </div>
-
-   <div class="features-container ">
-    <div class="content-wrapper">
-      <div class="text-section"> 
-        <h2 class="title">Add text, graphics, and effects in seconds
-</h2>
-        <p class="description">
-         Create whatever you’ve imagined in seconds. Choose from 200+ fonts, 
-         100,000+ vectors and shapes, and play with photo effects until your graphic is perfect—no design experience required.
-        </p>
- 
-      </div>
-      <v-img
-        :src="canvasTemplate"
-        alt="Team Collaboration"
-        max-height="400"
-        contain
-        class="feature-image"
-      ></v-img>
-
-      
-    </div>
-  </div>
-
 </template>
 
 <script setup>
-import designWithOthers from '@/assets/design_with_others.jpg'
-import canvasTemplate from '@/assets/canvas_template.jpg'
+import supportImage from "@/assets/images/support_image.jpeg";
 </script>
 
 <style scoped>
-.features-container { 
-  padding: 80px;
-  background-color: #f8f8f8;
+.support__section{
+  padding: 0px 100px;
+}
+.rating__star {
+  color: var(--yellow);
+  font-size: 32px;
+  margin-bottom: 15px;
+  list-style: none;
+  padding: 0;
 }
 
-.content-wrapper {
-  display: flex; 
-  align-items: center;  
-  justify-content: space-between;
-  gap: 40px;  
+.rating__star li {
+  margin-right: 6px;
 }
 
-.feature-image {
-  width: 60%;   
-  max-width: 100%;
-  height: auto;
-  border-radius: 8px;   
+.support__title {
+  font-size: 32px;
+  font-weight: 500;
+  margin-bottom: 15px;
 }
 
-.text-section { 
-  margin-top: 20px;
-  padding: 2rem; 
-  border-radius: 8px; 
-  max-width: 600px;   
+.support__description {
+  font-size: 18px; 
+  margin-bottom: 20px;
 }
 
-.title {
-  font-size: 2rem;
-  font-weight: bold;
-  color: #333;
-  margin-bottom: 1rem;
-}
-
-.description {
-  font-size: 1.125rem;
-  color: #555;
-  line-height: 1.5;
-  margin-bottom: 2rem;
-}
-
-.button-group {
-  display: flex;
-  gap: 1rem;
-  margin-top: 1rem;
-  flex-wrap: wrap;
-}
-
-.btn {
+.btn-link {
+  font-weight: 600;
   font-size: 16px;
-  text-transform: uppercase; 
+  color: #2b65f0;
+  text-decoration: none;
+  transition: all 0.3s ease;
+}
+
+.btn-link:hover {
+  color: #102768;
+}
+
+.support__image {
   border-radius: 10px;
-  min-width: 140px;
-}
-
-/* Responsive */
-
-@media (max-width: 960px) {
-  .features-container {
-    padding: 40px 20px;
-  }
-
-  .content-wrapper {
-    flex-direction: column;
-    gap: 30px;
-  }
-
-  .feature-image {
-    width: 100%;
-    max-height: 300px;
-  }
-
-  .text-section {
-    padding: 1rem;
-    max-width: 100%;
-    text-align: center;
-  }
-
-  .title {
-    font-size: 1.75rem;
-  }
-
-  .description {
-    font-size: 1rem;
-  }
-
-  .button-group {
-    justify-content: center;
-  }
-
-  .btn {
-    min-width: 120px;
-  }
-}
-
-@media (max-width: 600px) {
-  .features-container {
-    padding: 20px 15px;
-  }
-
-  .title {
-    font-size: 1.5rem;
-  }
-
-  .description {
-    font-size: 0.9rem;
-  }
-
-  .btn {
-    font-size: 14px;
-    min-width: 100px;
-    padding: 10px 0;
-  }
 }
 </style>
